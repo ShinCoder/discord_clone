@@ -10,7 +10,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "incremental": true,
+    "incremental": false,
     "plugins": [
       {
         "name": "next"

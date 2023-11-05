@@ -14,7 +14,14 @@
         "outputPath": "dist/apps/api-gateway",
         "main": "apps/api-gateway/src/main.ts",
         "tsConfig": "apps/api-gateway/tsconfig.app.json",
-        "assets": ["apps/api-gateway/src/assets"],
+        "assets": [
+          "apps/api-gateway/src/assets",
+          {
+            "input": "./libs/shared-assets/proto",
+            "glob": "**/*",
+            "output": "proto"
+          }
+        ],
         "isolatedConfig": true,
         "webpackConfig": "apps/api-gateway/webpack.config.js"
       },

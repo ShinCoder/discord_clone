@@ -1,0 +1,2 @@
+export const JWT_AT_STRATEGY_NAME = 'JWT_AT_STRATEGY';
+export const JWT_VT_STRATEGY_NAME = 'JWT_VT_STRATEGY';

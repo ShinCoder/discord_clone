@@ -61,3 +61,7 @@ Nx comes with local caching already built-in (check your `nx.json`). On CI you m
 - [Join the community](https://nx.dev/community)
 - [Subscribe to the Nx Youtube Channel](https://www.youtube.com/@nxdevtools)
 - [Follow us on Twitter](https://twitter.com/nxdevtools)
+
+## Generate ts from proto example
+
+protoc --plugin=protoc-gen-ts_proto=".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd" --ts_proto_out=./libs/common/src/types --ts_proto_opt=nestJs=true --proto_path=./libs/shared-assets/proto ./libs/shared-assets/proto/auth-service.proto

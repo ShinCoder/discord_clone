@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountStatus {
+  NOT_VERIFIED
+  ACTIVE
+  DISABLED
+
+  @@map("ACCOUNT_STATUS")
+}
+
+model Accounts {
+  id          String        @id @default(uuid())
+  email       String        @unique()
+  password    String
+  username    String        @unique()
+  displayName String?       @map("display_name")
+  dateOfBirth DateTime      @map("date_of_birth") @db.Date()
+  phoneNumber String?       @unique() @map("phone_number")
+  avatar      String?
+  status      AccountStatus @default(NOT_VERIFIED)
+  isAdmin     Boolean       @default(false) @map("is_admin")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt() @map("updated_at") @db.Timestamptz()
+
+  sessions Sessions[]
+
+  @@map("accounts")
+}
+
+model Sessions {
+  account   Accounts @relation(fields: [accountId], references: [id])
+  accountId String   
+
+  id           String   @id @default(uuid())
+  accessToken  String   @map("access_token")
+  refreshToken String   @map("refresh_token")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
+
+  @@map("sessions")
+}

@@ -1,0 +1,14 @@
+syntax="proto3";
+
+package com.common;
+
+enum MessageStatusType {
+    SUCCESS = 0;
+    ERROR = 1;
+}
+
+message MessageStatus {
+    MessageStatusType type = 1;
+    int32 statusCode = 2;
+    optional string message = 3;
+}

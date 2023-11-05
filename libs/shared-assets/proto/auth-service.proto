@@ -1,0 +1,101 @@
+syntax="proto3";
+
+package com.auth_service;
+
+import "common.proto";
+
+service AuthServiceAuthModule {
+    rpc Register (RegisterDto) returns (RegisterResult) {};
+    rpc Login (LoginDto) returns (LoginResult) {};
+    rpc Verify (VerifyDto) returns (VerifyResult) {};
+}
+
+service AuthServiceAccountModule {
+    rpc GetAccount (GetAccountDto) returns (GetAccountResult) {};
+    rpc GetAccounts (GetAccountsDto) returns (GetAccountsResult) {};
+}
+
+enum AccountStatus {
+    NOT_VERIFIED = 0;
+    ACTIVE = 1;
+    DISABLED = 2;
+}
+
+message RegisterDto {
+    string email = 1;
+    string password = 2;
+    string username = 3;
+    optional string displayName = 4;
+    string dateOfBirth = 5; 
+}
+
+message RegisterResult {
+    message VerifyTokenDto {
+        string verifyToken = 1;
+    }
+
+    com.common.MessageStatus status = 1;
+    optional VerifyTokenDto payload = 2;
+}
+
+message LoginDto {
+    oneof emailOrPhoneNumber {
+        string email = 1;
+        string phoneNumber = 2;
+    }
+    string password = 3;
+}
+
+message LoginResult {
+    message TokenDto {
+        string accessToken = 1;
+        string refreshToken = 2;
+    }
+
+    com.common.MessageStatus status = 1;
+    optional TokenDto payload = 2;
+}
+
+message VerifyDto {
+    string id = 1;
+}
+
+message VerifyResult {
+    com.common.MessageStatus status = 1;
+}
+
+message AccountDto {
+    string id = 1;
+    string email = 2;
+    string username = 3;
+    optional string displayName = 4;
+    string dateOfBirth = 5;
+    optional string phoneNumber = 6;
+    string avatar = 7;
+    AccountStatus status = 8;
+    bool isAdmin = 9;
+    string createdAt = 10;
+    string updatedAt = 11;
+}
+
+message GetAccountDto {
+    string id = 1;
+}
+
+message GetAccountResult {
+    com.common.MessageStatus status = 1;
+    optional AccountDto payload = 2;
+}
+
+message AccountsDto {
+    repeated AccountDto accounts = 1;
+}
+
+message GetAccountsDto {
+    
+}
+
+message GetAccountsResult {
+    com.common.MessageStatus status = 1;
+    optional AccountsDto payload = 2;
+}
