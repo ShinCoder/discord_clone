@@ -8,8 +8,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/grpc/auth-service';
-import { JwtVtStrategy } from '../../strategies';
-import { JwtAtStrategy } from '../../strategies';
+import { JwtAtStrategy, JwtRtStrategy, JwtVtStrategy } from '../../strategies';
 
 @Module({
   imports: [
@@ -30,6 +29,6 @@ import { JwtAtStrategy } from '../../strategies';
     ])
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAtStrategy, JwtVtStrategy]
+  providers: [AuthService, JwtAtStrategy, JwtVtStrategy, JwtRtStrategy]
 })
 export class AuthModule {}

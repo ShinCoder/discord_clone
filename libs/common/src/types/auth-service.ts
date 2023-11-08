@@ -35,14 +35,14 @@ export interface LoginDto {
   password: string;
 }
 
-export interface LoginResult {
-  status: MessageStatus | undefined;
-  payload?: LoginResult_TokenDto | undefined;
-}
-
-export interface LoginResult_TokenDto {
+export interface TokenDto {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface LoginResult {
+  status: MessageStatus | undefined;
+  payload?: TokenDto | undefined;
 }
 
 export interface VerifyDto {
@@ -50,6 +50,24 @@ export interface VerifyDto {
 }
 
 export interface VerifyResult {
+  status: MessageStatus | undefined;
+}
+
+export interface RefreshDto {
+  accountId: string;
+  refreshToken: string;
+}
+
+export interface RefreshResult {
+  status: MessageStatus | undefined;
+  payload?: TokenDto | undefined;
+}
+
+export interface LogoutDto {
+  accountId: string;
+}
+
+export interface LogoutResult {
   status: MessageStatus | undefined;
 }
 
@@ -69,6 +87,7 @@ export interface AccountDto {
 
 export interface GetAccountDto {
   id: string;
+  status?: AccountStatus | undefined;
 }
 
 export interface GetAccountResult {
@@ -95,6 +114,10 @@ export interface AuthServiceAuthModuleClient {
   login(request: LoginDto): Observable<LoginResult>;
 
   verify(request: VerifyDto): Observable<VerifyResult>;
+
+  refresh(request: RefreshDto): Observable<RefreshResult>;
+
+  logout(request: LogoutDto): Observable<LogoutResult>;
 }
 
 export interface AuthServiceAuthModuleController {
@@ -109,11 +132,25 @@ export interface AuthServiceAuthModuleController {
   verify(
     request: VerifyDto
   ): Promise<VerifyResult> | Observable<VerifyResult> | VerifyResult;
+
+  refresh(
+    request: RefreshDto
+  ): Promise<RefreshResult> | Observable<RefreshResult> | RefreshResult;
+
+  logout(
+    request: LogoutDto
+  ): Promise<LogoutResult> | Observable<LogoutResult> | LogoutResult;
 }
 
 export function AuthServiceAuthModuleControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['register', 'login', 'verify'];
+    const grpcMethods: string[] = [
+      'register',
+      'login',
+      'verify',
+      'refresh',
+      'logout'
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

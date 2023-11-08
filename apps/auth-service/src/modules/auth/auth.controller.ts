@@ -6,6 +6,8 @@ import {
   AuthServiceAuthModuleController,
   AuthServiceAuthModuleControllerMethods,
   LoginDto,
+  LogoutDto,
+  RefreshDto,
   RegisterDto,
   VerifyDto
 } from '@prj/grpc/auth-service';
@@ -25,5 +27,13 @@ export class AuthController implements AuthServiceAuthModuleController {
 
   verify(data: VerifyDto) {
     return this.authService.verify(data);
+  }
+
+  refresh(data: RefreshDto) {
+    return this.authService.refresh(data);
+  }
+
+  logout(data: LogoutDto) {
+    return this.authService.logout(data);
   }
 }

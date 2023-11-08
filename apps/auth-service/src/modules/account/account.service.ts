@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
-import { Accounts } from '@prisma/client';
+import { AccountStatus, Accounts } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utlis';
@@ -44,7 +44,10 @@ export class AccountService {
     try {
       const account = await this.prismaService.accounts.findFirst({
         where: {
-          id: data.id
+          id: data.id,
+          status: data.status
+            ? AccountStatus[RpcAccountStatus[data.status]]
+            : AccountStatus.ACTIVE
         }
       });
 

@@ -23,7 +23,11 @@ import {
   RegisterDto,
   RegisterResult,
   VerifyDto,
-  VerifyResult
+  VerifyResult,
+  RefreshDto,
+  RefreshResult,
+  LogoutDto,
+  LogoutResult
 } from '@prj/grpc/auth-service';
 import { getRpcSuccessMessage } from '@prj/common';
 
@@ -152,13 +156,31 @@ export class AuthService {
         }
       );
 
-      await this.prismaService.sessions.create({
-        data: {
-          accountId: account.id,
-          accessToken,
-          refreshToken
+      const session = await this.prismaService.sessions.findFirst({
+        where: {
+          accountId: account.id
         }
       });
+
+      if (session) {
+        await this.prismaService.sessions.update({
+          where: {
+            id: session.id
+          },
+          data: {
+            accessToken,
+            refreshToken
+          }
+        });
+      } else {
+        await this.prismaService.sessions.create({
+          data: {
+            accountId: account.id,
+            accessToken,
+            refreshToken
+          }
+        });
+      }
 
       return getRpcSuccessMessage(HttpStatus.OK, {
         accessToken,
@@ -189,6 +211,100 @@ export class AuthService {
           },
           data: {
             status: AccountStatus.ACTIVE
+          }
+        });
+
+        return getRpcSuccessMessage(HttpStatus.OK);
+      });
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async refresh(data: RefreshDto): Promise<RefreshResult> {
+    try {
+      return await this.prismaService.$transaction(async (tx) => {
+        const session = await tx.sessions.findFirst({
+          where: {
+            accountId: data.accountId
+          },
+          include: {
+            account: {
+              select: {
+                id: true,
+                email: true,
+                isAdmin: true
+              }
+            }
+          }
+        });
+
+        if (!session)
+          throw new RpcException(new ForbiddenException('Session not found'));
+
+        if (session.refreshToken !== data.refreshToken)
+          throw new RpcException(new ForbiddenException('Invalid token'));
+
+        const accessToken = this.jwtService.sign(
+          {
+            sub: session.account.id,
+            email: session.account.email,
+            isAdmin: session.account.isAdmin,
+            type: 'access'
+          },
+          {
+            privateKey: this.configService.get<string>('JWT_AT_SECRET'),
+            expiresIn: this.configService.get<string>('JWT_AT_EXPIRES')
+          }
+        );
+        const refreshToken = this.jwtService.sign(
+          {
+            sub: session.account.id,
+            email: session.account.email,
+            isAdmin: session.account.isAdmin,
+            type: 'refresh'
+          },
+          {
+            privateKey: this.configService.get<string>('JWT_RT_SECRET'),
+            expiresIn: this.configService.get<string>('JWT_RT_EXPIRES')
+          }
+        );
+
+        await tx.sessions.update({
+          where: {
+            id: session.id
+          },
+          data: {
+            accessToken,
+            refreshToken
+          }
+        });
+
+        return getRpcSuccessMessage(HttpStatus.OK, {
+          accessToken,
+          refreshToken
+        });
+      });
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async logout(data: LogoutDto): Promise<LogoutResult> {
+    try {
+      return await this.prismaService.$transaction(async (tx) => {
+        const session = await tx.sessions.findFirst({
+          where: {
+            accountId: data.accountId
+          }
+        });
+
+        if (!session)
+          throw new RpcException(new ForbiddenException('Session not found'));
+
+        await tx.sessions.delete({
+          where: {
+            id: session.id
           }
         });
 

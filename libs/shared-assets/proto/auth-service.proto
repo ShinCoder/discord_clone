@@ -8,6 +8,8 @@ service AuthServiceAuthModule {
     rpc Register (RegisterDto) returns (RegisterResult) {};
     rpc Login (LoginDto) returns (LoginResult) {};
     rpc Verify (VerifyDto) returns (VerifyResult) {};
+    rpc Refresh (RefreshDto) returns (RefreshResult) {};
+    rpc Logout (LogoutDto) returns (LogoutResult) {};
 }
 
 service AuthServiceAccountModule {
@@ -46,12 +48,12 @@ message LoginDto {
     string password = 3;
 }
 
-message LoginResult {
-    message TokenDto {
-        string accessToken = 1;
-        string refreshToken = 2;
-    }
+message TokenDto {
+    string accessToken = 1;
+    string refreshToken = 2;
+}
 
+message LoginResult {
     com.common.MessageStatus status = 1;
     optional TokenDto payload = 2;
 }
@@ -61,6 +63,24 @@ message VerifyDto {
 }
 
 message VerifyResult {
+    com.common.MessageStatus status = 1;
+}
+
+message RefreshDto {
+    string accountId = 1;
+    string refreshToken = 2;
+}
+
+message RefreshResult {
+    com.common.MessageStatus status = 1;
+    optional TokenDto payload = 2;
+}
+
+message LogoutDto {
+    string accountId = 1;
+}
+
+message LogoutResult {
     com.common.MessageStatus status = 1;
 }
 
@@ -80,6 +100,7 @@ message AccountDto {
 
 message GetAccountDto {
     string id = 1;
+    optional AccountStatus status = 2;
 }
 
 message GetAccountResult {

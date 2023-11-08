@@ -8,12 +8,15 @@ import { handleRpcResult } from '../../utils/rpc-message';
 import {
   AUTH_SERVICE_ACCOUNT_MODULE_SERVICE_NAME,
   AUTH_SERVICE_AUTH_MODULE_SERVICE_NAME,
+  AccountStatus as RpcAccountStatus,
   AuthServiceAccountModuleClient,
   AuthServiceAuthModuleClient,
   GetAccountDto,
   LoginDto,
   RegisterDto,
-  VerifyDto
+  VerifyDto,
+  RefreshDto,
+  LogoutDto
 } from '@prj/grpc/auth-service';
 
 @Injectable()
@@ -59,6 +62,22 @@ export class AuthService implements OnModuleInit {
     const result = await lastValueFrom(
       this.authServiceAccountModule.getAccount(data)
     );
+
+    const account = handleRpcResult(result);
+
+    return { ...account, status: RpcAccountStatus[account.status] };
+  }
+
+  async refresh(data: RefreshDto) {
+    const result = await lastValueFrom(
+      this.authServiceAuthModule.refresh(data)
+    );
+
+    return handleRpcResult(result);
+  }
+
+  async logout(data: LogoutDto) {
+    const result = await lastValueFrom(this.authServiceAuthModule.logout(data));
 
     return handleRpcResult(result);
   }
