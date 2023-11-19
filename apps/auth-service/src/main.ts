@@ -4,7 +4,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
 import { AppModule } from './modules/app/app.module';
-import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/grpc/auth-service';
+import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/auth-service';
 import { GlobalRpcExceptionFilter } from './exception-filters/rpc-exception.filter';
 
 async function bootstrap() {

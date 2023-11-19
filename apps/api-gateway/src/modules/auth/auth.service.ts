@@ -17,7 +17,7 @@ import {
   VerifyDto,
   RefreshDto,
   LogoutDto
-} from '@prj/grpc/auth-service';
+} from '@prj/types/grpc/auth-service';
 
 @Injectable()
 export class AuthService implements OnModuleInit {

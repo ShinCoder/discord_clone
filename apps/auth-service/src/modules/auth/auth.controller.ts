@@ -10,7 +10,7 @@ import {
   RefreshDto,
   RegisterDto,
   VerifyDto
-} from '@prj/grpc/auth-service';
+} from '@prj/types/grpc/auth-service';
 
 @Controller()
 @AuthServiceAuthModuleControllerMethods()

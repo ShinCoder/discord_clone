@@ -1,6 +1,8 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class LoginDto {
+import { ILoginDto } from '@prj/types/api';
+
+export class LoginDto implements ILoginDto {
   @IsNotEmpty()
   @IsString()
   username: string;

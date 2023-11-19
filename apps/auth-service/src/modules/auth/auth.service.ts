@@ -28,7 +28,7 @@ import {
   RefreshResult,
   LogoutDto,
   LogoutResult
-} from '@prj/grpc/auth-service';
+} from '@prj/types/grpc/auth-service';
 import { getRpcSuccessMessage } from '@prj/common';
 
 @Injectable()

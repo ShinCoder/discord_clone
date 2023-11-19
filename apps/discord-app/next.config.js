@@ -13,9 +13,11 @@ const nextConfig = {
     svgr: false
   },
 
+  reactStrictMode: true,
+
   compiler: {
-    // For other options, see https://styled-components.com/docs/tooling#babel-plugin
-    styledComponents: true
+    // For other options, see https://nextjs.org/docs/architecture/nextjs-compiler#emotion
+    emotion: true
   }
 };
 

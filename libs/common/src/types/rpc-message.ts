@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { MessageStatus, MessageStatusType } from './common';
+import { MessageStatus, MessageStatusType } from './grpc/common';
 
 export const getRpcSuccessMessage = <T>(code: HttpStatus, payload?: T) => ({
   status: {

@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
 import { IRpcResponseMessage } from '@prj/common';
-import { MessageStatusType } from '@prj/grpc/common';
+import { MessageStatusType } from '@prj/types/grpc/common';
 
 export const handleRpcResult = <T>(result: IRpcResponseMessage<T>) => {
   if (result.status.type === MessageStatusType.SUCCESS) return result.payload;

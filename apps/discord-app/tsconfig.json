@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
+    "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -16,7 +17,14 @@
         "name": "next"
       }
     ],
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@prj/types/api": ["../../libs/common/src/types/api/index.ts"],
+      "@components/*": ["./src/components/*"],
+      "@elements/*": ["./src/elements/*"],
+      "@constants": ["./src/constants/index.ts"]
+    }
   },
   "include": [
     "**/*.ts",

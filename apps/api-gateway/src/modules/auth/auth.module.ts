@@ -7,7 +7,7 @@ import { AUTH_SERVICE } from '../../constants';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/grpc/auth-service';
+import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/auth-service';
 import { JwtAtStrategy, JwtRtStrategy, JwtVtStrategy } from '../../strategies';
 
 @Module({

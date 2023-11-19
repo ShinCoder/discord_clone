@@ -7,7 +7,7 @@ import {
   AuthServiceAccountModuleControllerMethods,
   GetAccountDto,
   GetAccountsDto
-} from '@prj/grpc/auth-service';
+} from '@prj/types/grpc/auth-service';
 
 @Controller()
 @AuthServiceAccountModuleControllerMethods()

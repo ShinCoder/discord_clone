@@ -11,7 +11,9 @@ import { Type } from 'class-transformer';
 
 import { AgeRestrictConstraint } from '../../../utils';
 
-export class RegisterDto {
+import { IRegisterDto } from '@prj/types/api';
+
+export class RegisterDto implements IRegisterDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
