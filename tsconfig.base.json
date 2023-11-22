@@ -10,30 +10,18 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@prj/common": [
-        "libs/common/src/index.ts"
-      ],
+      "@prj/common": ["libs/common/src/index.ts"],
+      "@prj/types/api": ["libs/common/src/types/api/index.ts"],
       "@prj/types/grpc/auth-service": [
         "libs/common/src/types/grpc/auth-service.ts"
       ],
-      "@prj/types/grpc/common": [
-        "libs/common/src/types/grpc/common.ts"
-      ],
-      "@prj/types/api": [
-        "libs/common/src/types/api/index.ts"
-      ]
+      "@prj/types/grpc/common": ["libs/common/src/types/grpc/common.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

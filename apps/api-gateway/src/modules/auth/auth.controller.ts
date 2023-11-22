@@ -18,6 +18,8 @@ import { EMAIL_REGEX } from '../../constants';
 import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
 import { IRequestWithUser } from '../../types';
 
+import { IGetMeResult, ILoginResult } from '@prj/types/api';
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -31,7 +33,7 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() body: LoginDto) {
+  login(@Body() body: LoginDto): Promise<ILoginResult> {
     return this.authService.login(
       EMAIL_REGEX.test(body.username)
         ? {
@@ -53,7 +55,7 @@ export class AuthController {
 
   @UseGuards(JwtAtGuard)
   @Get('me')
-  getMe(@Req() req: IRequestWithUser) {
+  getMe(@Req() req: IRequestWithUser): Promise<IGetMeResult> {
     return this.authService.getAccount({
       id: req.user.sub
     });
@@ -62,9 +64,6 @@ export class AuthController {
   @UseGuards(JwtRtGuard)
   @Put('refresh')
   refresh(@Req() req: IRequestWithUser, @Body() body: RefreshDto) {
-    // console.log(req.user)
-    // throw new ForbiddenException()
-
     if (req.user.sub !== body.accountId)
       throw new ForbiddenException('Forbidden resource');
 

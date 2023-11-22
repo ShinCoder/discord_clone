@@ -14,10 +14,14 @@ const ControlledInputText = (props: ControlledInputText) => {
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, onBlur, value, ref } }) => (
+      render={({
+        field: { onChange, onBlur, value, ref },
+        fieldState: { error }
+      }) => (
         <InputText
           {...rest}
           inputProps={{ onChange, onBlur, value }}
+          error={error?.message}
         />
       )}
     />

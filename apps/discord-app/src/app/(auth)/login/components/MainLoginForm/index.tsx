@@ -1,17 +1,24 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import joi from 'joi';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import ControlledInputText from '@components/ControlledInputText';
 import CustomButton from '@elements/CustomButton';
 import { publicRoutes } from '@constants';
+import { getMe, login } from '@services';
+import { useAppDispatch } from '@redux/hooks';
+import { setLoading } from '@redux/slices/statusSlice';
+import { setToken } from '@redux/slices/authSlice';
 import { ForgotPasswordLink, RegisterLink } from './elements';
+
+import { ILoginDto } from '@prj/types/api';
 
 interface LoginFormData {
   username: string;
@@ -22,14 +29,21 @@ const MainLoginForm = () => {
   const formSchema = useMemo(
     () =>
       joi.object({
-        username: joi.string().required(),
-        password: joi.string().required()
+        username: joi
+          .string()
+          .required()
+          .messages({ 'string.empty': 'Required', 'any.required': 'Required' }),
+        password: joi
+          .string()
+          .required()
+          .messages({ 'string.empty': 'Required', 'any.required': 'Required' })
       }),
     []
   );
 
-  const { handleSubmit, control } = useForm<LoginFormData>({
+  const { handleSubmit, control, setError } = useForm<LoginFormData>({
     resolver: joiResolver(formSchema),
+    mode: 'onChange',
     defaultValues: {
       username: '',
       password: ''
@@ -37,6 +51,40 @@ const MainLoginForm = () => {
   });
 
   const theme = useTheme();
+
+  const dispatch = useAppDispatch();
+
+  const { data: accountData, refetch } = useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    enabled: false
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: ILoginDto) => {
+      return login(data);
+    },
+    onMutate: (variables) => {
+      dispatch(setLoading(true));
+    },
+    onSuccess: async (data, variables, context) => {
+      dispatch(setToken(data.data));
+      const account = await refetch();
+      console.log(account);
+      dispatch(setLoading(false));
+    },
+    onError: (error, variables, context) => {
+      setError('username', { message: 'Login or password is invalid.' });
+      setError('password', { message: 'Login or password is invalid.' });
+      mutation.reset();
+      dispatch(setLoading(false));
+    }
+  });
+
+  const handleLogin = useCallback(
+    handleSubmit((data) => mutation.mutate(data)),
+    []
+  );
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -62,7 +110,7 @@ const MainLoginForm = () => {
       </Box>
       <Box
         component='form'
-        onSubmit={handleSubmit((data) => console.log(data))}
+        onSubmit={handleLogin}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -73,12 +121,14 @@ const MainLoginForm = () => {
           control={control}
           name='username'
           label='Email or phone number'
+          isRequired
         />
         <ControlledInputText
           control={control}
           name='password'
           label='Password'
           isPassword
+          isRequired
           sx={{ marginTop: theme.spacing(2.5) }}
         />
         <ForgotPasswordLink href={publicRoutes.forgotPassword}>

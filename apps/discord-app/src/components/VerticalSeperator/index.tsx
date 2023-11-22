@@ -6,7 +6,6 @@ interface VerticalSeperatorProps {
 
 const VerticalSeperator = (props: VerticalSeperatorProps) => {
   const { radius } = props;
-  console.log(typeof window);
   return (
     <Box
       sx={{

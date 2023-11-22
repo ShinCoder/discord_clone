@@ -123,7 +123,7 @@ export class AuthService {
       });
 
       if (!account)
-        throw new RpcException(new NotFoundException('Account not found'));
+        throw new RpcException(new ForbiddenException('Account not found'));
 
       if (account.status === AccountStatus.NOT_VERIFIED)
         throw new RpcException(new ForbiddenException('Email is not verified'));

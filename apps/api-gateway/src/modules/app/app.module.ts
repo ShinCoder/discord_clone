@@ -14,7 +14,8 @@ import { AuthModule } from '../auth/auth.module';
         JWT_AT_PUBLIC: joi.string().required(),
         JWT_RT_PUBLIC: joi.string().required(),
         JWT_VT_PUBLIC: joi.string().required(),
-        JWT_RST_PUBLIC: joi.string().required()
+        JWT_RST_PUBLIC: joi.string().required(),
+        ALLOW_ORIGIN: joi.string()
       }),
       envFilePath: '.env'
     }),

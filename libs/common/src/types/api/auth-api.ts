@@ -3,6 +3,11 @@ export interface ILoginDto {
   password: string;
 }
 
+export interface ILoginResult {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface IRegisterDto {
   email: string;
   password: string;
@@ -18,4 +23,18 @@ export interface IRefreshDto {
 
 export interface ILogoutDto {
   accountId: string;
+}
+
+export interface IGetMeResult {
+  status: string;
+  id: string;
+  email: string;
+  username: string;
+  displayName?: string;
+  dateOfBirth: string;
+  phoneNumber?: string;
+  avatar: string;
+  isAdmin: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -60,6 +60,9 @@ export const defaultThemeOptions: ThemeOptions = {
       main: 'rgb(88, 101, 242)',
       contrastText: 'rgb(255, 255, 255)'
     },
+    error: {
+      main: 'rgb(250, 119, 124)'
+    },
     text: {
       primary: 'rgb(255, 255, 255)',
       secondary: 'rgb(181, 186, 193)'
