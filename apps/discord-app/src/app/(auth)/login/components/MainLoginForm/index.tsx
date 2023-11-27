@@ -29,14 +29,8 @@ const MainLoginForm = () => {
   const formSchema = useMemo(
     () =>
       joi.object({
-        username: joi
-          .string()
-          .required()
-          .messages({ 'string.empty': 'Required', 'any.required': 'Required' }),
-        password: joi
-          .string()
-          .required()
-          .messages({ 'string.empty': 'Required', 'any.required': 'Required' })
+        username: joi.string().messages({ 'string.empty': 'Required' }),
+        password: joi.string().messages({ 'string.empty': 'Required' })
       }),
     []
   );
@@ -81,6 +75,7 @@ const MainLoginForm = () => {
     }
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleLogin = useCallback(
     handleSubmit((data) => mutation.mutate(data)),
     []
@@ -137,7 +132,6 @@ const MainLoginForm = () => {
         <CustomButton
           type='submit'
           variant='contained'
-          sx={{}}
         >
           Log In
         </CustomButton>

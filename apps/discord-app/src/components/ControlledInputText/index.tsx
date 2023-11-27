@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Control, Controller } from 'react-hook-form';
 
 import InputText, { InputTextProps } from '../InputText';
@@ -8,7 +9,7 @@ interface ControlledInputText extends InputTextProps {
 }
 
 const ControlledInputText = (props: ControlledInputText) => {
-  const { control, name, ...rest } = props;
+  const { control, name, inputProps, ...rest } = props;
 
   return (
     <Controller
@@ -20,7 +21,17 @@ const ControlledInputText = (props: ControlledInputText) => {
       }) => (
         <InputText
           {...rest}
-          inputProps={{ onChange, onBlur, value }}
+          inputProps={{
+            ...inputProps,
+            onChange: (e) => {
+              inputProps?.onChange?.(e);
+              onChange(e);
+            },
+            onBlur: (e) => {
+              inputProps?.onBlur?.(e);
+              onBlur();
+            }
+          }}
           error={error?.message}
         />
       )}
@@ -28,4 +39,4 @@ const ControlledInputText = (props: ControlledInputText) => {
   );
 };
 
-export default ControlledInputText;
+export default memo(ControlledInputText);

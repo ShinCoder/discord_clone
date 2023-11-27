@@ -15,20 +15,7 @@ const Index = () => {
     setValue(newValue);
   };
 
-  return (
-    <Box>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        aria-label='basic tabs example'
-      >
-        <Tab label='Item One' />
-        <Tab label='Item Two' />
-        <Tab label='Item Three' />
-      </Tabs>
-      <Button sx={{}}>a</Button>
-    </Box>
-  );
+  return <Box>Comming soon</Box>;
 };
 
 export default Index;

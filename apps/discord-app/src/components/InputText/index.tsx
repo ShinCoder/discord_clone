@@ -1,14 +1,19 @@
 'use client';
 
-import { memo, useId } from 'react';
+import { memo, useId, useState } from 'react';
 import Box from '@mui/material/Box';
 import Input, { InputProps } from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import Typography from '@mui/material/Typography';
+import FormHelperText from '@mui/material/FormHelperText';
 import { SxProps, Theme, useTheme } from '@mui/material/styles';
+import Collapse from '@mui/material/Collapse';
+
+import InputLabel from '@components/InputLabel';
 
 export interface InputTextProps {
   label: string;
+  helperText?: string;
+  showHelperText?: boolean;
+  helperTextMode?: 'permanent' | 'onFocus';
   isPassword?: boolean;
   isRequired?: boolean;
   inputProps?: InputProps;
@@ -19,6 +24,9 @@ export interface InputTextProps {
 const InputText = (props: InputTextProps) => {
   const {
     label,
+    helperText,
+    showHelperText = false,
+    helperTextMode = 'permanent',
     isPassword = false,
     isRequired = false,
     inputProps,
@@ -29,59 +37,16 @@ const InputText = (props: InputTextProps) => {
   const theme = useTheme();
   const id = useId();
 
+  const [helperTextState, setHelperTextState] = useState(showHelperText);
+
   return (
     <Box sx={{ ...sx, width: '100%' }}>
       <InputLabel
-        sx={{
-          color: error && 'error.main',
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          lineHeight: '1rem',
-          textTransform: 'uppercase',
-          marginBottom: theme.spacing(1)
-        }}
+        label={label}
+        error={error}
+        isRequired={isRequired}
         htmlFor={id + '-input'}
-      >
-        {label}
-        {isRequired && !error && (
-          <Typography
-            component='span'
-            sx={{
-              color: theme.dcPalette.red,
-              font: 'inherit',
-              lineHeight: 'inherit',
-              paddingLeft: theme.spacing(0.5)
-            }}
-          >
-            *
-          </Typography>
-        )}
-        {error && (
-          <Typography
-            component='span'
-            sx={{
-              color: 'error.main',
-              fontSize: '0.75rem',
-              fontStyle: 'italic',
-              fontWeight: 500,
-              lineHeight: 'inherit',
-              textTransform: 'none'
-            }}
-          >
-            <Typography
-              component='span'
-              sx={{
-                font: 'inherit',
-                lineHeight: 'inherit',
-                padding: `0 ${theme.spacing(0.5)}`
-              }}
-            >
-              -
-            </Typography>
-            {error}
-          </Typography>
-        )}
-      </InputLabel>
+      />
       <Input
         id={id + '-input'}
         type={isPassword ? 'password' : 'text'}
@@ -100,7 +65,36 @@ const InputText = (props: InputTextProps) => {
           }
         }}
         {...inputProps}
+        onFocus={(e) => {
+          inputProps?.onFocus?.(e);
+          if (helperTextMode === 'onFocus') setHelperTextState(true);
+        }}
+        onBlur={(e) => {
+          inputProps?.onBlur?.(e);
+          if (helperTextMode === 'onFocus') setHelperTextState(false);
+        }}
       />
+      {helperText && (
+        <Collapse
+          in={helperTextMode === 'permanent' ? true : helperTextState}
+          collapsedSize='0'
+        >
+          <FormHelperText
+            sx={{
+              display: 'block',
+              height: '18px',
+              color: theme.dcPalette.input,
+              fontSize: '0.875rem',
+              lineHeight: '1.125rem',
+              fontWeight: 400,
+              paddingBottom: theme.spacing(2.5),
+              boxSizing: 'content-box'
+            }}
+          >
+            {helperText}
+          </FormHelperText>
+        </Collapse>
+      )}
     </Box>
   );
 };

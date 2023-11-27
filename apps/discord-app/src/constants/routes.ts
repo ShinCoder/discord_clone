@@ -1,5 +1,7 @@
 export const publicRoutes = {
   login: '/login',
   register: '/register',
-  forgotPassword: ''
+  forgotPassword: '',
+  terms: '/terms',
+  privacy: '/privacy'
 };

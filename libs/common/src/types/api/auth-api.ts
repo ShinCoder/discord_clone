@@ -14,6 +14,7 @@ export interface IRegisterDto {
   username: string;
   displayName?: string;
   dateOfBirth: Date;
+  emailSubscribe: boolean;
 }
 
 export interface IRefreshDto {

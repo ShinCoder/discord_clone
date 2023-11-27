@@ -5,7 +5,8 @@ import {
   IsString,
   IsOptional,
   IsDate,
-  Validate
+  Validate,
+  IsBoolean
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -35,4 +36,8 @@ export class RegisterDto implements IRegisterDto {
   @IsDate()
   @Validate(AgeRestrictConstraint)
   dateOfBirth: Date;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  emailSubscribe: boolean;
 }

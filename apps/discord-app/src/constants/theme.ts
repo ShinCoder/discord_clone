@@ -11,6 +11,7 @@ declare module '@mui/material/styles' {
         darker: string;
         darkest: string;
         accent: string;
+        accentHover: string;
       };
       link: string;
       input: string;
@@ -37,6 +38,7 @@ declare module '@mui/material/styles' {
         darker: string;
         darkest: string;
         accent: string;
+        accentHover: string;
       };
       link: string;
       input: string;
@@ -58,6 +60,8 @@ export const defaultThemeOptions: ThemeOptions = {
   palette: {
     primary: {
       main: 'rgb(88, 101, 242)',
+      light: 'rgb(121, 131, 245)',
+      dark: 'rgb(71, 82, 196)',
       contrastText: 'rgb(255, 255, 255)'
     },
     error: {
@@ -108,7 +112,8 @@ export const defaultThemeOptions: ThemeOptions = {
       dark: 'rgb(43, 45, 49)',
       darker: 'rgb(35, 36, 40)',
       darkest: 'rgb(30, 31, 34)',
-      accent: 'rgba(78, 80, 88, 0.6)'
+      accent: 'rgba(78, 80, 88, 0.6)',
+      accentHover: 'rgba(78, 80, 88, 0.3)'
     },
     link: 'rgb(0, 168, 252)',
     input: 'rgb(219, 222, 225)',
