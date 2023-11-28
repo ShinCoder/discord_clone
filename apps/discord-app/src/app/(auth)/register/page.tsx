@@ -7,13 +7,19 @@ import { useTheme } from '@mui/material/styles';
 import joi from 'joi';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { useMutation } from '@tanstack/react-query';
 
 import ControlledInputText from '@components/ControlledInputText';
 import ControlledCheckbox from '@components/ControlledCheckbox';
 import CustomButton from '@elements/CustomButton';
 import { publicRoutes } from '@constants';
+import { register } from '@services';
+import { useAppDispatch } from '@redux/hooks';
+import { setLoading } from '@redux/slices/statusSlice';
 import DateInput from './components/DateInput';
 import { LoginLink, PrivacyLink, TermsLink } from './elements';
+
+import { IRegisterDto } from '@prj/types/api';
 
 interface RegisterFormData {
   email: string;
@@ -56,6 +62,24 @@ const Register = () => {
       username: '',
       password: '',
       emailSubscribe: false
+    }
+  });
+
+  const dispatch = useAppDispatch();
+
+  const mutation = useMutation({
+    mutationFn: (data: IRegisterDto) => {
+      return register(data);
+    },
+    onMutate: (variables) => {
+      dispatch(setLoading(true));
+    },
+    onSuccess: async (data, variables, context) => {
+      dispatch(setLoading(false));
+    },
+    onError: (error, variables, context) => {
+      mutation.reset();
+      dispatch(setLoading(false));
     }
   });
 

@@ -43,7 +43,7 @@ export class AuthService implements OnModuleInit {
       this.authServiceAuthModule.register(data)
     );
 
-    return handleRpcResult(result);
+    // return handleRpcResult(result);
   }
 
   async login(data: LoginDto) {

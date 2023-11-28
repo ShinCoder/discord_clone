@@ -14,9 +14,13 @@ import bcrypt from 'bcrypt';
 import { AccountStatus, Accounts } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { IJwtPayload } from '@prj/common';
 import { handleThrowError } from '../../utlis';
 
+import {
+  IJwtPayload,
+  getRpcSuccessMessage,
+  ApiErrorMessages
+} from '@prj/common';
 import {
   LoginDto,
   LoginResult,
@@ -29,7 +33,6 @@ import {
   LogoutDto,
   LogoutResult
 } from '@prj/types/grpc/auth-service';
-import { getRpcSuccessMessage } from '@prj/common';
 
 @Injectable()
 export class AuthService {
@@ -51,7 +54,9 @@ export class AuthService {
             }
           });
           if (existed)
-            throw new RpcException(new ConflictException('Email existed'));
+            throw new RpcException(
+              new ConflictException(ApiErrorMessages.REGISTER__EMAIL_EXISTED)
+            );
 
           existed = await tx.accounts.findFirst({
             where: {
@@ -60,7 +65,9 @@ export class AuthService {
           });
 
           if (existed)
-            throw new RpcException(new ConflictException('Username existed'));
+            throw new RpcException(
+              new ConflictException(ApiErrorMessages.REGISTER__USERNAME_EXISTED)
+            );
 
           const account = await tx.accounts.create({
             data: {

@@ -1,0 +1,23 @@
+syntax="proto3";
+
+package com.mail_service;
+
+import "common.proto";
+
+service MailServiceAuthModule {
+    rpc SendVerifyEmail (VerifyEmailDto) returns (SendVerifyEmailResult) {};
+}
+
+message VerifyEmailDto {
+    message VerifyEmailDtoInput {
+        string name = 1;
+        string link = 2;
+    }
+
+    string email = 1;
+    VerifyEmailDtoInput input = 2;
+}
+
+message SendVerifyEmailResult {
+    com.common.MessageStatus status = 1;
+}
