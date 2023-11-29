@@ -7,10 +7,10 @@ export const protobufPackage = 'com.mail_service';
 
 export interface VerifyEmailDto {
   email: string;
-  input: VerifyEmailDto_VerifyEmailDtoInput | undefined;
+  context: VerifyEmailDto_VerifyEmailDtoContext | undefined;
 }
 
-export interface VerifyEmailDto_VerifyEmailDtoInput {
+export interface VerifyEmailDto_VerifyEmailDtoContext {
   name: string;
   link: string;
 }

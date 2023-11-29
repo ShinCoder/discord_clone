@@ -9,13 +9,13 @@ service MailServiceAuthModule {
 }
 
 message VerifyEmailDto {
-    message VerifyEmailDtoInput {
+    message VerifyEmailDtoContext {
         string name = 1;
         string link = 2;
     }
 
     string email = 1;
-    VerifyEmailDtoInput input = 2;
+    VerifyEmailDtoContext context = 2;
 }
 
 message SendVerifyEmailResult {

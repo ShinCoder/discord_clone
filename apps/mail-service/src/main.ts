@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
 import { AppModule } from './modules/app/app.module';
+import { GlobalRpcExceptionFilter } from './exception-filters/rpc-exception.filter';
 
 import { COM_MAIL_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/mail-service';
 
@@ -11,6 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get<ConfigService>(ConfigService);
+
+  app.useGlobalFilters(new GlobalRpcExceptionFilter());
 
   app.connectMicroservice<MicroserviceOptions>(
     {

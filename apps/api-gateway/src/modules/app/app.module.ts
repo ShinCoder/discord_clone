@@ -10,12 +10,14 @@ import { AuthModule } from '../auth/auth.module';
       isGlobal: true,
       validationSchema: joi.object({
         PORT: joi.string(),
-        GRPC_URL: joi.string().required(),
+        AUTH_SERVICE_GRPC_URL: joi.string().required(),
+        MAIL_SERVICE_GRPC_URL: joi.string().required(),
         JWT_AT_PUBLIC: joi.string().required(),
         JWT_RT_PUBLIC: joi.string().required(),
         JWT_VT_PUBLIC: joi.string().required(),
         JWT_RST_PUBLIC: joi.string().required(),
-        ALLOW_ORIGIN: joi.string()
+        ALLOW_ORIGIN: joi.string(),
+        WEBAPP_BASE_URL: joi.string().required()
       }),
       envFilePath: '.env'
     }),

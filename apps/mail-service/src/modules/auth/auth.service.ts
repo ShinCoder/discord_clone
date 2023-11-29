@@ -19,7 +19,7 @@ export class AuthService {
         to: data.email,
         subject: 'Verify Email Address NOT for Discord',
         template: 'verify',
-        context: { ...data.input }
+        context: { ...data.context }
       });
 
       return getRpcSuccessMessage(HttpStatus.OK);

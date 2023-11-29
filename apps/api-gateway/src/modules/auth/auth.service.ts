@@ -1,8 +1,9 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
 
-import { AUTH_SERVICE } from '../../constants';
+import { AUTH_SERVICE, MAIL_SERVICE } from '../../constants';
 import { handleRpcResult } from '../../utils/rpc-message';
 
 import {
@@ -18,23 +19,37 @@ import {
   RefreshDto,
   LogoutDto
 } from '@prj/types/grpc/auth-service';
+import {
+  MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME,
+  MailServiceAuthModuleClient
+} from '@prj/types/grpc/mail-service';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
   private authServiceAuthModule: AuthServiceAuthModuleClient;
   private authServiceAccountModule: AuthServiceAccountModuleClient;
+  private mailServiceAuthModule: MailServiceAuthModuleClient;
 
-  constructor(@Inject(AUTH_SERVICE) private readonly client: ClientGrpc) {}
+  constructor(
+    @Inject(AUTH_SERVICE) private readonly authClient: ClientGrpc,
+    @Inject(MAIL_SERVICE) private readonly mailClient: ClientGrpc,
+    private readonly configService: ConfigService
+  ) {}
 
   onModuleInit() {
     this.authServiceAuthModule =
-      this.client.getService<AuthServiceAuthModuleClient>(
+      this.authClient.getService<AuthServiceAuthModuleClient>(
         AUTH_SERVICE_AUTH_MODULE_SERVICE_NAME
       );
 
     this.authServiceAccountModule =
-      this.client.getService<AuthServiceAccountModuleClient>(
+      this.authClient.getService<AuthServiceAccountModuleClient>(
         AUTH_SERVICE_ACCOUNT_MODULE_SERVICE_NAME
+      );
+
+    this.mailServiceAuthModule =
+      this.mailClient.getService<MailServiceAuthModuleClient>(
+        MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME
       );
   }
 
@@ -43,7 +58,21 @@ export class AuthService implements OnModuleInit {
       this.authServiceAuthModule.register(data)
     );
 
-    // return handleRpcResult(result);
+    const payload = handleRpcResult(result);
+
+    const mailResult = await lastValueFrom(
+      this.mailServiceAuthModule.sendVerifyEmail({
+        email: data.email,
+        context: {
+          name: data.username,
+          link: `${this.configService.get<string>(
+            'WEBAPP_BASE_URL'
+          )}/verify?token=${payload.verifyToken}`
+        }
+      })
+    );
+
+    return handleRpcResult(mailResult);
   }
 
   async login(data: LoginDto) {
