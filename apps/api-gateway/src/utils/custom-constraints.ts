@@ -3,7 +3,10 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
+
 import { AGE_RESTRICTION } from '../constants';
+
+import { ApiErrorMessages } from '@prj/common';
 
 @ValidatorConstraint({ async: false })
 export class AgeRestrictConstraint implements ValidatorConstraintInterface {
@@ -13,6 +16,6 @@ export class AgeRestrictConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage(validationArguments?: ValidationArguments) {
-    return 'Age restriction violated';
+    return ApiErrorMessages.REGISTER__AGE_RESTRICTION_VIOLATED;
   }
 }

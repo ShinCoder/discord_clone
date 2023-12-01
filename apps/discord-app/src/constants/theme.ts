@@ -1,4 +1,4 @@
-import { ThemeOptions } from '@mui/material/styles';
+import { ThemeOptions, createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface Theme {
@@ -24,12 +24,16 @@ declare module '@mui/material/styles' {
         panel: string;
         input: string;
         button: string;
+        modal: string;
+      };
+      defaultWidth: {
+        modal: string;
       };
     };
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
-    dcPalette: {
+    dcPalette?: {
       red: string;
       green: string;
       grey: {
@@ -46,17 +50,27 @@ declare module '@mui/material/styles' {
         grey: string;
       };
     };
-    dcShape: {
+    dcShape?: {
       borderRadius: {
         panel: string;
         input: string;
         button: string;
+        modal: string;
+      };
+      defaultWidth: {
+        modal: string;
       };
     };
   }
 }
 
-export const defaultThemeOptions: ThemeOptions = {
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    white: true;
+  }
+}
+
+const defaultThemeOptions: ThemeOptions = {
   palette: {
     primary: {
       main: 'rgb(88, 101, 242)',
@@ -125,7 +139,40 @@ export const defaultThemeOptions: ThemeOptions = {
     borderRadius: {
       panel: '5px',
       input: '3px',
-      button: '3px'
+      button: '3px',
+      modal: '4px'
+    },
+    defaultWidth: {
+      modal: '440px'
     }
   }
 };
+
+let defaultTheme = createTheme(defaultThemeOptions);
+
+defaultTheme = createTheme(
+  {
+    components: {
+      MuiButton: {
+        variants: [
+          {
+            props: { variant: 'white' },
+            style: {
+              color: defaultTheme.dcPalette.text.grey,
+              backgroundColor: defaultTheme.palette.common.white,
+              '&:hover': {
+                color: defaultTheme.palette.common.white,
+                backgroundColor: defaultTheme.palette.augmentColor({
+                  color: { main: defaultTheme.palette.common.white }
+                }).dark
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  defaultTheme
+);
+
+export { defaultThemeOptions, defaultTheme };

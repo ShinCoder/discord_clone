@@ -7,7 +7,7 @@ import { CacheProvider } from '@emotion/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { defaultThemeOptions } from '@constants';
+import { defaultThemeOptions, defaultTheme } from '@constants';
 
 const ThemeRegistry = (props: any) => {
   const { options, children } = props;
@@ -52,7 +52,8 @@ const ThemeRegistry = (props: any) => {
     );
   });
 
-  const theme = useMemo(() => createTheme(defaultThemeOptions), []);
+  // const theme = useMemo(() => createTheme(defaultThemeOptions), []);
+  const theme = defaultTheme;
 
   return (
     <CacheProvider value={cache}>

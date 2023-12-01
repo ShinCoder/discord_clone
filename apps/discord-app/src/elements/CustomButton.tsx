@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 
-const CustomButton = styled(Button)(({ theme }) => ({
+const CustomButton = styled(Button)(({ theme, variant }) => ({
   height: '44px',
   fontSize: '1rem',
   lineHeight: '1.5rem',

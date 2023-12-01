@@ -21,11 +21,13 @@
     "baseUrl": ".",
     "paths": {
       "@prj/types/api": ["../../libs/common/src/types/api/index.ts"],
+      "@prj/common": ["../../libs/common/src/index.ts"],
       "@components/*": ["./src/components/*"],
       "@elements/*": ["./src/elements/*"],
       "@constants": ["./src/constants/index.ts"],
       "@services": ["./src/services/index.ts"],
-      "@redux/*": ["./src/redux/*"]
+      "@redux/*": ["./src/redux/*"],
+      "@utils": ["./src/utils/index.ts"]
     }
   },
   "include": [
