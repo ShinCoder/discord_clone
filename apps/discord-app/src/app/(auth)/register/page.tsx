@@ -73,13 +73,11 @@ const Register = () => {
   const [isDone, setIsDone] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: (data: IRegisterDto) => {
-      return register(data);
-    },
+    mutationFn: (data: IRegisterDto) => register(data),
     onMutate: (variables) => {
       dispatch(setLoading(true));
     },
-    onSuccess: async (data, variables, context) => {
+    onSuccess: (data, variables, context) => {
       setIsDone(true);
       dispatch(setLoading(false));
     },

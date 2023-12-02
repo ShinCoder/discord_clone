@@ -13,7 +13,7 @@ const nextConfig = {
     svgr: false
   },
 
-  reactStrictMode: true,
+  reactStrictMode: false,
 
   compiler: {
     // For other options, see https://nextjs.org/docs/architecture/nextjs-compiler#emotion

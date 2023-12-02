@@ -18,6 +18,12 @@ declare module '@mui/material/styles' {
       text: {
         grey: string;
       };
+      primary: {
+        '100': string;
+      };
+      button: {
+        secondaryBackground: string;
+      };
     };
     dcShape: {
       borderRadius: {
@@ -48,6 +54,12 @@ declare module '@mui/material/styles' {
       input: string;
       text: {
         grey: string;
+      };
+      primary: {
+        '100': string;
+      };
+      button: {
+        secondaryBackground: string;
       };
     };
     dcShape?: {
@@ -133,6 +145,12 @@ const defaultThemeOptions: ThemeOptions = {
     input: 'rgb(219, 222, 225)',
     text: {
       grey: 'rgb(148, 155, 164)'
+    },
+    primary: {
+      '100': 'rgb(249, 249, 249)'
+    },
+    button: {
+      secondaryBackground: 'rgb(78, 80, 88)'
     }
   },
   dcShape: {

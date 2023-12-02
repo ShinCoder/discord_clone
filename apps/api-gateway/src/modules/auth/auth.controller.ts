@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
-import { LogoutDto, RefreshDto, RegisterDto } from './dto';
+import { LogoutDto, RefreshDto, RegisterDto, VerifyDto } from './dto';
 import { LoginDto } from './dto';
 import { EMAIL_REGEX } from '../../constants';
 import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
@@ -49,7 +49,7 @@ export class AuthController {
 
   @UseGuards(JwtVtGuard)
   @Patch('verify')
-  verify(@Req() req: IRequestWithUser) {
+  verify(@Req() req: IRequestWithUser, @Body() body: VerifyDto) {
     return this.authService.verify({ id: req.user.sub });
   }
 

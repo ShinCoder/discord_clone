@@ -39,3 +39,7 @@ export interface IGetMeResult {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IVerifyDto {
+  verifyToken: string;
+}

@@ -4,7 +4,8 @@ import {
   IGetMeResult,
   ILoginDto,
   ILoginResult,
-  IRegisterDto
+  IRegisterDto,
+  IVerifyDto
 } from '@prj/types/api';
 
 export const login = (data: ILoginDto) => {
@@ -17,4 +18,8 @@ export const getMe = () => {
 
 export const register = (data: IRegisterDto) => {
   return client.post('/auth/register', data);
+};
+
+export const verify = (data: IVerifyDto) => {
+  return client.patch('/auth/verify', data);
 };
