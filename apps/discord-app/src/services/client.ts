@@ -14,7 +14,6 @@ axiosClient.interceptors.request.use(
   function (request) {
     const accessToken = store.getState().auth.token?.accessToken;
     if (accessToken) request.headers.Authorization = `Bearer ${accessToken}`;
-
     return request;
   },
   function (error) {

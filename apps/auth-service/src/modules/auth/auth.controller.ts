@@ -18,6 +18,8 @@ export class AuthController implements AuthServiceAuthModuleController {
   constructor(private readonly authService: AuthService) {}
 
   register(data: RegisterDto) {
+    console.log(data.dateOfBirth);
+    console.log(new Date(data.dateOfBirth));
     return this.authService.register(data);
   }
 

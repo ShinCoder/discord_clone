@@ -130,13 +130,19 @@ export class AuthService {
       });
 
       if (!account)
-        throw new RpcException(new ForbiddenException('Account not found'));
+        throw new RpcException(
+          new ForbiddenException(ApiErrorMessages.LOGIN__ACCOUNT_NOT_FOUND)
+        );
 
       if (account.status === AccountStatus.NOT_VERIFIED)
-        throw new RpcException(new ForbiddenException('Email is not verified'));
+        throw new RpcException(
+          new ForbiddenException(ApiErrorMessages.LOGIN__NOT_VERIFIED)
+        );
 
       if (!bcrypt.compareSync(data.password, account.password))
-        throw new RpcException(new ForbiddenException('Wrong password'));
+        throw new RpcException(
+          new ForbiddenException(ApiErrorMessages.LOGIN__WRONG_PASSWORD)
+        );
 
       const accessToken = this.jwtService.sign(
         {

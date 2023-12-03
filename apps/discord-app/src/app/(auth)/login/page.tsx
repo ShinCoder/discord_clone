@@ -5,12 +5,11 @@ import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 
 import VerticalSeperator from '@components/VerticalSeperator';
-import CustomButton from '@elements/CustomButton';
 import { publicRoutes } from '@constants';
 import MainLoginForm from './components/MainLoginForm';
 import QRSection from './components/QRSection';
 import QRCode from './components/QRCode';
-import { ForgotPasswordLink, RegisterLink } from './elements';
+import { RegisterLink } from './elements';
 
 const Login = () => {
   const theme = useTheme();
@@ -48,15 +47,6 @@ const Login = () => {
           </Typography>
         </Box>
         <MainLoginForm />
-        <ForgotPasswordLink href={publicRoutes.forgotPassword}>
-          Forgot your password?
-        </ForgotPasswordLink>
-        <CustomButton
-          type='submit'
-          variant='contained'
-        >
-          Log In
-        </CustomButton>
         <Box sx={{ marginTop: theme.spacing(0.5) }}>
           <Typography
             component='span'

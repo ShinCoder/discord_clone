@@ -26,6 +26,7 @@ export class AuthController {
 
   @Post('register')
   register(@Body() body: RegisterDto) {
+    // console.log(body.dateOfBirth)
     return this.authService.register({
       ...body,
       dateOfBirth: body.dateOfBirth.toDateString()

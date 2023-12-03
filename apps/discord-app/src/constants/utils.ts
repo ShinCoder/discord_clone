@@ -15,3 +15,6 @@ export enum MONTHS {
 
 export const OLDEST_BIRTH_YEAR = 1871;
 export const NEAREST_BIRTH_YEAR = 2020;
+
+export const IS_DEV =
+  !process.env.NODE_ENV || process.env.NODE_ENV === 'development';

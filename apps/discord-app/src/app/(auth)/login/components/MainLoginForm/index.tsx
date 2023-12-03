@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
@@ -8,13 +9,18 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import joi from 'joi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { ForgotPasswordLink } from './elements';
 import ControlledInputText from '@components/ControlledInputText';
+import CustomButton from '@elements/CustomButton';
 import { getMe, login } from '@services';
 import { useAppDispatch } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
-import { setToken } from '@redux/slices/authSlice';
+import { setAccountData, setToken } from '@redux/slices/authSlice';
+import { publicRoutes } from '@constants';
+import { getErrorMessage } from '@utils';
 
 import { ILoginDto } from '@prj/types/api';
+import { ApiErrorMessages } from '@prj/common';
 
 interface LoginFormData {
   username: string;
@@ -44,6 +50,8 @@ const MainLoginForm = () => {
 
   const dispatch = useAppDispatch();
 
+  const router = useRouter();
+
   const { data: accountData, refetch } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
@@ -51,22 +59,34 @@ const MainLoginForm = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: ILoginDto) => {
-      return login(data);
-    },
+    mutationFn: (data: ILoginDto) => login(data),
     onMutate: (variables) => {
       dispatch(setLoading(true));
     },
     onSuccess: async (data, variables, context) => {
       dispatch(setToken(data.data));
       const account = await refetch();
-      console.log(account);
-      dispatch(setLoading(false));
+      if (account.data?.data) {
+        dispatch(setAccountData(account.data?.data));
+        router.replace('/channels/@me');
+      }
     },
     onError: (error, variables, context) => {
-      setError('username', { message: 'Login or password is invalid.' });
-      setError('password', { message: 'Login or password is invalid.' });
+      const message = getErrorMessage(error);
+
+      switch (message) {
+        case ApiErrorMessages.LOGIN__NOT_VERIFIED:
+          setError('username', { message: 'Please verify your email first.' });
+          break;
+        default:
+          setError('username', { message: 'Login or password is invalid.' });
+          setError('password', { message: 'Login or password is invalid.' });
+          break;
+      }
+
       mutation.reset();
+    },
+    onSettled: (data, error, variables, context) => {
       dispatch(setLoading(false));
     }
   });
@@ -101,6 +121,15 @@ const MainLoginForm = () => {
         isRequired
         sx={{ marginTop: theme.spacing(2.5) }}
       />
+      <ForgotPasswordLink href={publicRoutes.forgotPassword}>
+        Forgot your password?
+      </ForgotPasswordLink>
+      <CustomButton
+        type='submit'
+        variant='contained'
+      >
+        Log In
+      </CustomButton>
     </Box>
   );
 };

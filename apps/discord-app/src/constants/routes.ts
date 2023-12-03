@@ -3,5 +3,6 @@ export const publicRoutes = {
   register: '/register',
   forgotPassword: '',
   terms: '/terms',
-  privacy: '/privacy'
+  privacy: '/privacy',
+  channels: '/channels/@me'
 };

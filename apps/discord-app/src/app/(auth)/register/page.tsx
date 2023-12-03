@@ -79,7 +79,6 @@ const Register = () => {
     },
     onSuccess: (data, variables, context) => {
       setIsDone(true);
-      dispatch(setLoading(false));
     },
     onError: (error, variables, context) => {
       const message = getErrorMessage(error);
@@ -104,6 +103,9 @@ const Register = () => {
         });
 
       mutation.reset();
+    },
+
+    onSettled: (data, error, variables, context) => {
       dispatch(setLoading(false));
     }
   });
