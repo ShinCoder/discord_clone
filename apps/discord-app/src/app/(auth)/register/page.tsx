@@ -29,7 +29,7 @@ interface RegisterFormData {
   displayName?: string;
   username: string;
   password: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   emailSubscribe: boolean;
 }
 
@@ -43,7 +43,7 @@ const Register = () => {
         displayName: joi.string().allow(''),
         username: joi.string().messages({ 'string.empty': 'Required' }),
         password: joi.string().messages({ 'string.empty': 'Required' }),
-        dateOfBirth: joi.date(),
+        dateOfBirth: joi.string(),
         emailSubscribe: joi.boolean()
       }),
     []
@@ -111,7 +111,7 @@ const Register = () => {
   });
 
   const setDate = useCallback(
-    (date: Date) => {
+    (date: string) => {
       setValue('dateOfBirth', date);
     },
     [setValue]

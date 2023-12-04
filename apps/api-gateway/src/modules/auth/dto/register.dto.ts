@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { AgeRestrictConstraint } from '../../../utils';
+import { AgeRestrictConstraint, DateConstraint } from '../../../utils';
 
 import { IRegisterDto } from '@prj/types/api';
 
@@ -32,10 +32,10 @@ export class RegisterDto implements IRegisterDto {
   displayName?: string;
 
   @IsNotEmpty()
-  @Type(() => Date)
-  @IsDate()
+  @IsString()
+  @Validate(DateConstraint)
   @Validate(AgeRestrictConstraint)
-  dateOfBirth: Date;
+  dateOfBirth: string;
 
   @IsNotEmpty()
   @IsBoolean()

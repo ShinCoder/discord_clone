@@ -13,7 +13,7 @@ export interface IRegisterDto {
   password: string;
   username: string;
   displayName?: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   emailSubscribe: boolean;
 }
 

@@ -1,17 +1,20 @@
 import { memo, useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import Select from '@components/Select';
 import InputLabel from '@components/InputLabel';
 import { MONTHS, NEAREST_BIRTH_YEAR, OLDEST_BIRTH_YEAR } from '@constants';
 
 interface DateInputProps {
-  handleSetValue: (value: Date) => void;
+  handleSetValue: (value: string) => void;
   error?: string;
   handleSetError: (error: string) => void;
   handleClearError: () => void;
 }
+
+dayjs.extend(customParseFormat);
 
 const DateInput = (props: DateInputProps) => {
   const { handleSetValue, error, handleSetError, handleClearError } = props;
@@ -53,12 +56,13 @@ const DateInput = (props: DateInputProps) => {
       selectState.month !== '' &&
       selectState.year !== ''
     ) {
-      const date = moment(
-        `${selectState.month}-${selectState.day}-${selectState.year}`,
-        'MM-DD-YYYY'
+      const date = dayjs(
+        `${selectState.year}-${selectState.month}-${selectState.day}`,
+        'YYYY-M-D',
+        true
       );
 
-      handleSetValue(date.toDate());
+      handleSetValue(date.format('YYYY-MM-DD'));
 
       if (date.isValid()) handleClearError();
       else handleSetError('Please enter a valid date of birth');
