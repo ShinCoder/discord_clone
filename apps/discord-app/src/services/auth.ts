@@ -1,4 +1,4 @@
-import client from './client';
+import { apiClient, apiClientWithAuth } from './client';
 
 import {
   IGetMeResult,
@@ -9,17 +9,17 @@ import {
 } from '@prj/types/api';
 
 export const login = (data: ILoginDto) => {
-  return client.post<ILoginResult>('/auth/login', data);
+  return apiClient.post<ILoginResult>('/auth/login', data);
 };
 
 export const getMe = () => {
-  return client.get<IGetMeResult>('/auth/me');
+  return apiClientWithAuth.get<IGetMeResult>('/auth/me');
 };
 
 export const register = (data: IRegisterDto) => {
-  return client.post('/auth/register', data);
+  return apiClient.post('/auth/register', data);
 };
 
 export const verify = (data: IVerifyDto) => {
-  return client.patch('/auth/verify', data);
+  return apiClient.patch('/auth/verify', data);
 };

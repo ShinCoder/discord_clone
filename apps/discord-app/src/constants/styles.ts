@@ -19,7 +19,7 @@ export const scrollbarStyle: SxProps = {
     backgroundColor: 'rgb(26, 27, 30)'
   },
 
-  '::-webkit-scrollbar-track-piece': {
+  '&::-webkit-scrollbar-track-piece': {
     borderColor: 'transparent',
     backgroundColor: 'transparent'
   }

@@ -12,7 +12,7 @@ export class JwtVtStrategy extends PassportStrategy(
   Strategy,
   JWT_VT_STRATEGY_NAME
 ) {
-  constructor(configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('verifyToken'),
       secretOrKey: configService.get<string>('JWT_VT_PUBLIC'),

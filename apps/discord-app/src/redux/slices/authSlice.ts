@@ -1,13 +1,21 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-import { ILoginResult, IGetMeResult } from '@prj/types/api';
+import { readLocalStorage } from '@utils';
 
-interface AuthSlice {
-  token?: ILoginResult;
+import { ILoginResult, IGetMeResult } from '@prj/types/api';
+import { StorageKey } from '@constants';
+
+export interface AuthSlice {
+  token?: {
+    accessToken?: string;
+    refreshToken?: string;
+  };
   data?: IGetMeResult;
 }
 
-const initialState: AuthSlice = {};
+const initialState: AuthSlice = {
+  token: readLocalStorage(StorageKey.TOKEN, undefined)
+};
 
 export const authSlice = createSlice({
   name: 'auth',

@@ -4,7 +4,8 @@ import {
   ForbiddenException,
   HttpStatus,
   Injectable,
-  NotFoundException
+  NotFoundException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
@@ -131,7 +132,7 @@ export class AuthService {
 
       if (!account)
         throw new RpcException(
-          new ForbiddenException(ApiErrorMessages.LOGIN__ACCOUNT_NOT_FOUND)
+          new UnauthorizedException(ApiErrorMessages.LOGIN__ACCOUNT_NOT_FOUND)
         );
 
       if (account.status === AccountStatus.NOT_VERIFIED)
@@ -141,7 +142,7 @@ export class AuthService {
 
       if (!bcrypt.compareSync(data.password, account.password))
         throw new RpcException(
-          new ForbiddenException(ApiErrorMessages.LOGIN__WRONG_PASSWORD)
+          new UnauthorizedException(ApiErrorMessages.LOGIN__WRONG_PASSWORD)
         );
 
       const accessToken = this.jwtService.sign(
@@ -312,14 +313,12 @@ export class AuthService {
           }
         });
 
-        if (!session)
-          throw new RpcException(new ForbiddenException('Session not found'));
-
-        await tx.sessions.delete({
-          where: {
-            id: session.id
-          }
-        });
+        if (session)
+          await tx.sessions.delete({
+            where: {
+              id: session.id
+            }
+          });
 
         return getRpcSuccessMessage(HttpStatus.OK);
       });

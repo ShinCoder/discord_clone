@@ -18,7 +18,7 @@ import { EMAIL_REGEX } from '../../constants';
 import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
 import { IRequestWithUser } from '../../types';
 
-import { IGetMeResult, ILoginResult } from '@prj/types/api';
+import { IGetMeResult, ILoginResult, IRefreshResult } from '@prj/types/api';
 import dayjs from 'dayjs';
 
 @Controller('auth')
@@ -63,12 +63,12 @@ export class AuthController {
 
   @UseGuards(JwtRtGuard)
   @Put('refresh')
-  refresh(@Req() req: IRequestWithUser, @Body() body: RefreshDto) {
-    if (req.user.sub !== body.accountId)
-      throw new ForbiddenException('Forbidden resource');
-
+  refresh(
+    @Req() req: IRequestWithUser,
+    @Body() body: RefreshDto
+  ): Promise<IRefreshResult> {
     return this.authService.refresh({
-      accountId: body.accountId,
+      accountId: req.user.sub,
       refreshToken: body.refreshToken
     });
   }

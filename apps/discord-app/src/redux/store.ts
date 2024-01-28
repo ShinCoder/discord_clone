@@ -1,9 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createLogger } from 'redux-logger';
+import createSagaMiddleware from 'redux-saga';
 
 import statusReducer from './slices/statusSlice';
 import authReducer from './slices/authSlice';
+import rootSaga from './saga';
 import { IS_DEV } from '@constants';
+
+const sagaMiddleware = createSagaMiddleware();
 
 const loggerMiddleware = createLogger({
   // ...options
@@ -20,8 +24,12 @@ export const store = configureStore({
     auth: authReducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({}).concat(...getMiddlewares())
+    getDefaultMiddleware({})
+      .concat(...getMiddlewares())
+      .concat(sagaMiddleware)
 });
+
+sagaMiddleware.run(rootSaga);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

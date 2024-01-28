@@ -18,7 +18,11 @@ export interface IRegisterDto {
 }
 
 export interface IRefreshDto {
-  accountId: string;
+  refreshToken: string;
+}
+
+export interface IRefreshResult {
+  accessToken: string;
   refreshToken: string;
 }
 

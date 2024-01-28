@@ -3,3 +3,5 @@ export const getErrorMessage = (error: Error) => {
   // @ts-ignore
   return error.response?.data?.message;
 };
+
+export * from './browser';
