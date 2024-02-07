@@ -29,7 +29,8 @@
               }
             ]
           }
-        ]
+        ],
+        "react/jsx-no-useless-fragment": "off"
       }
     },
     {

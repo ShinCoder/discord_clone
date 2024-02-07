@@ -1,0 +1,105 @@
+import { useEffect } from 'react';
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter
+} from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
+import AuthLayout from '@layouts/AuthLayout';
+import ProtectedRouteLayout from '@layouts/ProtectedRouteLayout';
+import PublicRouteLayout from '@layouts/PublicRouteLayout';
+import ChannelMe from '@pages/ChannelMe';
+import Login from '@pages/Login';
+import Register from '@pages/Register';
+import Verify from '@pages/Verify';
+import { useAppDispatch, useAppSelector } from '@redux/hooks';
+import { clearAuthState, setAccountData } from '@redux/slices/authSlice';
+import { setLoading } from '@redux/slices/statusSlice';
+import { getMe } from '@services';
+import { protectedRoutes, publicRoutes } from '@constants';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    children: [
+      {
+        index: true,
+        element: (
+          <Navigate
+            to={protectedRoutes.app}
+            replace
+          />
+        )
+      },
+      {
+        element: <AuthLayout />,
+        children: [
+          {
+            element: <PublicRouteLayout />,
+            children: [
+              {
+                path: publicRoutes.login,
+                element: <Login />
+              },
+              {
+                path: publicRoutes.register,
+                element: <Register />
+              }
+            ]
+          },
+          {
+            path: publicRoutes.verify,
+            element: <Verify />
+          }
+        ]
+      },
+      {
+        element: <ProtectedRouteLayout />,
+        children: [
+          {
+            path: protectedRoutes.app,
+            element: <Navigate to={protectedRoutes.myChannels} />
+          },
+          {
+            path: protectedRoutes.myChannels,
+            element: <ChannelMe />
+          }
+        ]
+      }
+    ]
+  }
+]);
+
+const AppRouter = () => {
+  const dispatch = useAppDispatch();
+
+  const authState = useAppSelector((state) => state.auth);
+
+  const { refetch } = useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    enabled: false
+  });
+
+  useEffect(() => {
+    if (authState.token) {
+      const fetchMe = async () => {
+        dispatch(setLoading(true));
+        try {
+          const me = await refetch({ throwOnError: true });
+          if (me.data?.data) dispatch(setAccountData(me.data?.data));
+        } catch (err) {
+          dispatch(clearAuthState());
+        }
+        dispatch(setLoading(false));
+      };
+
+      fetchMe();
+    }
+  }, [authState.token, dispatch, refetch]);
+
+  return <RouterProvider router={router} />;
+};
+
+export default AppRouter;
