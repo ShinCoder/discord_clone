@@ -9,7 +9,7 @@ export const scrollbarStyle: SxProps = {
   '&::-webkit-scrollbar-track': {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    backgroundColor: (theme) => theme.dcPalette.grey.dark
+    backgroundColor: (theme) => theme.dcPalette.background.secondary
   },
 
   '&::-webkit-scrollbar-thumb': {

@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import GlobalBackdrop from '@components/GlobalBackdrop';
+import GlobalLoadingState from '@components/GlobalLoadingState';
 import { defaultTheme } from '@constants';
 import AppRouter from './AppRouter';
 
@@ -14,7 +14,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={defaultTheme}>
         <CssBaseline />
-        <GlobalBackdrop />
+        <GlobalLoadingState />
         <AppRouter />
       </ThemeProvider>
     </QueryClientProvider>

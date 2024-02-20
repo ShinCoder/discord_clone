@@ -53,7 +53,7 @@ const InputText = (props: InputTextProps) => {
         sx={{
           width: '100%',
           height: '40px',
-          color: theme.dcPalette.input,
+          color: theme.dcPalette.text.normal,
           borderRadius: theme.dcShape.borderRadius.input,
           backgroundColor: theme.dcPalette.grey.darkest,
           '&::before, &::after': { content: 'none' }
@@ -83,7 +83,7 @@ const InputText = (props: InputTextProps) => {
             sx={{
               display: 'block',
               height: '18px',
-              color: theme.dcPalette.input,
+              color: theme.dcPalette.text.normal,
               fontSize: '0.875rem',
               lineHeight: '1.125rem',
               fontWeight: 400,
