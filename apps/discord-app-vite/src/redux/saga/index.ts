@@ -1,9 +1,9 @@
 import { all } from 'redux-saga/effects';
 
-import { watchSetToken } from './auth';
+// import { watchSetToken, watchClearAuthState } from './auth';
 
 const rootSaga = function* root() {
-  yield all([watchSetToken()]);
+  // yield all([watchSetToken(), watchClearAuthState()]);
 };
 
 export default rootSaga;

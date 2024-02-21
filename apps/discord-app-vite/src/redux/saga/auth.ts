@@ -1,15 +1,21 @@
-import { takeLatest, select } from 'redux-saga/effects';
+// import { takeLatest, select } from 'redux-saga/effects';
 
-import { AuthSlice, setToken } from '@redux/slices/authSlice';
-import { writeLocalStorage } from '@utils';
-import { StorageKey } from '@constants';
+// import { AuthSlice, clearAuthState, setToken } from '@redux/slices/authSlice';
+// import { clearLocalStorage, writeLocalStorage } from '@utils';
+// import { StorageKey } from '@constants';
 
-function* watchSetToken() {
-  yield takeLatest('auth/setToken', function* writeToken() {
-    const authState: AuthSlice = yield select((state) => state.auth);
+// function* watchSetToken() {
+//   yield takeLatest(setToken.type, function* writeToken() {
+//     const authState: AuthSlice = yield select((state) => state.auth);
 
-    writeLocalStorage(StorageKey.TOKEN, authState.token);
-  });
-}
+//     writeLocalStorage(StorageKey.TOKEN, authState.token);
+//   });
+// }
 
-export { watchSetToken };
+// function* watchClearAuthState() {
+//   yield takeLatest(clearAuthState.type, function removeToken() {
+//     clearLocalStorage(StorageKey.TOKEN);
+//   });
+// }
+
+// export { watchSetToken, watchClearAuthState };
