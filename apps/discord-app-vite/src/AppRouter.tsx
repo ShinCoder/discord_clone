@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
+import GlobalLoading from '@components/GlobalLoading';
 import AuthLayout from '@layouts/AuthLayout';
 import ProtectedRouteLayout from '@layouts/ProtectedRouteLayout';
 import PublicRouteLayout from '@layouts/PublicRouteLayout';
@@ -76,7 +77,7 @@ const AppRouter = () => {
 
   const authState = useAppSelector((state) => state.auth);
 
-  const { refetch } = useQuery({
+  const { isLoading, refetch } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
     enabled: false
@@ -99,7 +100,7 @@ const AppRouter = () => {
     }
   }, [authState.token, dispatch, refetch]);
 
-  return <RouterProvider router={router} />;
+  return isLoading ? <GlobalLoading /> : <RouterProvider router={router} />;
 };
 
 export default AppRouter;
