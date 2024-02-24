@@ -28,6 +28,7 @@ const GlobalLoading = () => {
         <video
           autoPlay
           loop
+          muted
           style={{ width: '200px', height: '200px' }}
         >
           <source

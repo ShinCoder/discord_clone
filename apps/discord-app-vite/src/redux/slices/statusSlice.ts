@@ -1,7 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import toast from 'react-hot-toast';
 
-interface StatusSlice {
+export interface StatusSlice {
   isLoading: boolean;
+  error?: string;
 }
 
 const initialState: StatusSlice = {
@@ -14,10 +16,15 @@ export const statusSlice = createSlice({
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
+    },
+    setErrorMessage: (state, action: PayloadAction<string | null>) => {
+      if (action.payload) {
+        state.error = action.payload;
+      } else state.error = undefined;
     }
   }
 });
 
-export const { setLoading } = statusSlice.actions;
+export const { setLoading, setErrorMessage } = statusSlice.actions;
 
 export default statusSlice.reducer;

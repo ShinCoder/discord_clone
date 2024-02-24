@@ -3,7 +3,6 @@ import { ThemeOptions, createTheme } from '@mui/material/styles';
 declare module '@mui/material/styles' {
   interface Theme {
     dcPalette: {
-      red: string;
       green: string;
       grey: {
         main: string;
@@ -28,6 +27,9 @@ declare module '@mui/material/styles' {
       background: {
         secondary: string;
       };
+      status: {
+        danger: string;
+      };
     };
     dcShape: {
       borderRadius: {
@@ -44,7 +46,6 @@ declare module '@mui/material/styles' {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     dcPalette?: {
-      red: string;
       green: string;
       grey: {
         main: string;
@@ -67,6 +68,9 @@ declare module '@mui/material/styles' {
       };
       background: {
         secondary: string;
+      };
+      status: {
+        danger: string;
       };
     };
     dcShape?: {
@@ -138,7 +142,6 @@ const defaultThemeOptions: ThemeOptions = {
     }
   },
   dcPalette: {
-    red: 'rgb(242, 63, 66)',
     green: 'rgb(36, 128, 70)',
     grey: {
       main: 'rgb(88, 101, 242)',
@@ -161,6 +164,9 @@ const defaultThemeOptions: ThemeOptions = {
     },
     background: {
       secondary: 'rgb(43, 45, 49)'
+    },
+    status: {
+      danger: 'rgb(242, 63, 66)'
     }
   },
   dcShape: {

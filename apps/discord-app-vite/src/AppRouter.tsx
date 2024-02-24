@@ -16,7 +16,7 @@ import Register from '@pages/Register';
 import Verify from '@pages/Verify';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { clearAuthState, setAccountData } from '@redux/slices/authSlice';
-import { setLoading } from '@redux/slices/statusSlice';
+import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
 import { getMe } from '@services';
 import { protectedRoutes, publicRoutes } from '@constants';
 
@@ -90,8 +90,14 @@ const AppRouter = () => {
         try {
           const me = await refetch({ throwOnError: true });
           if (me.data?.data) dispatch(setAccountData(me.data?.data));
-        } catch (err) {
-          dispatch(clearAuthState());
+        } catch (err: any) {
+          /* empty */
+          if (err?.status !== 401) {
+            dispatch(
+              setErrorMessage('Something went wrong, please try again later')
+            );
+            dispatch(clearAuthState());
+          }
         }
         dispatch(setLoading(false));
       };
