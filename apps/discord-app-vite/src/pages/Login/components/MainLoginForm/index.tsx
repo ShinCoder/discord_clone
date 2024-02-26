@@ -5,20 +5,20 @@ import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import joi from 'joi';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 import { ForgotPasswordLink } from './elements';
 import ControlledInputText from '@components/ControlledInputText';
 import CustomButton from '@elements/CustomButton';
 import { getMe, login } from '@services';
 import { useAppDispatch } from '@redux/hooks';
-import { setLoading } from '@redux/slices/statusSlice';
+import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
 import { setAccountData, setToken } from '@redux/slices/authSlice';
 import { publicRoutes } from '@constants';
 import { getErrorMessage } from '@utils';
 
 import { ILoginDto } from '@prj/types/api';
 import { ApiErrorMessages } from '@prj/common';
-import { useNavigate } from 'react-router-dom';
 
 interface LoginFormData {
   username: string;
@@ -50,7 +50,7 @@ const MainLoginForm = () => {
 
   const navigate = useNavigate();
 
-  const { data: accountData, refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
     enabled: false
@@ -76,10 +76,15 @@ const MainLoginForm = () => {
         case ApiErrorMessages.LOGIN__NOT_VERIFIED:
           setError('username', { message: 'Please verify your email first.' });
           break;
-        default:
+        case ApiErrorMessages.LOGIN__ACCOUNT_NOT_FOUND:
+        case ApiErrorMessages.LOGIN__WRONG_PASSWORD:
           setError('username', { message: 'Login or password is invalid.' });
           setError('password', { message: 'Login or password is invalid.' });
           break;
+        default:
+          dispatch(
+            setErrorMessage('Something went wrong, please try again later')
+          );
       }
 
       mutation.reset();

@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-import { readLocalStorage } from '@utils';
+import { clearLocalStorage, readLocalStorage, writeLocalStorage } from '@utils';
+import { StorageKey } from '@constants';
 
 import { ILoginResult, IGetMeResult } from '@prj/types/api';
-import { StorageKey } from '@constants';
 
 export interface AuthSlice {
   token?: {
@@ -23,11 +23,13 @@ export const authSlice = createSlice({
   reducers: {
     setToken: (state, action: PayloadAction<ILoginResult>) => {
       state.token = action.payload;
+      writeLocalStorage(StorageKey.TOKEN, action.payload);
     },
     setAccountData: (state, action: PayloadAction<IGetMeResult>) => {
       state.data = action.payload;
     },
     clearAuthState: (state) => {
+      clearLocalStorage(StorageKey.TOKEN);
       return {};
     }
   }

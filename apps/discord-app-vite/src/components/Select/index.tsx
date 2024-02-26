@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import MUISelect, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { SxProps, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 import { scrollbarStyle } from '@constants';
 
@@ -56,7 +56,7 @@ const Select = (props: SelectProps) => {
         MenuProps={{
           MenuListProps: {
             sx: {
-              backgroundColor: theme.dcPalette.grey.dark
+              backgroundColor: theme.dcPalette.background.secondary
             }
           },
           slotProps: {
