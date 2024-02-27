@@ -8,6 +8,9 @@ import { useMutation } from '@tanstack/react-query';
 import PulsingEllipsis from '@components/PulsingEllipsis';
 import CustomButton from '@elements/CustomButton';
 import { verify } from '@services';
+import emailCheckedImg from './assets/email_checked.svg';
+import emailErrorImg from './assets/email_error.svg';
+import emailInfoImg from './assets/email_info.svg';
 
 const Verify = () => {
   const theme = useTheme();
@@ -48,10 +51,10 @@ const Verify = () => {
       <img
         src={
           state === 'success'
-            ? '/email_checked.svg'
+            ? emailCheckedImg
             : state === 'error'
-            ? '/email_error.svg'
-            : '/email_info.svg'
+            ? emailErrorImg
+            : emailInfoImg
         }
         alt='status_image'
         width={0}

@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
+import GlobalLoading from '@components/GlobalLoading';
 import AuthLayout from '@layouts/AuthLayout';
 import ProtectedRouteLayout from '@layouts/ProtectedRouteLayout';
 import PublicRouteLayout from '@layouts/PublicRouteLayout';
@@ -15,7 +16,7 @@ import Register from '@pages/Register';
 import Verify from '@pages/Verify';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { clearAuthState, setAccountData } from '@redux/slices/authSlice';
-import { setLoading } from '@redux/slices/statusSlice';
+import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
 import { getMe } from '@services';
 import { protectedRoutes, publicRoutes } from '@constants';
 
@@ -76,7 +77,7 @@ const AppRouter = () => {
 
   const authState = useAppSelector((state) => state.auth);
 
-  const { refetch } = useQuery({
+  const { isLoading, refetch } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
     enabled: false
@@ -89,8 +90,14 @@ const AppRouter = () => {
         try {
           const me = await refetch({ throwOnError: true });
           if (me.data?.data) dispatch(setAccountData(me.data?.data));
-        } catch (err) {
-          dispatch(clearAuthState());
+        } catch (err: any) {
+          /* empty */
+          if (err?.status !== 401) {
+            dispatch(
+              setErrorMessage('Something went wrong, please try again later')
+            );
+            dispatch(clearAuthState());
+          }
         }
         dispatch(setLoading(false));
       };
@@ -99,7 +106,7 @@ const AppRouter = () => {
     }
   }, [authState.token, dispatch, refetch]);
 
-  return <RouterProvider router={router} />;
+  return isLoading ? <GlobalLoading /> : <RouterProvider router={router} />;
 };
 
 export default AppRouter;

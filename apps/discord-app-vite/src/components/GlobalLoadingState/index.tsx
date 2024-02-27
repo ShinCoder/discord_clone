@@ -1,12 +1,10 @@
-'use client';
-
+import { useEffect } from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useEffect } from 'react';
 
 import { useAppSelector } from '@redux/hooks';
 
-function GlobalBackdrop() {
+const GlobalLoadingState = () => {
   const disableTabKey = (event: KeyboardEvent) => {
     if (event.key === 'Tab') {
       event.preventDefault();
@@ -32,6 +30,6 @@ function GlobalBackdrop() {
       <CircularProgress color='primary' />
     </Backdrop>
   );
-}
+};
 
-export default GlobalBackdrop;
+export default GlobalLoadingState;
