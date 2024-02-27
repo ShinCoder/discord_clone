@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
@@ -15,7 +15,7 @@ import emailInfoImg from './assets/email_info.svg';
 const Verify = () => {
   const theme = useTheme();
 
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const [state, setState] = useState<'pending' | 'success' | 'error'>(
     'pending'
@@ -34,7 +34,8 @@ const Verify = () => {
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) verifyMutation.mutate(token);
-  }, [searchParams, verifyMutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   return (
     <Box
