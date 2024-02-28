@@ -76,14 +76,9 @@ export class AuthService {
               email: data.email,
               password: await bcrypt.hash(data.password, this.saltRounds),
               username: data.username,
-              displayName: data.displayName,
+              displayName: data.displayName || data.username,
               dateOfBirth: new Date(data.dateOfBirth),
-              accountProfile: {
-                create: {
-                  displayName: data.displayName || data.username,
-                  bannerColor: DefaultProfileValue.BannerColor
-                }
-              }
+              bannerColor: DefaultProfileValue.BannerColor
             }
           });
 

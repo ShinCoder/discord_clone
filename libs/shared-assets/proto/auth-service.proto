@@ -92,10 +92,14 @@ message AccountDto {
     string dateOfBirth = 5;
     optional string phoneNumber = 6;
     string avatar = 7;
-    AccountStatus status = 8;
-    bool isAdmin = 9;
-    string createdAt = 10;
-    string updatedAt = 11;
+    optional string pronouns = 8;
+    optional string about = 9;
+    string bannerColor = 10;
+    repeated string friendIds = 11;
+    AccountStatus status = 12;
+    bool isAdmin = 13;
+    string createdAt = 14;
+    string updatedAt = 15;
 }
 
 message GetAccountDto {
