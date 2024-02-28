@@ -19,7 +19,6 @@ import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
 import { IRequestWithUser } from '../../types';
 
 import { IGetMeResult, ILoginResult, IRefreshResult } from '@prj/types/api';
-import dayjs from 'dayjs';
 
 @Controller('auth')
 export class AuthController {

@@ -1,5 +1,4 @@
 import { Controller } from '@nestjs/common';
-import dayjs from 'dayjs';
 
 import { AuthService } from './auth.service';
 
