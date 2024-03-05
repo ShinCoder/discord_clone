@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { SxProps, useTheme } from '@mui/material/styles';
 
-import { scrollbarStyle } from '@constants';
+import { inputScrollbarStyle } from '@utils';
 
 interface SelectProps {
   value?: string;
@@ -56,11 +56,11 @@ const Select = (props: SelectProps) => {
         MenuProps={{
           MenuListProps: {
             sx: {
-              backgroundColor: theme.dcPalette.grey.dark
+              backgroundColor: theme.dcPalette.primary[630]
             }
           },
           slotProps: {
-            paper: { sx: { maxHeight: '215px', ...scrollbarStyle } }
+            paper: { sx: { maxHeight: '215px', ...inputScrollbarStyle } }
           },
           anchorOrigin: {
             vertical: 'top',

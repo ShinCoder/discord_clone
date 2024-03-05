@@ -7,7 +7,6 @@ declare module '@mui/material/styles' {
       green: string;
       grey: {
         main: string;
-        dark: string;
         darker: string;
         darkest: string;
         accent: string;
@@ -20,9 +19,14 @@ declare module '@mui/material/styles' {
       };
       primary: {
         '100': string;
+        '630': string;
+        '730': string;
       };
       button: {
         secondaryBackground: string;
+      };
+      white: {
+        '500': string;
       };
     };
     dcShape: {
@@ -44,7 +48,6 @@ declare module '@mui/material/styles' {
       green: string;
       grey: {
         main: string;
-        dark: string;
         darker: string;
         darkest: string;
         accent: string;
@@ -57,9 +60,14 @@ declare module '@mui/material/styles' {
       };
       primary: {
         '100': string;
+        '630': string;
+        '730': string;
       };
       button: {
         secondaryBackground: string;
+      };
+      white: {
+        '500': string;
       };
     };
     dcShape?: {
@@ -135,7 +143,6 @@ const defaultThemeOptions: ThemeOptions = {
     green: 'rgb(36, 128, 70)',
     grey: {
       main: 'rgb(88, 101, 242)',
-      dark: 'rgb(43, 45, 49)',
       darker: 'rgb(35, 36, 40)',
       darkest: 'rgb(30, 31, 34)',
       accent: 'rgba(78, 80, 88, 0.6)',
@@ -147,10 +154,15 @@ const defaultThemeOptions: ThemeOptions = {
       grey: 'rgb(148, 155, 164)'
     },
     primary: {
-      '100': 'rgb(249, 249, 249)'
+      '100': 'rgb(249, 249, 249)',
+      '630': 'rgb(43, 45, 49)',
+      '730': 'rgb(26, 27, 30)'
     },
     button: {
       secondaryBackground: 'rgb(78, 80, 88)'
+    },
+    white: {
+      '500': 'rgb(255, 255, 255)'
     }
   },
   dcShape: {
