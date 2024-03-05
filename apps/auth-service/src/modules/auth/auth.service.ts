@@ -34,6 +34,7 @@ import {
   LogoutDto,
   LogoutResult
 } from '@prj/types/grpc/auth-service';
+import { DefaultProfileValue } from '../../constants/common';
 
 @Injectable()
 export class AuthService {
@@ -75,8 +76,9 @@ export class AuthService {
               email: data.email,
               password: await bcrypt.hash(data.password, this.saltRounds),
               username: data.username,
-              displayName: data.displayName,
-              dateOfBirth: new Date(data.dateOfBirth)
+              displayName: data.displayName || data.username,
+              dateOfBirth: new Date(data.dateOfBirth),
+              bannerColor: DefaultProfileValue.BannerColor
             }
           });
 

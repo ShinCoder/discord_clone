@@ -3,7 +3,6 @@ import { ThemeOptions, createTheme } from '@mui/material/styles';
 declare module '@mui/material/styles' {
   interface Theme {
     dcPalette: {
-      red: string;
       green: string;
       grey: {
         main: string;
@@ -13,9 +12,10 @@ declare module '@mui/material/styles' {
         accentHover: string;
       };
       link: string;
-      input: string;
       text: {
         grey: string;
+        normal: string;
+        headerPrimary: string;
       };
       primary: {
         '100': string;
@@ -27,6 +27,12 @@ declare module '@mui/material/styles' {
       };
       white: {
         '500': string;
+      };
+      background: {
+        secondary: string;
+      };
+      status: {
+        danger: string;
       };
     };
     dcShape: {
@@ -44,7 +50,6 @@ declare module '@mui/material/styles' {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     dcPalette?: {
-      red: string;
       green: string;
       grey: {
         main: string;
@@ -54,9 +59,10 @@ declare module '@mui/material/styles' {
         accentHover: string;
       };
       link: string;
-      input: string;
       text: {
         grey: string;
+        normal: string;
+        headerPrimary: string;
       };
       primary: {
         '100': string;
@@ -68,6 +74,12 @@ declare module '@mui/material/styles' {
       };
       white: {
         '500': string;
+      };
+      background: {
+        secondary: string;
+      };
+      status: {
+        danger: string;
       };
     };
     dcShape?: {
@@ -139,7 +151,6 @@ const defaultThemeOptions: ThemeOptions = {
     }
   },
   dcPalette: {
-    red: 'rgb(242, 63, 66)',
     green: 'rgb(36, 128, 70)',
     grey: {
       main: 'rgb(88, 101, 242)',
@@ -149,9 +160,10 @@ const defaultThemeOptions: ThemeOptions = {
       accentHover: 'rgba(78, 80, 88, 0.3)'
     },
     link: 'rgb(0, 168, 252)',
-    input: 'rgb(219, 222, 225)',
     text: {
-      grey: 'rgb(148, 155, 164)'
+      grey: 'rgb(148, 155, 164)',
+      normal: 'rgb(219, 222, 225)',
+      headerPrimary: 'rgb(242, 243, 245)'
     },
     primary: {
       '100': 'rgb(249, 249, 249)',
@@ -163,6 +175,12 @@ const defaultThemeOptions: ThemeOptions = {
     },
     white: {
       '500': 'rgb(255, 255, 255)'
+    },
+    background: {
+      secondary: 'rgb(43, 45, 49)'
+    },
+    status: {
+      danger: 'rgb(242, 63, 66)'
     }
   },
   dcShape: {

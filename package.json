@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky install",
-    "start:dev" : "nx run-many -t serve --exclude discord-app"
+    "start:dev": "nx run-many -t serve --exclude discord-app"
   },
   "private": true,
   "dependencies": {
@@ -47,6 +47,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
     "react-is": "18.2.0",
     "react-redux": "^8.1.3",
     "react-router-dom": "6.11.2",

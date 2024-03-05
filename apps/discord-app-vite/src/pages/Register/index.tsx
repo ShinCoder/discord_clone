@@ -16,13 +16,13 @@ import { publicRoutes } from '@constants';
 import { register } from '@services';
 import { getErrorMessage } from '@utils';
 import { useAppDispatch } from '@redux/hooks';
-import { setLoading } from '@redux/slices/statusSlice';
+import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
 import DateInput from './components/DateInput';
 import { LoginLink, PrivacyLink, TermsLink } from './elements';
+import Modal from '@components/Modal';
 
 import { IRegisterDto } from '@prj/types/api';
 import { ApiErrorMessages } from '@prj/common';
-import Modal from '@components/Modal';
 
 interface RegisterFormData {
   email: string;
@@ -91,6 +91,9 @@ const Register = () => {
           setError('username', { message: 'Username unavailable' });
           break;
         default:
+          dispatch(
+            setErrorMessage('Something went wrong, please try again later')
+          );
           break;
       }
 

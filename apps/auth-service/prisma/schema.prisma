@@ -23,14 +23,20 @@ model Accounts {
   email       String        @unique()
   password    String
   username    String        @unique()
-  displayName String?       @map("display_name")
   dateOfBirth DateTime      @map("date_of_birth") @db.Date()
   phoneNumber String?       @unique() @map("phone_number")
-  avatar      String?
   status      AccountStatus @default(NOT_VERIFIED)
   isAdmin     Boolean       @default(false) @map("is_admin")
-  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt   DateTime      @updatedAt() @map("updated_at") @db.Timestamptz()
+
+  displayName String?  @map("display_name")
+  pronouns    String?
+  avatar      String?
+  bannerColor String   @map("banner_color")
+  about       String?
+  friendIds   String[] @default([]) @map("friend_ids")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
 
   sessions Sessions[]
 
@@ -39,7 +45,7 @@ model Accounts {
 
 model Sessions {
   account   Accounts @relation(fields: [accountId], references: [id])
-  accountId String   
+  accountId String   @map("account_id")
 
   id           String   @id @default(uuid())
   accessToken  String   @map("access_token")

@@ -33,7 +33,7 @@ const InputLabel = (props: InputLabelProps) => {
         <Typography
           component='span'
           sx={{
-            color: theme.dcPalette.red,
+            color: theme.dcPalette.status.danger,
             font: 'inherit',
             lineHeight: 'inherit',
             paddingLeft: theme.spacing(0.5)

@@ -79,6 +79,10 @@ export interface AccountDto {
   dateOfBirth: string;
   phoneNumber?: string | undefined;
   avatar: string;
+  pronouns?: string | undefined;
+  about?: string | undefined;
+  bannerColor: string;
+  friendIds: string[];
   status: AccountStatus;
   isAdmin: boolean;
   createdAt: string;
