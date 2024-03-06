@@ -1,28 +1,14 @@
-import { useCallback } from 'react';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useCallback, useState } from 'react';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
 
 import { NavItemAvatar } from '../../elements';
 
-type NavItemProps = {
-  href: string;
-  tooltip: string;
-  type?: 'icon' | 'no-icon';
-  icon?: string;
-  shortenName?: string;
-};
-
-const NavItem = (props: NavItemProps) => {
-  const { href, tooltip, type = 'icon', icon, shortenName } = props;
-  const match = useMatch(props.href);
-  const navigate = useNavigate();
-
-  const active = match?.pathname === props.href;
-
-  const handleClick = useCallback(() => {
-    if (!active) navigate(href);
-  }, [active, href, navigate]);
+const NavItemAdd = () => {
+  const [active, setActive] = useState(false);
+  const theme = useTheme();
 
   return (
     <Box
@@ -35,25 +21,16 @@ const NavItem = (props: NavItemProps) => {
       }}
     >
       <Tooltip
-        title={tooltip}
+        title='Add a Server'
         placement='right'
       >
-        {type === 'icon' ? (
-          <NavItemAvatar
-            alt={shortenName}
-            src={icon}
-            active={active}
-            onClick={handleClick}
-          />
-        ) : (
-          <NavItemAvatar
-            active={active}
-            onClick={handleClick}
-            alt={shortenName}
-          >
-            {shortenName}
-          </NavItemAvatar>
-        )}
+        <NavItemAvatar
+          color={theme.dcPalette.green[360]}
+          active={active}
+          selectedBackgroundColor={theme.dcPalette.green[360]}
+        >
+          <AddIcon />
+        </NavItemAvatar>
       </Tooltip>
       <Box
         sx={{
@@ -84,4 +61,4 @@ const NavItem = (props: NavItemProps) => {
   );
 };
 
-export default NavItem;
+export default NavItemAdd;

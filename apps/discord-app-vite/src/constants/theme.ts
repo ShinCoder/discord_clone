@@ -3,11 +3,12 @@ import { ThemeOptions, createTheme } from '@mui/material/styles';
 declare module '@mui/material/styles' {
   interface Theme {
     dcPalette: {
-      green: string;
+      green: {
+        '360': string;
+      };
       grey: {
         main: string;
         darker: string;
-        darkest: string;
         accent: string;
         accentHover: string;
       };
@@ -15,7 +16,6 @@ declare module '@mui/material/styles' {
       text: {
         grey: string;
         normal: string;
-        headerPrimary: string;
       };
       primary: {
         '100': string;
@@ -29,10 +29,16 @@ declare module '@mui/material/styles' {
         '500': string;
       };
       background: {
+        primary: string;
         secondary: string;
+        tertiary: string;
+        modifierAccent: string;
       };
       status: {
         danger: string;
+      };
+      header: {
+        primary: string;
       };
     };
     dcShape: {
@@ -41,20 +47,28 @@ declare module '@mui/material/styles' {
         input: string;
         button: string;
         modal: string;
+        serverNav: string;
       };
       defaultWidth: {
         modal: string;
+      };
+      defaultHeight: {
+        header: string;
+      };
+      boxShadow: {
+        elevationLow: string;
       };
     };
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
     dcPalette?: {
-      green: string;
+      green: {
+        '360': string;
+      };
       grey: {
         main: string;
         darker: string;
-        darkest: string;
         accent: string;
         accentHover: string;
       };
@@ -62,7 +76,6 @@ declare module '@mui/material/styles' {
       text: {
         grey: string;
         normal: string;
-        headerPrimary: string;
       };
       primary: {
         '100': string;
@@ -76,10 +89,16 @@ declare module '@mui/material/styles' {
         '500': string;
       };
       background: {
+        primary: string;
         secondary: string;
+        tertiary: string;
+        modifierAccent: string;
       };
       status: {
         danger: string;
+      };
+      header: {
+        primary: string;
       };
     };
     dcShape?: {
@@ -88,9 +107,16 @@ declare module '@mui/material/styles' {
         input: string;
         button: string;
         modal: string;
+        serverNav: string;
       };
       defaultWidth: {
         modal: string;
+      };
+      defaultHeight: {
+        header: string;
+      };
+      boxShadow: {
+        elevationLow: string;
       };
     };
   }
@@ -151,19 +177,19 @@ const defaultThemeOptions: ThemeOptions = {
     }
   },
   dcPalette: {
-    green: 'rgb(36, 128, 70)',
+    green: {
+      '360': 'rgb(35, 165, 89)'
+    },
     grey: {
       main: 'rgb(88, 101, 242)',
       darker: 'rgb(35, 36, 40)',
-      darkest: 'rgb(30, 31, 34)',
       accent: 'rgba(78, 80, 88, 0.6)',
       accentHover: 'rgba(78, 80, 88, 0.3)'
     },
     link: 'rgb(0, 168, 252)',
     text: {
       grey: 'rgb(148, 155, 164)',
-      normal: 'rgb(219, 222, 225)',
-      headerPrimary: 'rgb(242, 243, 245)'
+      normal: 'rgb(219, 222, 225)'
     },
     primary: {
       '100': 'rgb(249, 249, 249)',
@@ -177,10 +203,16 @@ const defaultThemeOptions: ThemeOptions = {
       '500': 'rgb(255, 255, 255)'
     },
     background: {
-      secondary: 'rgb(43, 45, 49)'
+      primary: 'rgb(49, 51, 56)',
+      secondary: 'rgb(43, 45, 49)',
+      tertiary: 'rgb(30, 31, 34)',
+      modifierAccent: 'rgba(78, 80, 88, 0.48)'
     },
     status: {
       danger: 'rgb(242, 63, 66)'
+    },
+    header: {
+      primary: 'rgb(242, 243, 245)'
     }
   },
   dcShape: {
@@ -188,10 +220,18 @@ const defaultThemeOptions: ThemeOptions = {
       panel: '5px',
       input: '3px',
       button: '3px',
-      modal: '4px'
+      modal: '4px',
+      serverNav: '15px'
     },
     defaultWidth: {
       modal: '440px'
+    },
+    defaultHeight: {
+      header: '48px'
+    },
+    boxShadow: {
+      elevationLow:
+        '0 1px 0 hsl(0 calc( 1 * 0%) 0.8% / 0.2), 0 1.5px 0 hsl(240 calc( 1 * 7.7%) 2.5% / 0.05), 0 2px 0 hsl(0 calc( 1 * 0%) 0.8% / 0.05)'
     }
   }
 };

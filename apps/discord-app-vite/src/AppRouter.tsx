@@ -19,6 +19,7 @@ import { clearAuthState, setAccountData } from '@redux/slices/authSlice';
 import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
 import { getMe } from '@services';
 import { protectedRoutes, publicRoutes } from '@constants';
+import ServerLayout from '@layouts/ServerLayout';
 
 const router = createBrowserRouter([
   {
@@ -63,8 +64,14 @@ const router = createBrowserRouter([
             element: <Navigate to={protectedRoutes.myChannels} />
           },
           {
-            path: protectedRoutes.myChannels,
-            element: <ChannelMe />
+            path: protectedRoutes.channels(),
+            element: <ServerLayout />,
+            children: [
+              {
+                path: protectedRoutes.myChannels,
+                element: <ChannelMe />
+              }
+            ]
           }
         ]
       }

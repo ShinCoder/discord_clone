@@ -4,25 +4,18 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 
 import { NavItemAvatar } from '../../elements';
+import BrandIcon from '@components/BrandIcon';
+import { protectedRoutes } from '@constants';
 
-type NavItemProps = {
-  href: string;
-  tooltip: string;
-  type?: 'icon' | 'no-icon';
-  icon?: string;
-  shortenName?: string;
-};
-
-const NavItem = (props: NavItemProps) => {
-  const { href, tooltip, type = 'icon', icon, shortenName } = props;
-  const match = useMatch(props.href);
+const NavItemDM = () => {
+  const match = useMatch(protectedRoutes.myChannels);
   const navigate = useNavigate();
 
-  const active = match?.pathname === props.href;
+  const active = match?.pathname === protectedRoutes.myChannels;
 
   const handleClick = useCallback(() => {
-    if (!active) navigate(href);
-  }, [active, href, navigate]);
+    if (!active) navigate(protectedRoutes.myChannels);
+  }, [active, navigate]);
 
   return (
     <Box
@@ -35,25 +28,15 @@ const NavItem = (props: NavItemProps) => {
       }}
     >
       <Tooltip
-        title={tooltip}
+        title='Direct Messages'
         placement='right'
       >
-        {type === 'icon' ? (
-          <NavItemAvatar
-            alt={shortenName}
-            src={icon}
-            active={active}
-            onClick={handleClick}
-          />
-        ) : (
-          <NavItemAvatar
-            active={active}
-            onClick={handleClick}
-            alt={shortenName}
-          >
-            {shortenName}
-          </NavItemAvatar>
-        )}
+        <NavItemAvatar
+          active={active}
+          onClick={handleClick}
+        >
+          <BrandIcon />
+        </NavItemAvatar>
       </Tooltip>
       <Box
         sx={{
@@ -84,4 +67,4 @@ const NavItem = (props: NavItemProps) => {
   );
 };
 
-export default NavItem;
+export default NavItemDM;

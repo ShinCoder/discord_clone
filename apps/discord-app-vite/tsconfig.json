@@ -11,6 +11,7 @@
     "paths": {
       "@prj/types/api": ["../../libs/common/src/types/api/index.ts"],
       "@prj/common": ["../../libs/common/src/index.ts"],
+      "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"],
       "@elements/*": ["./src/elements/*"],
       "@constants": ["./src/constants/index.ts"],

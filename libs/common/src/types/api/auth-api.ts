@@ -39,6 +39,9 @@ export interface IGetMeResult {
   dateOfBirth: string;
   phoneNumber?: string;
   avatar: string;
+  pronouns?: string;
+  bannerColor: string;
+  about?: string;
   isAdmin: boolean;
   createdAt: string;
   updatedAt: string;

@@ -2,27 +2,22 @@ import { useCallback } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
+import ExploreIcon from '@mui/icons-material/Explore';
+import { useTheme } from '@mui/material/styles';
 
 import { NavItemAvatar } from '../../elements';
+import { protectedRoutes } from '@constants';
 
-type NavItemProps = {
-  href: string;
-  tooltip: string;
-  type?: 'icon' | 'no-icon';
-  icon?: string;
-  shortenName?: string;
-};
-
-const NavItem = (props: NavItemProps) => {
-  const { href, tooltip, type = 'icon', icon, shortenName } = props;
-  const match = useMatch(props.href);
+const NavItemDiscoverable = () => {
+  const match = useMatch(protectedRoutes.discoverServers);
   const navigate = useNavigate();
+  const theme = useTheme();
 
-  const active = match?.pathname === props.href;
+  const active = match?.pathname === protectedRoutes.discoverServers;
 
   const handleClick = useCallback(() => {
-    if (!active) navigate(href);
-  }, [active, href, navigate]);
+    if (!active) navigate(protectedRoutes.discoverServers);
+  }, [active, navigate]);
 
   return (
     <Box
@@ -35,25 +30,17 @@ const NavItem = (props: NavItemProps) => {
       }}
     >
       <Tooltip
-        title={tooltip}
+        title='Explore Discoverable Servers'
         placement='right'
       >
-        {type === 'icon' ? (
-          <NavItemAvatar
-            alt={shortenName}
-            src={icon}
-            active={active}
-            onClick={handleClick}
-          />
-        ) : (
-          <NavItemAvatar
-            active={active}
-            onClick={handleClick}
-            alt={shortenName}
-          >
-            {shortenName}
-          </NavItemAvatar>
-        )}
+        <NavItemAvatar
+          active={active}
+          onClick={handleClick}
+          color={theme.dcPalette.green[360]}
+          selectedBackgroundColor={theme.dcPalette.green[360]}
+        >
+          <ExploreIcon />
+        </NavItemAvatar>
       </Tooltip>
       <Box
         sx={{
@@ -84,4 +71,4 @@ const NavItem = (props: NavItemProps) => {
   );
 };
 
-export default NavItem;
+export default NavItemDiscoverable;

@@ -40,7 +40,7 @@ const Select = (props: SelectProps) => {
               : 'text.secondary',
           fontWeight: 500,
           borderRadius: theme.dcShape.borderRadius.input,
-          backgroundColor: theme.dcPalette.grey.darkest,
+          backgroundColor: theme.dcPalette.background.tertiary,
 
           '& .MuiOutlinedInput-notchedOutline': {
             borderWidth: '0 !important'
