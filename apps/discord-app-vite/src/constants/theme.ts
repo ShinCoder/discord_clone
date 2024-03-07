@@ -14,8 +14,8 @@ declare module '@mui/material/styles' {
       };
       link: string;
       text: {
-        grey: string;
         normal: string;
+        muted: string;
       };
       primary: {
         '100': string;
@@ -33,6 +33,8 @@ declare module '@mui/material/styles' {
         secondary: string;
         tertiary: string;
         modifierAccent: string;
+        modifierSelected: string;
+        modifierHover: string;
       };
       status: {
         danger: string;
@@ -51,6 +53,7 @@ declare module '@mui/material/styles' {
       };
       defaultWidth: {
         modal: string;
+        sidebar: string;
       };
       defaultHeight: {
         header: string;
@@ -74,8 +77,8 @@ declare module '@mui/material/styles' {
       };
       link: string;
       text: {
-        grey: string;
         normal: string;
+        muted: string;
       };
       primary: {
         '100': string;
@@ -93,6 +96,8 @@ declare module '@mui/material/styles' {
         secondary: string;
         tertiary: string;
         modifierAccent: string;
+        modifierSelected: string;
+        modifierHover: string;
       };
       status: {
         danger: string;
@@ -111,6 +116,7 @@ declare module '@mui/material/styles' {
       };
       defaultWidth: {
         modal: string;
+        sidebar: string;
       };
       defaultHeight: {
         header: string;
@@ -174,6 +180,11 @@ const defaultThemeOptions: ThemeOptions = {
       defaultProps: {
         noSsr: true
       }
+    },
+    MuiTooltip: {
+      defaultProps: {
+        arrow: true
+      }
     }
   },
   dcPalette: {
@@ -188,8 +199,8 @@ const defaultThemeOptions: ThemeOptions = {
     },
     link: 'rgb(0, 168, 252)',
     text: {
-      grey: 'rgb(148, 155, 164)',
-      normal: 'rgb(219, 222, 225)'
+      normal: 'rgb(219, 222, 225)',
+      muted: 'rgb(148, 155, 164)'
     },
     primary: {
       '100': 'rgb(249, 249, 249)',
@@ -206,7 +217,9 @@ const defaultThemeOptions: ThemeOptions = {
       primary: 'rgb(49, 51, 56)',
       secondary: 'rgb(43, 45, 49)',
       tertiary: 'rgb(30, 31, 34)',
-      modifierAccent: 'rgba(78, 80, 88, 0.48)'
+      modifierAccent: 'rgba(78, 80, 88, 0.48)',
+      modifierSelected: 'rgba(78, 80, 88, 0.6)',
+      modifierHover: 'rgba(78, 80, 88, 0.3)'
     },
     status: {
       danger: 'rgb(242, 63, 66)'
@@ -224,7 +237,8 @@ const defaultThemeOptions: ThemeOptions = {
       serverNav: '15px'
     },
     defaultWidth: {
-      modal: '440px'
+      modal: '440px',
+      sidebar: '240px'
     },
     defaultHeight: {
       header: '48px'
@@ -246,7 +260,7 @@ defaultTheme = createTheme(
           {
             props: { variant: 'white' },
             style: {
-              color: defaultTheme.dcPalette.text.grey,
+              color: defaultTheme.dcPalette.text.muted,
               backgroundColor: defaultTheme.palette.common.white,
               '&:hover': {
                 color: defaultTheme.palette.common.white,

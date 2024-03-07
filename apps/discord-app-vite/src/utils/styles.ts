@@ -25,7 +25,7 @@ export const inputScrollbarStyle: SxProps = {
   }
 };
 
-export const getsScrollbarStyle: (variant?: 'thin' | 'auto') => SxProps = (
+export const getScrollbarStyle: (variant?: 'thin' | 'auto') => SxProps = (
   variant = 'auto'
 ) => {
   const multiplier = variant === 'auto' ? 4 : 2;
@@ -61,4 +61,10 @@ export const getsScrollbarStyle: (variant?: 'thin' | 'auto') => SxProps = (
       backgroundClip: 'padding-box'
     }
   };
+};
+
+export const ellipsisTextWrapStyle: SxProps = {
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden'
 };

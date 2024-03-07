@@ -20,5 +20,6 @@ export const protectedRoutes = {
     }
   },
   myChannels: '/channels/@me',
-  discoverServers: '/channels/guild-discovery'
+  discoverServers: '/channels/guild-discovery',
+  shop: '/shop'
 };
