@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/message-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ChannelTypes {
+  DIRECT_MESSAGE
+  GROUP_CHANNEL
+
+  @@map("CHANNEL_TYPES")
+}
+
+enum MessageTypes {
+  TEXT
+  IMAGE
+
+  @@map("MESSAGES_TYPES")
+}
+
+model Channels {
+  id       String       @id @default(uuid())
+  type     ChannelTypes
+  ownerIds String[]     @default([]) @map("owner_ids")
+  serverId String?
+  name     String?
+  topic    String?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
+
+  @@map("channels")
+}
+
+model Messages {
+  id        String       @id @default(uuid())
+  senderId  String       @map("sender_id")
+  channelId String       @map("channel_id")
+  content   String
+  type      MessageTypes @default(TEXT)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
+
+  @@map("messages")
+}

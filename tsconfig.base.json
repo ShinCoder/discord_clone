@@ -23,6 +23,9 @@
       "@prj/types/grpc/common": ["libs/common/src/types/grpc/common.ts"],
       "@prj/types/grpc/mail-service": [
         "libs/common/src/types/grpc/mail-service.ts"
+      ],
+      "@prj/types/grpc/message-service": [
+        "libs/common/src/types/grpc/message-service.ts"
       ]
     }
   },
