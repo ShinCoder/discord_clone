@@ -2,8 +2,9 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import joi from 'joi';
 
-import { AuthModule } from '../auth/auth.module';
 import { CustomLoggerMiddleware } from '../../middlewares/custom-logger.middleware';
+import { AuthModule } from '../auth/auth.module';
+import { ChannelsModule } from '../channels/channels.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CustomLoggerMiddleware } from '../../middlewares/custom-logger.middlewa
         PORT: joi.string(),
         AUTH_SERVICE_GRPC_URL: joi.string().required(),
         MAIL_SERVICE_GRPC_URL: joi.string().required(),
+        MESSAGE_SERVICE_GRPC_URL: joi.string().required(),
         JWT_AT_PUBLIC: joi.string().required(),
         JWT_RT_PUBLIC: joi.string().required(),
         JWT_VT_PUBLIC: joi.string().required(),
@@ -22,7 +24,8 @@ import { CustomLoggerMiddleware } from '../../middlewares/custom-logger.middlewa
       }),
       envFilePath: '.env'
     }),
-    AuthModule
+    AuthModule,
+    ChannelsModule
   ]
 })
 export class AppModule implements NestModule {

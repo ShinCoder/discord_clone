@@ -52,7 +52,8 @@ export default class DmService {
       });
 
       return getRpcSuccessMessage(HttpStatus.OK, {
-        channels: channels.map((e) => this.toChannelDto(e))
+        channels:
+          channels.length > 0 ? channels.map((e) => this.toChannelDto(e)) : []
       });
     } catch (err) {
       return handleThrowError(err);
