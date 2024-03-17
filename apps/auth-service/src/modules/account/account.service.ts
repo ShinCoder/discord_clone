@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
-import { AccountStatus, Accounts } from '@prisma/client';
+import { AccountStatus, Accounts } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utlis';

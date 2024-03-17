@@ -14,7 +14,7 @@ export class GlobalRpcExceptionFilter
   catch(exception: RpcException, host: ArgumentsHost): Observable<any> {
     const error: any = exception.getError();
 
-    // console.log(error);
+    console.log(error);
 
     return throwError(() => new InternalServerErrorException());
   }

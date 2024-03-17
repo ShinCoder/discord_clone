@@ -1,1 +1,2 @@
 CREATE SCHEMA IF NOT EXISTS "auth-service";
+CREATE SCHEMA IF NOT EXISTS "message-service";
