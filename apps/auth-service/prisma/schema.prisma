@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "../../../node_modules/@prisma/auth-client"
+  output   = "../../../node_modules/@prisma/auth-client"
 }
 
 datasource db {
@@ -17,6 +17,16 @@ enum AccountStatus {
   DISABLED
 
   @@map("ACCOUNT_STATUS")
+}
+
+enum RelationshipStatus {
+  REQUESTING
+  PENDING
+  FRIEND
+  BLOCKED
+  BEING_BLOCKED
+
+  @@map("RELATIONSHIP_STATUS")
 }
 
 model Accounts {
@@ -39,7 +49,9 @@ model Accounts {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
 
-  sessions Sessions[]
+  sessions         Sessions[]
+  relationship     Relationships[] @relation("have_relationship_with")
+  relationshipWith Relationships[] @relation("in_relationship_with")
 
   @@map("accounts")
 }
@@ -55,4 +67,20 @@ model Sessions {
   updatedAt    DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
 
   @@map("sessions")
+}
+
+model Relationships {
+  account   Accounts @relation(fields: [accountId], references: [id], name: "have_relationship_with")
+  accountId String   @map("account_id")
+  target    Accounts @relation(fields: [targetId], references: [id], name: "in_relationship_with")
+  targetId  String   @map("target_id")
+
+  id             String              @id @default(uuid())
+  status         RelationshipStatus  @default(REQUESTING)
+  previousStatus RelationshipStatus? @map("previous_status")
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt      DateTime            @updatedAt() @map("updated_at") @db.Timestamptz()
+
+  @@unique([accountId, targetId])
+  @@map("relationships")
 }

@@ -15,12 +15,33 @@ service AuthServiceAuthModule {
 service AuthServiceAccountModule {
     rpc GetAccount (GetAccountDto) returns (GetAccountResult) {};
     rpc GetAccounts (GetAccountsDto) returns (GetAccountsResult) {};
+    rpc CreateOrUpdateRelationship (CreateOrUpdateRelationshipDto) returns (CreateOrUpdateRelationshipResult) {};
+    rpc DeleteRelationship (DeleteRelationshipDto) returns (DeleteRelationshipResult) {};
+    rpc GetFriends (GetFriendsDto) returns (GetFriendsResult) {};
 }
 
 enum AccountStatus {
     NOT_VERIFIED = 0;
     ACTIVE = 1;
     DISABLED = 2;
+}
+
+enum RelationshipStatus {
+    REQUESTING = 0;
+    PENDING = 1;
+    FRIEND = 2;
+    BLOCKED = 3;
+    BEING_BLOCKED = 4;
+}
+
+message RelationshipDto {
+    string id = 1;
+    string accountId = 2;
+    string targetId = 3;
+    RelationshipStatus status = 4;
+    optional RelationshipStatus previousStatus = 5;
+    string createdAt = 6;
+    string updatedAt = 7;
 }
 
 message RegisterDto {
@@ -100,11 +121,13 @@ message AccountDto {
     bool isAdmin = 13;
     string createdAt = 14;
     string updatedAt = 15;
+    optional RelationshipDto relationshipWith = 16;
 }
 
 message GetAccountDto {
     string id = 1;
     optional AccountStatus status = 2;
+    optional string includeRelationshipWith = 3;
 }
 
 message GetAccountResult {
@@ -117,10 +140,42 @@ message AccountsDto {
 }
 
 message GetAccountsDto {
-    
+    optional string includeRelationshipWith = 1;
 }
 
 message GetAccountsResult {
+    com.common.MessageStatus status = 1;
+    optional AccountsDto payload = 2;
+}
+
+message RelationshipWriteDto {
+    string id = 1;
+    RelationshipStatus status = 2;
+}
+
+message CreateOrUpdateRelationshipDto {
+    RelationshipWriteDto account = 1;
+    RelationshipWriteDto target = 2;
+}
+
+message CreateOrUpdateRelationshipResult {
+    com.common.MessageStatus status = 1;
+}
+
+message DeleteRelationshipDto {
+    string accountId = 1;
+    string targetId = 2; 
+}
+
+message DeleteRelationshipResult {
+    com.common.MessageStatus status = 1;
+}
+
+message GetFriendsDto {
+    string accountId = 1;
+}
+
+message GetFriendsResult {
     com.common.MessageStatus status = 1;
     optional AccountsDto payload = 2;
 }

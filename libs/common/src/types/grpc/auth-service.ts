@@ -12,6 +12,25 @@ export enum AccountStatus {
   UNRECOGNIZED = -1
 }
 
+export enum RelationshipStatus {
+  REQUESTING = 0,
+  PENDING = 1,
+  FRIEND = 2,
+  BLOCKED = 3,
+  BEING_BLOCKED = 4,
+  UNRECOGNIZED = -1
+}
+
+export interface RelationshipDto {
+  id: string;
+  accountId: string;
+  targetId: string;
+  status: RelationshipStatus;
+  previousStatus?: RelationshipStatus | undefined;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface RegisterDto {
   email: string;
   password: string;
@@ -87,11 +106,13 @@ export interface AccountDto {
   isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
+  relationshipWith?: RelationshipDto | undefined;
 }
 
 export interface GetAccountDto {
   id: string;
   status?: AccountStatus | undefined;
+  includeRelationshipWith?: string | undefined;
 }
 
 export interface GetAccountResult {
@@ -103,9 +124,43 @@ export interface AccountsDto {
   accounts: AccountDto[];
 }
 
-export interface GetAccountsDto {}
+export interface GetAccountsDto {
+  includeRelationshipWith?: string | undefined;
+}
 
 export interface GetAccountsResult {
+  status: MessageStatus | undefined;
+  payload?: AccountsDto | undefined;
+}
+
+export interface RelationshipWriteDto {
+  id: string;
+  status: RelationshipStatus;
+}
+
+export interface CreateOrUpdateRelationshipDto {
+  account: RelationshipWriteDto | undefined;
+  target: RelationshipWriteDto | undefined;
+}
+
+export interface CreateOrUpdateRelationshipResult {
+  status: MessageStatus | undefined;
+}
+
+export interface DeleteRelationshipDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface DeleteRelationshipResult {
+  status: MessageStatus | undefined;
+}
+
+export interface GetFriendsDto {
+  accountId: string;
+}
+
+export interface GetFriendsResult {
   status: MessageStatus | undefined;
   payload?: AccountsDto | undefined;
 }
@@ -187,6 +242,16 @@ export interface AuthServiceAccountModuleClient {
   getAccount(request: GetAccountDto): Observable<GetAccountResult>;
 
   getAccounts(request: GetAccountsDto): Observable<GetAccountsResult>;
+
+  createOrUpdateRelationship(
+    request: CreateOrUpdateRelationshipDto
+  ): Observable<CreateOrUpdateRelationshipResult>;
+
+  deleteRelationship(
+    request: DeleteRelationshipDto
+  ): Observable<DeleteRelationshipResult>;
+
+  getFriends(request: GetFriendsDto): Observable<GetFriendsResult>;
 }
 
 export interface AuthServiceAccountModuleController {
@@ -203,11 +268,38 @@ export interface AuthServiceAccountModuleController {
     | Promise<GetAccountsResult>
     | Observable<GetAccountsResult>
     | GetAccountsResult;
+
+  createOrUpdateRelationship(
+    request: CreateOrUpdateRelationshipDto
+  ):
+    | Promise<CreateOrUpdateRelationshipResult>
+    | Observable<CreateOrUpdateRelationshipResult>
+    | CreateOrUpdateRelationshipResult;
+
+  deleteRelationship(
+    request: DeleteRelationshipDto
+  ):
+    | Promise<DeleteRelationshipResult>
+    | Observable<DeleteRelationshipResult>
+    | DeleteRelationshipResult;
+
+  getFriends(
+    request: GetFriendsDto
+  ):
+    | Promise<GetFriendsResult>
+    | Observable<GetFriendsResult>
+    | GetFriendsResult;
 }
 
 export function AuthServiceAccountModuleControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['getAccount', 'getAccounts'];
+    const grpcMethods: string[] = [
+      'getAccount',
+      'getAccounts',
+      'createOrUpdateRelationship',
+      'deleteRelationship',
+      'getFriends'
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,
