@@ -1,4 +1,9 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  OnModuleInit
+} from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
@@ -17,12 +22,20 @@ import {
   RegisterDto,
   VerifyDto,
   RefreshDto,
-  LogoutDto
+  LogoutDto,
+  RelationshipStatus as RpcRelationshipStatus,
+  RelationshipStatus
 } from '@prj/types/grpc/auth-service';
 import {
   MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME,
   MailServiceAuthModuleClient
 } from '@prj/types/grpc/mail-service';
+import {
+  AcceptFriendRequestDto,
+  DeclineFriendRequestDto,
+  SendFriendRequestDto
+} from './dto';
+import { ApiErrorMessages } from '@prj/common';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -109,5 +122,107 @@ export class AuthService implements OnModuleInit {
     const result = await lastValueFrom(this.authServiceAuthModule.logout(data));
 
     return handleRpcResult(result);
+  }
+
+  async sendFriendRequest(data: SendFriendRequestDto) {
+    const target = handleRpcResult(
+      await lastValueFrom(
+        this.authServiceAccountModule.getAccount({
+          id: data.targetId,
+          includeRelationshipWith: data.accountId
+        })
+      )
+    );
+
+    if (target.relationshipWith.status === RpcRelationshipStatus.FRIEND)
+      throw new ConflictException(
+        ApiErrorMessages.SEND_FRIEND_REQUEST_ALREADY_FRIEND
+      );
+
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.createOrUpdateRelationship({
+        account: {
+          id: data.accountId,
+          status: RpcRelationshipStatus.REQUESTING
+        },
+        target: {
+          id: data.targetId,
+          status: RpcRelationshipStatus.PENDING
+        }
+      })
+    );
+
+    return handleRpcResult(result);
+  }
+
+  async acceptFriendRequest(data: AcceptFriendRequestDto) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.createOrUpdateRelationship({
+        account: {
+          id: data.accountId,
+          status: RpcRelationshipStatus.FRIEND
+        },
+        target: {
+          id: data.targetId,
+          status: RpcRelationshipStatus.FRIEND
+        }
+      })
+    );
+
+    return handleRpcResult(result);
+  }
+
+  async declineFriendRequest(data: DeclineFriendRequestDto) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.deleteRelationship({
+        accountId: data.accountId,
+        targetId: data.targetId
+      })
+    );
+
+    return handleRpcResult(result);
+  }
+
+  async getFriends(accountId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.getFriends({ accountId })
+    );
+
+    return {
+      friends:
+        handleRpcResult(result).accounts?.map((e) => ({
+          ...e,
+          status: RpcAccountStatus[e.status],
+          relationshipWith: {
+            ...e.relationshipWith,
+            status: RpcRelationshipStatus[e.relationshipWith.status],
+            previousStatus:
+              RpcRelationshipStatus[e.relationshipWith.previousStatus]
+          }
+        })) || []
+    };
+  }
+
+  async getPendingFriendRequest(accountId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.getAccounts({
+        haveRelationshipWith: accountId,
+        relationshipStatus: RelationshipStatus.PENDING
+      })
+    );
+
+    return {
+      accounts:
+        handleRpcResult(result).accounts?.map((e) => ({
+          ...e,
+          status: RpcAccountStatus[e.status],
+          relationshipWith: {
+            ...e.relationshipWith,
+            status: RpcRelationshipStatus[e.relationshipWith.status],
+            previousStatus:
+              RpcRelationshipStatus[e.relationshipWith.previousStatus]
+          }
+        })) || []
+    };
   }
 }
