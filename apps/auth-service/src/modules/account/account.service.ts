@@ -20,7 +20,7 @@ import {
   GetFriendsDto,
   GetFriendsResult
 } from '@prj/types/grpc/auth-service';
-import { getRpcSuccessMessage } from '@prj/common';
+import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
 
 @Injectable()
 export class AccountService {
@@ -43,7 +43,6 @@ export class AccountService {
       pronouns: data.pronouns,
       about: data.about,
       bannerColor: data.bannerColor,
-      friendIds: data.friendIds,
       status: RpcAccountStatus[data.status],
       isAdmin: data.isAdmin,
       createdAt: data.createdAt.toISOString(),
@@ -95,11 +94,26 @@ export class AccountService {
   async getAccounts(data: GetAccountsDto): Promise<GetAccountsResult> {
     try {
       const accounts = await this.prismaService.accounts.findMany({
+        where: {
+          ...(data.haveRelationshipWith && {
+            relationshipWith: {
+              some: {
+                accountId: data.haveRelationshipWith,
+                ...(data.relationshipStatus && {
+                  status:
+                    RelationshipStatus[
+                      RpcRelationshipStatus[data.relationshipStatus]
+                    ]
+                })
+              }
+            }
+          })
+        },
         include: {
-          ...(data.includeRelationshipWith && {
+          ...(data.haveRelationshipWith && {
             relationshipWith: {
               where: {
-                accountId: data.includeRelationshipWith
+                accountId: data.haveRelationshipWith
               }
             }
           })
@@ -117,17 +131,31 @@ export class AccountService {
   async createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
     try {
       await this.prismaService.$transaction(async (tx) => {
+        const account = await tx.accounts.findFirst({
+          where: { id: data.account.id }
+        });
+        if (!account)
+          throw new RpcException(
+            new NotFoundException(
+              ApiErrorMessages.SEND_FRIEND_REQUEST_ACCOUNT_NOT_FOUND
+            )
+          );
+        const target = await tx.accounts.findFirst({
+          where: { id: data.target.id }
+        });
+        if (!target)
+          throw new RpcException(
+            new NotFoundException(
+              ApiErrorMessages.SEND_FRIEND_REQUEST_ACCOUNT_NOT_FOUND
+            )
+          );
+
         let existed = await tx.relationships.findFirst({
           where: {
             accountId: data.account.id,
             targetId: data.target.id
           }
         });
-
-        console.log(
-          data.account.status,
-          RelationshipStatus[RpcRelationshipStatus[data.account.status]]
-        );
 
         if (existed) {
           await tx.relationships.update({

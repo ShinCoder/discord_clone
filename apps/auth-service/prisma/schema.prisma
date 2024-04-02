@@ -44,7 +44,6 @@ model Accounts {
   avatar      String?
   bannerColor String   @map("banner_color")
   about       String?
-  friendIds   String[] @default([]) @map("friend_ids")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt DateTime @updatedAt() @map("updated_at") @db.Timestamptz()

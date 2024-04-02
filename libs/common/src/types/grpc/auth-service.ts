@@ -101,7 +101,6 @@ export interface AccountDto {
   pronouns?: string | undefined;
   about?: string | undefined;
   bannerColor: string;
-  friendIds: string[];
   status: AccountStatus;
   isAdmin: boolean;
   createdAt: string;
@@ -125,7 +124,8 @@ export interface AccountsDto {
 }
 
 export interface GetAccountsDto {
-  includeRelationshipWith?: string | undefined;
+  haveRelationshipWith?: string | undefined;
+  relationshipStatus?: RelationshipStatus | undefined;
 }
 
 export interface GetAccountsResult {
