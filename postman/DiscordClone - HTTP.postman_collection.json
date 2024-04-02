@@ -1,0 +1,290 @@
+{
+	"info": {
+		"_postman_id": "404af706-1cda-40f0-a3f6-7e607d8fca83",
+		"name": "DiscordClone - HTTP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "29629296"
+	},
+	"item": [
+		{
+			"name": "register",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"trananhkiet.tk.813@gmail.com\",\r\n    \"password\": \"123\",\r\n    \"username\": \"shin\",\r\n    \"displayName\": \"shin\",\r\n    \"dateOfBirth\": \"2015-12-04\",\r\n    \"emailSubscribe\": false\r\n}"
+				},
+				"url": "{{webapp_base_url}}/auth/register"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"shin1@gmail.com\",\r\n    \"password\": \"123\"\r\n}"
+				},
+				"url": "{{webapp_base_url}}/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "verify",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"verifyToken\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZTFhMDEwMi0zNTY5LTRhZDctYTMzZi05ZGI5MGRjOTllZTEiLCJlbWFpbCI6InNoaW5AZ21haWwuY29tIiwiaXNBZG1pbiI6ZmFsc2UsInR5cGUiOiJ2ZXJpZnkiLCJpYXQiOjE2OTk0MzMxNDEsImV4cCI6MTY5OTQ3NjM0MX0.CNIagQ9Gi0X4DkssEATi-VbiR9cNOxnbSElJz3cF0MXIv6gyJ4ACscuL36Qhn1xWkO1-KugcTmJ4ibks6049pLLxMDAcNsyFYz-ajw9rCHB0SzVpx7LMBiRbLWk1pQBUMh-iyeyPO4v-yDif4nyK7Ffl6KzPCMFroxzvc55A5n8lRhre8Wl_CkYGgJ-BS4oKhfCmpKWWOpi95dNL2q5Ef40yGehdE4GQ2XyZQMKPThzL5QULgdJkT1Ac0DAT9q0TRlEr_tOPJa9GnIqGBx1Kh7eTp0YGt25QRW5rLfer-F15YhLGa-5VgZd_lCJ49gqgLg3RnzUuR0ANOIPxxbGA2R7YlODvlrkbJmzbde0rs1TtGnhYUfFyvAMlB8MHUqPXOUyor5ZjxPM5t4Ooz0God4KL0hSLOMR8ZkrPURjQNZkZCMno1zoTCoTYWNBG3ihtrlNWWMqZ2K58kiHCOlOwqYwRE6k2ymdedgnIsCrvhOMZ4ScOZgCq9JCUyg8XGnsM32Ys3L_FHUo1R2EwgSHT_nNFUILTZ9h9iS8cfpyJOlv5ViZdIxiDT1YvwabNl8ebsIvj3Wdemvxr-dEmuQWLayDb0KPJA-VfuYqI-KbhZ3GeGk_ljn5oG--8kqDzACIgn9obCgS2rfBWi_qb3G9a4v3oiiV6FbsGzEU-KhM8MKw\"\r\n}"
+				},
+				"url": "{{webapp_base_url}}/auth/verify"
+			},
+			"response": []
+		},
+		{
+			"name": "getMe",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNzljNzQ4OS0yZGEyLTQ0NzItODZkYi0zMjFkOGFkMDUyNDMiLCJlbWFpbCI6InNoaW5AZ21haWwuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTY5OTE3ODU4NSwiZXhwIjoxNjk5MTc5MTg1fQ.SW6f5lPQv61ARJlkV611gwvfu39eAICev-sJE_UNm_xrIu_uv9copTJhVeT2vMSo7txo3UlNnPP2bOWM0xbWlacA4b7PB_I_L8lb4AN5WAX6Cvh_YxOI1XVmJaDm-xEJcoovnkoW-HG2f7ReplRvh-Zi4tF42v-hpw1ZyjMI6Qve-BoKR5WluflzvhtTvqmBSe9Lc-KQeCQzQpDkY-KhlD9tWXpWZJv4kRI0C-HI7n3RFldn-YZBDr3CRqlRDJ8j0QfNDj-5dn1T7RrqCB0JqKLwiqBwwoE-MUoVawupFbcsSWun6WKff9j1rTrRNes0vIOfmgbQ5IM36Yww3MdSn5GwEjVRYB98HRycml36BPLildW92ly3LMVUR5wnrMKQ2aJkZ0B3mfd6TcB1wyRYJS1EDh6b4dktZTDqno6I8RRlTBwnCKeQfNLnySef3Z8hogVKZtcjt68vVKOzbppzFVw1awbMLDDfdqwuG2PuKfvmXDOoGSoZsT-G-INiu_mF9TOXQzKsHdH5a4Pj9qd9nkUB7IYmPfPIi8YRQhkwpdq6SS9y5HZsoqh3hbzHLBuVkXnNIvKncCcJsA6rESDEc11pG1PcAvHw379mKXlebAVhJxd-iB7GQm-GdAcuYRCkT_Zn6hnIJnXPeDyGY7lxMGjjxP1as2KkopD5og_3nwQ",
+						"type": "text"
+					}
+				],
+				"url": "{{webapp_base_url}}/auth/me"
+			},
+			"response": []
+		},
+		{
+			"name": "refresh",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{refreshToken}}"
+					}
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountId\": \"7e1a0102-3569-4ad7-a33f-9db90dc99ee1\",\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}"
+				},
+				"url": "{{webapp_base_url}}/auth/refresh"
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountId\": \"7e1a0102-3569-4ad7-a33f-9db90dc99ee1\"\r\n}"
+				},
+				"url": "{{webapp_base_url}}/auth/logout"
+			},
+			"response": []
+		},
+		{
+			"name": "getAllDirectMessageChannels",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{webapp_base_url}}/channels/direct-message/3225067e-5b75-40d6-bdde-2664a0003584"
+			},
+			"response": []
+		},
+		{
+			"name": "createDirectMessageChannel",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ownerIds\": [\"3225067e-5b75-40d6-bdde-2664a0003584\", \"1\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{webapp_base_url}}/channels/direct-message"
+			},
+			"response": []
+		},
+		{
+			"name": "sendFriendRequest",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountId\": \"3225067e-5b75-40d6-bdde-2664a0003584\",\r\n    \"targetId\": \"b07a84ae-a64c-4dc9-8fac-fce1fbdc07d8\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{webapp_base_url}}/auth/friend-request"
+			},
+			"response": []
+		},
+		{
+			"name": "acceptFriendRequest",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountId\": \"3225067e-5b75-40d6-bdde-2664a0003584\" ,\r\n    \"targetId\": \"b07a84ae-a64c-4dc9-8fac-fce1fbdc07d8\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{webapp_base_url}}/auth/friend-request/accept"
+			},
+			"response": []
+		},
+		{
+			"name": "declineFriendRequest",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountId\": \"3225067e-5b75-40d6-bdde-2664a0003584\" ,\r\n    \"targetId\": \"b07a84ae-a64c-4dc9-8fac-fce1fbdc07d8\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{webapp_base_url}}/auth/friend-request/decline"
+			},
+			"response": []
+		},
+		{
+			"name": "getFriends",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{accessToken}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{webapp_base_url}}/auth/3225067e-5b75-40d6-bdde-2664a0003584/friends"
+			},
+			"response": []
+		},
+		{
+			"name": "getPendingFriendRequests",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMDdhODRhZS1hNjRjLTRkYzktOGZhYy1mY2UxZmJkYzA3ZDgiLCJlbWFpbCI6InNoaW4xQGdtYWlsLmNvbSIsImlzQWRtaW4iOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzEyMDU1NTE5LCJleHAiOjE3OTg0NTU1MTl9.GvqyOW0fxrR0TITjdUuJ2_B0YofrBJlOmXb5BgQJY0IwIMijIqwuhDCyvtKQKQ9W-z857jjuHhbV3BLFk-x4QvMD6uRfMXpReFh7qaK73WBzgTbvJdzGEt6l_4q--r8IIF98YTz1Jhx-fqsWimYY-ytNNiLCdxUhC4EOVbhoJoakkQItHkMvg91H2VSGtox6YhYvTij0WOS7LN5WzOx5l4i-INYbD2VqJDsTrLUDlnN1LnfqYTF1MCeTydDKP_zk7E4OMQDCsVQidxbwstS75e5FOccEgWJQM6ryilT-Y1LG1sYWGtr5cTqjxH26imkoxi86gS-S99k-k4t-2jDWLG9SXkaXB0Him9NfMsEJt78iwxN2FRxGjaG4w9yIcrX6t7yv93FkZzwPISpi0UIklY58ks9aT3rkU-UZIQ_na0p5ZJvpJ93eTW3qM7fmZ1KdIIRuU2iiVQTwtld3JqwWnn4XsbPVm8ozqNyURi_Pmhs-WKL26CCUYpmr_FUp2vnbIfQr5G590HIulO5oMYPUxPg3tS5noEsqinsX-iQuN2jy5NPTm6cLY-5f2xcGfYoiq4sA25nB2fJcqGZUzDGQoxz2wEWXpO2FmIB2D0oq8JfvWZ41B1Ks_1Lkap3Yfnk1zN8zVlnLg2opEVqQUKC5C84uwZWdtfIb1Q9DUHiK02o"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{webapp_base_url}}/auth/b07a84ae-a64c-4dc9-8fac-fce1fbdc07d8/friend-request"
+			},
+			"response": []
+		}
+	]
+}
