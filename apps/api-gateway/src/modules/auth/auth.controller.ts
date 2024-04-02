@@ -4,6 +4,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  Param,
   Patch,
   Post,
   Put,
@@ -18,7 +19,15 @@ import { EMAIL_REGEX } from '../../constants';
 import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
 import { IRequestWithUser } from '../../types';
 
-import { IGetMeResult, ILoginResult, IRefreshResult } from '@prj/types/api';
+import {
+  IGetFriendRequestsResult,
+  IGetFriendsResult,
+  IGetMeResult,
+  ILoginResult,
+  IRefreshResult
+} from '@prj/types/api';
+import { SendFriendRequestDto } from './dto/sendFriendRequest.dto';
+import { AcceptFriendRequestDto } from './dto/acceptFriendRequest.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -48,6 +57,7 @@ export class AuthController {
 
   @UseGuards(JwtVtGuard)
   @Patch('verify')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   verify(@Req() req: IRequestWithUser, @Body() body: VerifyDto) {
     return this.authService.verify({ id: req.user.sub });
   }
@@ -79,5 +89,55 @@ export class AuthController {
       throw new ForbiddenException('Forbidden resource');
 
     return this.authService.logout({ accountId: body.accountId });
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Post('friend-request')
+  sendFriendRequest(
+    @Req() req: IRequestWithUser,
+    @Body() body: SendFriendRequestDto
+  ) {
+    if (req.user.sub !== body.accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.sendFriendRequest(body);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Patch('friend-request/accept')
+  acceptFriendRequest(
+    @Req() req: IRequestWithUser,
+    @Body() body: AcceptFriendRequestDto
+  ) {
+    if (req.user.sub !== body.accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.acceptFriendRequest(body);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Patch('friend-request/decline')
+  declineFriendRequest(
+    @Req() req: IRequestWithUser,
+    @Body() body: AcceptFriendRequestDto
+  ) {
+    if (req.user.sub !== body.accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.declineFriendRequest(body);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Get(':id/friends')
+  getFriends(@Param('id') accountId: string): Promise<IGetFriendsResult> {
+    return this.authService.getFriends(accountId);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Get(':id/friend-request')
+  getPendingFriendRequest(
+    @Param('id') accountId: string
+  ): Promise<IGetFriendRequestsResult> {
+    return this.authService.getPendingFriendRequest(accountId);
   }
 }

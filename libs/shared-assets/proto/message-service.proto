@@ -1,0 +1,82 @@
+syntax="proto3";
+
+package com.message_service;
+
+import "common.proto";
+
+service MessageServiceDirectMessageModule {
+    rpc GetDirectMessageChannels (GetDirectMessageChannelsDto) returns (GetDirectMessageChannelsResult) {};
+    rpc CreateDirectMessageChannel (CreateDirectMessageChannelDto) returns (CreateDirectMessageChannelResult) {};
+}
+
+service MessageServiceMessageModule {
+    rpc GetChannelMessages (GetChannelMessagesDto) returns (GetChannelMessagesResult) {};
+}
+
+enum ChannelTypes {
+    DIRECT_MESSAGE = 0;
+    GROUP_CHANNEL = 1;
+}
+
+enum MessageTypes {
+    TEXT = 0;
+    IMAGE = 1;
+}
+
+message ChannelDto {
+    string id = 1;
+    ChannelTypes type = 2;
+    repeated string ownerIds = 3;
+    optional string serverId = 4;
+    optional string name = 5;
+    optional string topic = 6;
+    string createdAt = 7;
+    string updatedAt = 8;
+}
+
+message ChannelsDto {
+    repeated ChannelDto channels = 1;
+}
+
+message GetDirectMessageChannelsDto {
+    string ownerId = 1;
+}
+
+message GetDirectMessageChannelsResult {
+    com.common.MessageStatus status = 1;
+    optional ChannelsDto payload = 2;
+}
+
+message MessageDto {
+    string id = 1;
+    string senderId = 2;
+    string channelId = 3;
+    string content = 4;
+    MessageTypes type = 5;
+    string createdAt = 6;
+    string updatedAt = 7;
+}
+
+message MessagesDto {
+    repeated MessageDto messages = 1;
+    int32 totalPage = 2;
+}
+
+message GetChannelMessagesDto {
+    string id = 1;
+    int32 take = 2;
+    int32 page = 3;
+}
+
+message GetChannelMessagesResult {
+    com.common.MessageStatus status = 1;
+    optional MessagesDto payload = 2;
+}
+
+message CreateDirectMessageChannelDto {
+    repeated string ownerIds = 1;
+}
+
+message CreateDirectMessageChannelResult {
+    com.common.MessageStatus status = 1;
+}

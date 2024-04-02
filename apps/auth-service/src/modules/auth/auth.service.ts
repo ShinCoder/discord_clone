@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 
-import { AccountStatus, Accounts } from '@prisma/client';
+import { AccountStatus, Accounts } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utlis';

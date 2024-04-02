@@ -50,3 +50,57 @@ export interface IGetMeResult {
 export interface IVerifyDto {
   verifyToken: string;
 }
+
+export interface ISendFriendRequestDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface IAcceptFriendRequestDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface IDeclineFriendRequestDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface IGetFriendsDto {
+  accountId: string;
+}
+
+interface RelationshipDto {
+  id: string;
+  accountId: string;
+  targetId: string;
+  status: string;
+  previousStatus?: string | undefined;
+  createdAt: string;
+  updatedAt: string;
+}
+interface AccountDto {
+  id: string;
+  email: string;
+  username: string;
+  displayName?: string | undefined;
+  dateOfBirth: string;
+  phoneNumber?: string | undefined;
+  avatar: string;
+  pronouns?: string | undefined;
+  about?: string | undefined;
+  bannerColor: string;
+  status: string;
+  isAdmin: boolean;
+  createdAt: string;
+  updatedAt: string;
+  relationshipWith?: RelationshipDto | undefined;
+}
+
+export interface IGetFriendsResult {
+  friends: Array<AccountDto>;
+}
+
+export interface IGetFriendRequestsResult {
+  accounts: Array<AccountDto>;
+}
