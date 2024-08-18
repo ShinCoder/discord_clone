@@ -5,6 +5,7 @@ declare module '@mui/material/styles' {
     dcPalette: {
       green: {
         '360': string;
+        '430': string;
       };
       grey: {
         main: string;
@@ -68,6 +69,7 @@ declare module '@mui/material/styles' {
     dcPalette?: {
       green: {
         '360': string;
+        '430': string;
       };
       grey: {
         main: string;
@@ -189,7 +191,8 @@ const defaultThemeOptions: ThemeOptions = {
   },
   dcPalette: {
     green: {
-      '360': 'rgb(35, 165, 89)'
+      '360': 'rgb(35, 165, 89)',
+      '430': 'rgb(36, 128, 70)'
     },
     grey: {
       main: 'rgb(88, 101, 242)',
