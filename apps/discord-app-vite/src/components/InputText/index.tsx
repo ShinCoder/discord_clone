@@ -55,7 +55,7 @@ const InputText = (props: InputTextProps) => {
           height: '40px',
           color: theme.dcPalette.text.normal,
           borderRadius: theme.dcShape.borderRadius.input,
-          backgroundColor: theme.dcPalette.grey.darkest,
+          backgroundColor: theme.dcPalette.background.tertiary,
           '&::before, &::after': { content: 'none' }
         }}
         inputProps={{

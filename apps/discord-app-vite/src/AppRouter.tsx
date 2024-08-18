@@ -10,10 +10,14 @@ import GlobalLoading from '@components/GlobalLoading';
 import AuthLayout from '@layouts/AuthLayout';
 import ProtectedRouteLayout from '@layouts/ProtectedRouteLayout';
 import PublicRouteLayout from '@layouts/PublicRouteLayout';
+import ServerLayout from '@layouts/ServerLayout';
+import DMLayout from '@layouts/DMLayout';
 import ChannelMe from '@pages/ChannelMe';
 import Login from '@pages/Login';
 import Register from '@pages/Register';
 import Verify from '@pages/Verify';
+import DiscoverableServer from '@pages/DiscoverableServer';
+import Shop from '@pages/Shop';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { clearAuthState, setAccountData } from '@redux/slices/authSlice';
 import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
@@ -63,8 +67,26 @@ const router = createBrowserRouter([
             element: <Navigate to={protectedRoutes.myChannels} />
           },
           {
-            path: protectedRoutes.myChannels,
-            element: <ChannelMe />
+            element: <ServerLayout />,
+            children: [
+              {
+                element: <DMLayout />,
+                children: [
+                  {
+                    path: protectedRoutes.myChannels,
+                    element: <ChannelMe />
+                  },
+                  {
+                    path: protectedRoutes.shop,
+                    element: <Shop />
+                  }
+                ]
+              },
+              {
+                path: protectedRoutes.discoverServers,
+                element: <DiscoverableServer />
+              }
+            ]
           }
         ]
       }

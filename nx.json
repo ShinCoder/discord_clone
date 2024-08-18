@@ -67,7 +67,7 @@
   "tasksRunnerOptions": {
     "default": {
       "options": {
-        "maxParallel": "4"
+        "maxParallel": "5"
       }
     }
   }

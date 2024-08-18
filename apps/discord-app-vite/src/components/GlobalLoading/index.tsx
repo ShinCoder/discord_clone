@@ -48,7 +48,7 @@ const GlobalLoading = () => {
           <Typography
             sx={{
               maxWidth: '300px',
-              color: theme.dcPalette.text.headerPrimary,
+              color: theme.dcPalette.header.primary,
               fontSize: '0.75rem',
               fontWeight: 600,
               textTransform: 'uppercase',

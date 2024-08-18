@@ -9,5 +9,17 @@ export const publicRoutes = {
 
 export const protectedRoutes = {
   app: '/app',
-  myChannels: '/channels/@me'
+  channels: (type: 'base' | 'pattern' | 'absolute' = 'base', id?: string) => {
+    switch (type) {
+      case 'base':
+        return '/channels';
+      case 'pattern':
+        return '/channels/:id';
+      case 'absolute':
+        return `/channels/${id}`;
+    }
+  },
+  myChannels: '/channels/@me',
+  discoverServers: '/channels/guild-discovery',
+  shop: '/shop'
 };
