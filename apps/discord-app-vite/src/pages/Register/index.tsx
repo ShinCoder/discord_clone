@@ -218,7 +218,7 @@ const Register = () => {
           </CustomButton>
           <Typography
             sx={{
-              color: theme.dcPalette.text.grey,
+              color: theme.dcPalette.text.muted,
               fontSize: '0.75rem',
               fontWeight: 400,
               lineHeight: '1rem',

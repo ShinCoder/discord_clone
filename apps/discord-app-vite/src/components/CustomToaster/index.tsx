@@ -23,11 +23,11 @@ const CustomToaster = () => {
           style: {
             color: theme.palette.common.white,
             fontSize: '1rem',
-            backgroundColor: theme.dcPalette.status.danger
+            backgroundColor: theme.dcPalette.status.danger.base
           },
           iconTheme: {
             primary: theme.palette.common.white,
-            secondary: theme.dcPalette.status.danger
+            secondary: theme.dcPalette.status.danger.base
           },
           duration: 4000
         }

@@ -1,47 +1,225 @@
 import { ThemeOptions, createTheme } from '@mui/material/styles';
 
+const placeholderColor = 'hsl(0, 100%, 100%)';
+
+interface PaletteConstants {
+  saturationFactor: number;
+
+  'blue-hsl': {
+    '345': string;
+  };
+  'green-hsl': {
+    '330': string;
+    '360': string;
+    '430': string;
+  };
+  'primary-hsl': {
+    '100': string;
+    '130': string;
+    '330': string;
+    '360': string;
+    '500': string;
+    '600': string;
+    '630': string;
+    '700': string;
+    '730': string;
+  };
+  'red-hsl': {
+    '400': string;
+  };
+  'white-hsl': {
+    base: string;
+  };
+
+  blue: {
+    '345': string;
+  };
+  green: {
+    '330': string;
+    '360': string;
+    '430': string;
+  };
+  primary: {
+    '100': string;
+    '130': string;
+    '330': string;
+    '360': string;
+    '600': string;
+    '630': string;
+    '700': string;
+    '730': string;
+  };
+  red: {
+    '400': string;
+  };
+  white: {
+    base: string;
+  };
+}
+
+let paletteConstants: PaletteConstants = {
+  saturationFactor: 1,
+
+  'blue-hsl': {
+    '345': placeholderColor
+  },
+  'green-hsl': {
+    '330': placeholderColor,
+    '360': placeholderColor,
+    '430': placeholderColor
+  },
+  'primary-hsl': {
+    '100': placeholderColor,
+    '130': placeholderColor,
+    '330': placeholderColor,
+    '360': placeholderColor,
+    '500': placeholderColor,
+    '600': placeholderColor,
+    '630': placeholderColor,
+    '700': placeholderColor,
+    '730': placeholderColor
+  },
+  'red-hsl': {
+    '400': placeholderColor
+  },
+  'white-hsl': {
+    base: placeholderColor
+  },
+
+  blue: {
+    '345': placeholderColor
+  },
+  green: {
+    '330': placeholderColor,
+    '360': placeholderColor,
+    '430': placeholderColor
+  },
+  primary: {
+    '100': placeholderColor,
+    '130': placeholderColor,
+    '330': placeholderColor,
+    '360': placeholderColor,
+    '600': placeholderColor,
+    '630': placeholderColor,
+    '700': placeholderColor,
+    '730': placeholderColor
+  },
+  red: {
+    '400': placeholderColor
+  },
+  white: {
+    base: placeholderColor
+  }
+};
+
+paletteConstants = {
+  ...paletteConstants,
+
+  'blue-hsl': {
+    '345': `201 calc(${paletteConstants.saturationFactor} * 100%) 59%`
+  },
+  'green-hsl': {
+    '330': `146 calc(${paletteConstants.saturationFactor} * 63.1%) 47.8%`,
+    '360': `145 calc(${paletteConstants.saturationFactor} * 65%) 39.2%`,
+    '430': `142 calc(${paletteConstants.saturationFactor} * 56.1%) 32.2%`
+  },
+  'primary-hsl': {
+    '100': `0 calc(${paletteConstants.saturationFactor} * 0%) 97.6%`,
+    '130': `220 calc(${paletteConstants.saturationFactor} * 13%) 95.5%`,
+    '330': `215 calc(${paletteConstants.saturationFactor} * 8.8%) 73.3%`,
+    '360': `214 calc(${paletteConstants.saturationFactor} * 8.1%) 61.2%`,
+    '500': `228 calc(${paletteConstants.saturationFactor} * 6%) 32.5%`,
+    '600': `223 calc(${paletteConstants.saturationFactor} * 6.7%) 20.6%`,
+    '630': `220 calc(${paletteConstants.saturationFactor} * 6.5%) 18%`,
+    '700': `225 calc(${paletteConstants.saturationFactor} * 6.3%) 12.5%`,
+    '730': `225 calc(${paletteConstants.saturationFactor} * 7.1%) 11%`
+  },
+  'red-hsl': {
+    '400': `359 calc(${paletteConstants.saturationFactor} * 87.3%) 59.8%`
+  },
+  'white-hsl': {
+    base: `0 calc(${paletteConstants.saturationFactor} * 0%) 100`
+  }
+};
+
+paletteConstants = {
+  ...paletteConstants,
+
+  blue: {
+    '345': `hsl(${paletteConstants['blue-hsl'][345]} / 1)`
+  },
+  green: {
+    '330': `hsl(${paletteConstants['green-hsl'][330]} / 1)`,
+    '360': `hsl(${paletteConstants['green-hsl'][360]} / 1)`,
+    '430': `hsl(${paletteConstants['green-hsl'][430]} / 1)`
+  },
+  primary: {
+    '100': `hsl(${paletteConstants['primary-hsl'][100]} / 1)`,
+    '130': `hsl(${paletteConstants['primary-hsl'][130]} / 1)`,
+    '330': `hsl(${paletteConstants['primary-hsl'][330]} / 1)`,
+    '360': `hsl(${paletteConstants['primary-hsl'][360]} / 1)`,
+    '600': `hsl(${paletteConstants['primary-hsl'][600]} / 1)`,
+    '630': `hsl(${paletteConstants['primary-hsl'][630]} / 1)`,
+    '700': `hsl(${paletteConstants['primary-hsl'][700]} / 1)`,
+    '730': `hsl(${paletteConstants['primary-hsl'][730]} / 1)`
+  },
+  red: {
+    '400': `hsl(${paletteConstants['red-hsl'][400]} / 1)`
+  },
+  white: {
+    base: `hsl(${paletteConstants['white-hsl'].base} / 1)`
+  }
+};
 declare module '@mui/material/styles' {
   interface Theme {
     dcPalette: {
-      green: {
-        '360': string;
-        '430': string;
-      };
-      grey: {
-        main: string;
-        darker: string;
-        accent: string;
-        accentHover: string;
-      };
-      link: string;
-      text: {
-        normal: string;
-        muted: string;
-      };
-      primary: {
-        '100': string;
-        '630': string;
-        '730': string;
+      background: {
+        modifierAccent: string;
+        modifierHover: string;
+        modifierSelected: string;
+        primary: string;
+        secondary: string;
+        tertiary: string;
       };
       button: {
         secondaryBackground: string;
       };
-      white: {
-        '500': string;
-      };
-      background: {
-        primary: string;
-        secondary: string;
-        tertiary: string;
-        modifierAccent: string;
-        modifierSelected: string;
-        modifierHover: string;
-      };
-      status: {
-        danger: string;
+      green: {
+        '330': string;
+        '360': string;
+        '430': string;
       };
       header: {
         primary: string;
+      };
+      interactive: {
+        active: string;
+        normal: string;
+      };
+      primary: {
+        '100': string;
+        '330': string;
+        '360': string;
+        '630': string;
+        '730': string;
+      };
+      status: {
+        danger: {
+          base: string;
+        };
+        positive: {
+          background: string;
+          text: string;
+        };
+      };
+      text: {
+        link: string;
+        muted: string;
+        normal: string;
+        positive: string;
+      };
+      white: {
+        base: string;
       };
     };
     dcShape: {
@@ -67,45 +245,53 @@ declare module '@mui/material/styles' {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     dcPalette?: {
-      green: {
-        '360': string;
-        '430': string;
-      };
-      grey: {
-        main: string;
-        darker: string;
-        accent: string;
-        accentHover: string;
-      };
-      link: string;
-      text: {
-        normal: string;
-        muted: string;
-      };
-      primary: {
-        '100': string;
-        '630': string;
-        '730': string;
+      background: {
+        modifierAccent: string;
+        modifierHover: string;
+        modifierSelected: string;
+        primary: string;
+        secondary: string;
+        tertiary: string;
       };
       button: {
         secondaryBackground: string;
       };
-      white: {
-        '500': string;
-      };
-      background: {
-        primary: string;
-        secondary: string;
-        tertiary: string;
-        modifierAccent: string;
-        modifierSelected: string;
-        modifierHover: string;
-      };
-      status: {
-        danger: string;
+      green: {
+        '330': string;
+        '360': string;
+        '430': string;
       };
       header: {
         primary: string;
+      };
+      interactive: {
+        active: string;
+        normal: string;
+      };
+      primary: {
+        '100': string;
+        '330': string;
+        '360': string;
+        '630': string;
+        '730': string;
+      };
+      status: {
+        danger: {
+          base: string;
+        };
+        positive: {
+          background: string;
+          text: string;
+        };
+      };
+      text: {
+        link: string;
+        muted: string;
+        normal: string;
+        positive: string;
+      };
+      white: {
+        base: string;
       };
     };
     dcShape?: {
@@ -190,45 +376,53 @@ const defaultThemeOptions: ThemeOptions = {
     }
   },
   dcPalette: {
-    green: {
-      '360': 'rgb(35, 165, 89)',
-      '430': 'rgb(36, 128, 70)'
-    },
-    grey: {
-      main: 'rgb(88, 101, 242)',
-      darker: 'rgb(35, 36, 40)',
-      accent: 'rgba(78, 80, 88, 0.6)',
-      accentHover: 'rgba(78, 80, 88, 0.3)'
-    },
-    link: 'rgb(0, 168, 252)',
-    text: {
-      normal: 'rgb(219, 222, 225)',
-      muted: 'rgb(148, 155, 164)'
-    },
-    primary: {
-      '100': 'rgb(249, 249, 249)',
-      '630': 'rgb(43, 45, 49)',
-      '730': 'rgb(26, 27, 30)'
+    background: {
+      modifierAccent: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.48) 100%, hsl(0 0% 0% / 0.48) 0%)`,
+      modifierHover: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.3) 100%, hsl(0 0% 0% / 0.3) 0%)`,
+      modifierSelected: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.6) 100%, hsl(0 0% 0% / 0.6) 0%)`,
+      primary: `color-mix(in oklab, ${paletteConstants.primary[600]} 100%, black 0%)`,
+      secondary: `color-mix(in oklab, ${paletteConstants.primary[630]} 100%, black 0%)`,
+      tertiary: `color-mix(in oklab, ${paletteConstants.primary[700]} 100%, black 0%)`
     },
     button: {
       secondaryBackground: 'rgb(78, 80, 88)'
     },
-    white: {
-      '500': 'rgb(255, 255, 255)'
-    },
-    background: {
-      primary: 'rgb(49, 51, 56)',
-      secondary: 'rgb(43, 45, 49)',
-      tertiary: 'rgb(30, 31, 34)',
-      modifierAccent: 'rgba(78, 80, 88, 0.48)',
-      modifierSelected: 'rgba(78, 80, 88, 0.6)',
-      modifierHover: 'rgba(78, 80, 88, 0.3)'
-    },
-    status: {
-      danger: 'rgb(242, 63, 66)'
+    green: {
+      '330': paletteConstants.green[330],
+      '360': paletteConstants.green[360],
+      '430': paletteConstants.green[430]
     },
     header: {
-      primary: 'rgb(242, 243, 245)'
+      primary: `color-mix(in oklab, ${paletteConstants.primary[130]} 100%, black 0%)`
+    },
+    interactive: {
+      active: `color-mix(in oklab, ${paletteConstants.white.base} 100%, black 0%)`,
+      normal: `color-mix(in oklab, ${paletteConstants.primary[330]} 100%, black 0%)`
+    },
+    primary: {
+      '100': paletteConstants.primary[100],
+      '330': paletteConstants.primary[330],
+      '360': paletteConstants.primary[360],
+      '630': paletteConstants.primary[630],
+      '730': paletteConstants.primary[730]
+    },
+    status: {
+      danger: {
+        base: paletteConstants.red[400]
+      },
+      positive: {
+        background: paletteConstants.green[430],
+        text: paletteConstants.white.base
+      }
+    },
+    text: {
+      link: `color-mix(in oklab, ${paletteConstants.blue[345]} 100%, black 0%)`,
+      muted: `color-mix(in oklab, ${paletteConstants.primary[360]} 100%, black 0%)`,
+      normal: 'rgb(219, 222, 225)',
+      positive: `color-mix(in oklab, ${paletteConstants.green[330]} 100%, black 0%)`
+    },
+    white: {
+      base: paletteConstants.white.base
     }
   },
   dcShape: {

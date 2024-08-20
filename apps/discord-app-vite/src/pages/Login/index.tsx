@@ -48,7 +48,7 @@ const Login = () => {
           <Typography
             component='span'
             sx={{
-              color: theme.dcPalette.text.grey,
+              color: theme.dcPalette.text.muted,
               fontSize: '0.875rem',
               lineHeight: '1rem'
             }}

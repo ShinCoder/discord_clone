@@ -27,7 +27,7 @@ export const NavItemAvatar = styled(Avatar, {
     transition: 'all 0.1s ease-out',
 
     ...(active && {
-      color: theme.dcPalette.white[500],
+      color: theme.dcPalette.white.base,
       borderRadius: theme.dcShape.borderRadius.serverNav,
       backgroundColor: selectedBackgroundColor,
 
@@ -38,7 +38,7 @@ export const NavItemAvatar = styled(Avatar, {
 
     ...(!active && {
       '&:hover': {
-        color: theme.dcPalette.white[500],
+        color: theme.dcPalette.white.base,
         borderRadius: theme.dcShape.borderRadius.serverNav,
         backgroundColor: selectedBackgroundColor,
 

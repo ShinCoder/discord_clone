@@ -10,8 +10,7 @@ const VerticalSeperator = (props: VerticalSeperatorProps) => {
     <Box
       sx={{
         height: 0,
-        margin: `0 ${radius}`,
-        border: (theme) => `1px solid ${theme.dcPalette.grey.accent}`
+        margin: `0 ${radius}`
       }}
     />
   );
