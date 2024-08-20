@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 
 const CustomLink = styled(Link)(({ theme }) => ({
   display: 'inline',
-  color: theme.dcPalette.link,
+  color: theme.dcPalette.text.link,
   textDecoration: 'none',
 
   '&:hover': {

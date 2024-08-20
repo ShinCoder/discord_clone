@@ -62,7 +62,7 @@ const Checkbox = (props: CheckboxProps) => {
       slotProps={{
         typography: {
           sx: {
-            color: (theme) => theme.dcPalette.text.grey,
+            color: (theme) => theme.dcPalette.text.muted,
             fontSize: '0.75rem',
             fontWeight: 400,
             lineHeight: '1rem',

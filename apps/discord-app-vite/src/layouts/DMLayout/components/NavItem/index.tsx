@@ -29,7 +29,7 @@ const NavItem = (props: NavItemProps) => {
               height: '42px',
               justifyContent: 'flex-start',
               color: isActive
-                ? theme.dcPalette.white[500]
+                ? theme.dcPalette.interactive.active
                 : theme.dcPalette.text.muted,
               textTransform: 'none',
               padding: `0 ${theme.spacing(1)}`,

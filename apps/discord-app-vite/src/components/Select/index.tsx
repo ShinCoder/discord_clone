@@ -36,8 +36,8 @@ const Select = (props: SelectProps) => {
           height: '40px',
           color:
             value === placeholderWhen
-              ? theme.dcPalette.text.grey
-              : 'text.secondary',
+              ? theme.dcPalette.text.muted
+              : theme.dcPalette.interactive.normal,
           fontWeight: 500,
           borderRadius: theme.dcShape.borderRadius.input,
           backgroundColor: theme.dcPalette.background.tertiary,
@@ -56,7 +56,7 @@ const Select = (props: SelectProps) => {
         MenuProps={{
           MenuListProps: {
             sx: {
-              backgroundColor: theme.dcPalette.primary[630]
+              backgroundColor: theme.dcPalette.background.secondary
             }
           },
           slotProps: {
