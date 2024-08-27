@@ -29,6 +29,13 @@ enum RelationshipStatus {
   @@map("RELATIONSHIP_STATUS")
 }
 
+enum ConnectionStatus {
+  ONLINE
+  OFFLINE
+
+  @@map("CONNECTION_STATUS")
+}
+
 model Accounts {
   id          String        @id @default(uuid())
   email       String        @unique()
@@ -39,10 +46,10 @@ model Accounts {
   status      AccountStatus @default(NOT_VERIFIED)
   isAdmin     Boolean       @default(false) @map("is_admin")
 
-  displayName String?  @map("display_name")
+  displayName String? @map("display_name")
   pronouns    String?
   avatar      String?
-  bannerColor String   @map("banner_color")
+  bannerColor String  @map("banner_color")
   about       String?
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
@@ -59,11 +66,12 @@ model Sessions {
   account   Accounts @relation(fields: [accountId], references: [id])
   accountId String   @map("account_id")
 
-  id           String   @id @default(uuid())
-  accessToken  String   @map("access_token")
-  refreshToken String   @map("refresh_token")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt    DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
+  id               String           @id @default(uuid())
+  accessToken      String           @map("access_token")
+  refreshToken     String           @map("refresh_token")
+  connectionStatus ConnectionStatus @default(OFFLINE) @map("connection_status")
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime         @updatedAt() @map("updated_at") @db.Timestamptz()
 
   @@map("sessions")
 }

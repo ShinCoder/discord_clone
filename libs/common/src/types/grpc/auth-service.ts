@@ -21,6 +21,12 @@ export enum RelationshipStatus {
   UNRECOGNIZED = -1
 }
 
+export enum ConnectionStatus {
+  ONLINE = 0,
+  OFFLINE = 1,
+  UNRECOGNIZED = -1
+}
+
 export interface RelationshipDto {
   id: string;
   accountId: string;
@@ -106,6 +112,7 @@ export interface AccountDto {
   createdAt: string;
   updatedAt: string;
   relationshipWith?: RelationshipDto | undefined;
+  connectionStatus: ConnectionStatus;
 }
 
 export interface GetAccountDto {
@@ -165,6 +172,16 @@ export interface GetFriendsResult {
   payload?: AccountsDto | undefined;
 }
 
+export interface UpdateConnectionStatusDto {
+  accountId: string;
+  accessToken: string;
+  status: ConnectionStatus;
+}
+
+export interface UpdateConnectionStatusResult {
+  status: MessageStatus | undefined;
+}
+
 export const COM_AUTH_SERVICE_PACKAGE_NAME = 'com.auth_service';
 
 export interface AuthServiceAuthModuleClient {
@@ -177,6 +194,10 @@ export interface AuthServiceAuthModuleClient {
   refresh(request: RefreshDto): Observable<RefreshResult>;
 
   logout(request: LogoutDto): Observable<LogoutResult>;
+
+  updateConnectionStatus(
+    request: UpdateConnectionStatusDto
+  ): Observable<UpdateConnectionStatusResult>;
 }
 
 export interface AuthServiceAuthModuleController {
@@ -199,6 +220,13 @@ export interface AuthServiceAuthModuleController {
   logout(
     request: LogoutDto
   ): Promise<LogoutResult> | Observable<LogoutResult> | LogoutResult;
+
+  updateConnectionStatus(
+    request: UpdateConnectionStatusDto
+  ):
+    | Promise<UpdateConnectionStatusResult>
+    | Observable<UpdateConnectionStatusResult>
+    | UpdateConnectionStatusResult;
 }
 
 export function AuthServiceAuthModuleControllerMethods() {
@@ -208,7 +236,8 @@ export function AuthServiceAuthModuleControllerMethods() {
       'login',
       'verify',
       'refresh',
-      'logout'
+      'logout',
+      'updateConnectionStatus'
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

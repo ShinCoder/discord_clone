@@ -10,6 +10,7 @@ service AuthServiceAuthModule {
     rpc Verify (VerifyDto) returns (VerifyResult) {};
     rpc Refresh (RefreshDto) returns (RefreshResult) {};
     rpc Logout (LogoutDto) returns (LogoutResult) {};
+    rpc UpdateConnectionStatus (UpdateConnectionStatusDto) returns (UpdateConnectionStatusResult);
 }
 
 service AuthServiceAccountModule {
@@ -32,6 +33,11 @@ enum RelationshipStatus {
     FRIEND = 2;
     BLOCKED = 3;
     BEING_BLOCKED = 4;
+}
+
+enum ConnectionStatus {
+    ONLINE = 0;
+    OFFLINE = 1;
 }
 
 message RelationshipDto {
@@ -121,6 +127,7 @@ message AccountDto {
     string createdAt = 13;
     string updatedAt = 14;
     optional RelationshipDto relationshipWith = 15;
+    ConnectionStatus connectionStatus = 16;
 }
 
 message GetAccountDto {
@@ -178,4 +185,14 @@ message GetFriendsDto {
 message GetFriendsResult {
     com.common.MessageStatus status = 1;
     optional AccountsDto payload = 2;
+}
+
+message UpdateConnectionStatusDto {
+    string accountId = 1;
+    string accessToken = 2;
+    ConnectionStatus status = 3;
+}
+
+message UpdateConnectionStatusResult {
+    com.common.MessageStatus status = 1;
 }

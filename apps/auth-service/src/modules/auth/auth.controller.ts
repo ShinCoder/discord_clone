@@ -9,6 +9,7 @@ import {
   LogoutDto,
   RefreshDto,
   RegisterDto,
+  UpdateConnectionStatusDto,
   VerifyDto
 } from '@prj/types/grpc/auth-service';
 
@@ -35,5 +36,9 @@ export class AuthController implements AuthServiceAuthModuleController {
 
   logout(data: LogoutDto) {
     return this.authService.logout(data);
+  }
+
+  updateConnectionStatus(data: UpdateConnectionStatusDto) {
+    return this.authService.updateConnectionStatus(data);
   }
 }

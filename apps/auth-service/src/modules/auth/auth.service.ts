@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 
-import { AccountStatus, Accounts } from '@prisma/auth-client';
+import { AccountStatus, Accounts, ConnectionStatus } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utlis';
@@ -20,7 +20,8 @@ import { handleThrowError } from '../../utlis';
 import {
   IJwtPayload,
   getRpcSuccessMessage,
-  ApiErrorMessages
+  ApiErrorMessages,
+  getRpcErrorMessage
 } from '@prj/common';
 import {
   LoginDto,
@@ -32,7 +33,10 @@ import {
   RefreshDto,
   RefreshResult,
   LogoutDto,
-  LogoutResult
+  LogoutResult,
+  UpdateConnectionStatusDto,
+  UpdateConnectionStatusResult,
+  ConnectionStatus as RpcConnectionStatus
 } from '@prj/types/grpc/auth-service';
 import { DefaultProfileValue } from '../../constants/common';
 
@@ -323,6 +327,45 @@ export class AuthService {
           });
 
         return getRpcSuccessMessage(HttpStatus.OK);
+      });
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async updateConnectionStatus(
+    data: UpdateConnectionStatusDto
+  ): Promise<UpdateConnectionStatusResult> {
+    try {
+      return await this.prismaService.$transaction(async (tx) => {
+        const session = await tx.sessions.findFirst({
+          where: {
+            AND: [
+              {
+                accountId: data.accountId
+              },
+              {
+                accessToken: data.accessToken
+              }
+            ]
+          }
+        });
+
+        if (session) {
+          await tx.sessions.update({
+            where: {
+              id: session.id
+            },
+            data: {
+              connectionStatus:
+                ConnectionStatus[RpcConnectionStatus[data.status]]
+            }
+          });
+
+          return getRpcSuccessMessage(HttpStatus.OK);
+        }
+
+        return getRpcErrorMessage(HttpStatus.NOT_FOUND);
       });
     } catch (err) {
       return handleThrowError(err);
