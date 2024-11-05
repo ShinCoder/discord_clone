@@ -14,7 +14,14 @@
         "outputPath": "dist/apps/socket-service",
         "main": "apps/socket-service/src/main.ts",
         "tsConfig": "apps/socket-service/tsconfig.app.json",
-        "assets": ["apps/socket-service/src/assets"],
+        "assets": [
+          "apps/socket-service/src/assets",
+          {
+            "input": "./libs/shared-assets/proto",
+            "glob": "**/*",
+            "output": "proto"
+          }
+        ],
         "isolatedConfig": true,
         "webpackConfig": "apps/socket-service/webpack.config.js"
       },
