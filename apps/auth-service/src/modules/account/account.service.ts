@@ -2,7 +2,12 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
-import { AccountStatus, Prisma, RelationshipStatus } from '@prisma/auth-client';
+import {
+  AccountStatus,
+  Prisma,
+  RelationshipStatus,
+  ConnectionStatus
+} from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utlis';
@@ -18,7 +23,8 @@ import {
   CreateOrUpdateRelationshipDto,
   DeleteRelationshipDto,
   GetFriendsDto,
-  GetFriendsResult
+  GetFriendsResult,
+  ConnectionStatus as RpcConnectionStatus
 } from '@prj/types/grpc/auth-service';
 import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
 
@@ -30,7 +36,9 @@ export class AccountService {
   ) {}
 
   private toAccountDto(
-    data: Prisma.AccountsGetPayload<{ include: { relationshipWith: true } }>
+    data: Prisma.AccountsGetPayload<{ include: { relationshipWith: true } }> & {
+      connectionStatus: ConnectionStatus;
+    }
   ): AccountDto {
     return {
       id: data.id,
@@ -58,8 +66,30 @@ export class AccountService {
               createdAt: data.relationshipWith[0].createdAt.toISOString(),
               updatedAt: data.relationshipWith[0].updatedAt.toISOString()
             }
-          : undefined
+          : undefined,
+      connectionStatus: RpcConnectionStatus[data.connectionStatus]
     };
+  }
+
+  private async getConnectionStatus(
+    accountId: string
+  ): Promise<ConnectionStatus> {
+    try {
+      const session = await this.prismaService.sessions.findFirst({
+        where: {
+          accountId,
+          connectionStatus: ConnectionStatus.ONLINE
+        }
+      });
+
+      if (session) {
+        return ConnectionStatus.ONLINE;
+      }
+
+      return ConnectionStatus.OFFLINE;
+    } catch {
+      return ConnectionStatus.OFFLINE;
+    }
   }
 
   async getAccount(data: GetAccountDto): Promise<GetAccountResult> {
@@ -83,7 +113,13 @@ export class AccountService {
       });
 
       if (account)
-        return getRpcSuccessMessage(HttpStatus.OK, this.toAccountDto(account));
+        return getRpcSuccessMessage(
+          HttpStatus.OK,
+          this.toAccountDto({
+            ...account,
+            connectionStatus: await this.getConnectionStatus(account.id)
+          })
+        );
 
       throw new RpcException(new NotFoundException());
     } catch (err) {
@@ -121,7 +157,14 @@ export class AccountService {
       });
 
       return getRpcSuccessMessage(HttpStatus.OK, {
-        accounts: accounts.map((account) => this.toAccountDto(account))
+        accounts: await Promise.all(
+          accounts.map(async (account) =>
+            this.toAccountDto({
+              ...account,
+              connectionStatus: await this.getConnectionStatus(account.id)
+            })
+          )
+        )
       });
     } catch (err) {
       return handleThrowError(err);
@@ -267,8 +310,14 @@ export class AccountService {
         }
       });
 
-      const friends = relationships.map((e) =>
-        this.toAccountDto({ ...e.account, relationshipWith: undefined })
+      const friends = await Promise.all(
+        relationships.map(async (e) =>
+          this.toAccountDto({
+            ...e.account,
+            relationshipWith: undefined,
+            connectionStatus: await this.getConnectionStatus(e.account.id)
+          })
+        )
       );
 
       return getRpcSuccessMessage(HttpStatus.OK, { accounts: friends });
