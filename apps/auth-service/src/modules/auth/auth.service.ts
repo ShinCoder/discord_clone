@@ -340,14 +340,7 @@ export class AuthService {
       return await this.prismaService.$transaction(async (tx) => {
         const session = await tx.sessions.findFirst({
           where: {
-            AND: [
-              {
-                accountId: data.accountId
-              },
-              {
-                accessToken: data.accessToken
-              }
-            ]
+            accountId: data.accountId
           }
         });
 

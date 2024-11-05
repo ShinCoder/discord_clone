@@ -174,7 +174,6 @@ export interface GetFriendsResult {
 
 export interface UpdateConnectionStatusDto {
   accountId: string;
-  accessToken: string;
   status: ConnectionStatus;
 }
 

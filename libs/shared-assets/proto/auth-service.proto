@@ -189,8 +189,7 @@ message GetFriendsResult {
 
 message UpdateConnectionStatusDto {
     string accountId = 1;
-    string accessToken = 2;
-    ConnectionStatus status = 3;
+    ConnectionStatus status = 2;
 }
 
 message UpdateConnectionStatusResult {

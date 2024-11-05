@@ -13,7 +13,15 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
-import { LogoutDto, RefreshDto, RegisterDto, VerifyDto } from './dto';
+import {
+  AcceptFriendRequestDto,
+  DeclineFriendRequestDto,
+  LogoutDto,
+  RefreshDto,
+  RegisterDto,
+  SendFriendRequestDto,
+  VerifyDto
+} from './dto';
 import { LoginDto } from './dto';
 import { EMAIL_REGEX } from '../../constants';
 import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
@@ -26,8 +34,6 @@ import {
   ILoginResult,
   IRefreshResult
 } from '@prj/types/api';
-import { SendFriendRequestDto } from './dto/sendFriendRequest.dto';
-import { AcceptFriendRequestDto } from './dto/acceptFriendRequest.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -119,7 +125,7 @@ export class AuthController {
   @Patch('friend-request/decline')
   declineFriendRequest(
     @Req() req: IRequestWithUser,
-    @Body() body: AcceptFriendRequestDto
+    @Body() body: DeclineFriendRequestDto
   ) {
     if (req.user.sub !== body.accountId)
       throw new ForbiddenException('Forbidden resource');
