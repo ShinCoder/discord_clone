@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky install",
-    "start:dev": "nx run-many -t serve --exclude discord-app"
+    "start:dev": "nx run-many -t serve --exclude mail-service"
   },
   "private": true,
   "dependencies": {
@@ -58,6 +58,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "socket.io": "^4.7.5",
+    "socket.io-client": "^4.8.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

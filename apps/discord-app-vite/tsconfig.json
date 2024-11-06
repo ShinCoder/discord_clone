@@ -19,7 +19,8 @@
       "@redux/*": ["./src/redux/*"],
       "@utils": ["./src/utils/index.ts"],
       "@layouts/*": ["./src/layouts/*"],
-      "@pages/*": ["./src/pages/*"]
+      "@pages/*": ["./src/pages/*"],
+      "@socket": ["./src/socket.ts"]
     }
   },
   "files": [],
