@@ -16,6 +16,7 @@ interface PaletteConstants {
   'primary-hsl': {
     '100': string;
     '130': string;
+    '230': string;
     '330': string;
     '360': string;
     '500': string;
@@ -23,9 +24,11 @@ interface PaletteConstants {
     '630': string;
     '700': string;
     '730': string;
+    '800': string;
   };
   'red-hsl': {
     '400': string;
+    '430': string;
   };
   'white-hsl': {
     base: string;
@@ -42,15 +45,18 @@ interface PaletteConstants {
   primary: {
     '100': string;
     '130': string;
+    '230': string;
     '330': string;
     '360': string;
     '600': string;
     '630': string;
     '700': string;
     '730': string;
+    '800': string;
   };
   red: {
     '400': string;
+    '430': string;
   };
   white: {
     base: string;
@@ -71,16 +77,19 @@ let paletteConstants: PaletteConstants = {
   'primary-hsl': {
     '100': placeholderColor,
     '130': placeholderColor,
+    '230': placeholderColor,
     '330': placeholderColor,
     '360': placeholderColor,
     '500': placeholderColor,
     '600': placeholderColor,
     '630': placeholderColor,
     '700': placeholderColor,
-    '730': placeholderColor
+    '730': placeholderColor,
+    '800': placeholderColor
   },
   'red-hsl': {
-    '400': placeholderColor
+    '400': placeholderColor,
+    '430': placeholderColor
   },
   'white-hsl': {
     base: placeholderColor
@@ -97,15 +106,18 @@ let paletteConstants: PaletteConstants = {
   primary: {
     '100': placeholderColor,
     '130': placeholderColor,
+    '230': placeholderColor,
     '330': placeholderColor,
     '360': placeholderColor,
     '600': placeholderColor,
     '630': placeholderColor,
     '700': placeholderColor,
-    '730': placeholderColor
+    '730': placeholderColor,
+    '800': placeholderColor
   },
   red: {
-    '400': placeholderColor
+    '400': placeholderColor,
+    '430': placeholderColor
   },
   white: {
     base: placeholderColor
@@ -126,16 +138,19 @@ paletteConstants = {
   'primary-hsl': {
     '100': `0 calc(${paletteConstants.saturationFactor} * 0%) 97.6%`,
     '130': `220 calc(${paletteConstants.saturationFactor} * 13%) 95.5%`,
+    '230': `210 calc(${paletteConstants.saturationFactor} * 9.091%) 87.059%`,
     '330': `215 calc(${paletteConstants.saturationFactor} * 8.8%) 73.3%`,
     '360': `214 calc(${paletteConstants.saturationFactor} * 8.1%) 61.2%`,
     '500': `228 calc(${paletteConstants.saturationFactor} * 6%) 32.5%`,
     '600': `223 calc(${paletteConstants.saturationFactor} * 6.7%) 20.6%`,
     '630': `220 calc(${paletteConstants.saturationFactor} * 6.5%) 18%`,
     '700': `225 calc(${paletteConstants.saturationFactor} * 6.3%) 12.5%`,
-    '730': `225 calc(${paletteConstants.saturationFactor} * 7.1%) 11%`
+    '730': `225 calc(${paletteConstants.saturationFactor} * 7.1%) 11%`,
+    '800': `220 calc(${paletteConstants.saturationFactor} * 8.108%) 7.255%`
   },
   'red-hsl': {
-    '400': `359 calc(${paletteConstants.saturationFactor} * 87.3%) 59.8%`
+    '400': `359 calc(${paletteConstants.saturationFactor} * 87.3%) 59.8%`,
+    '430': `358.16 calc(${paletteConstants.saturationFactor} * 63.776%) 53.529%`
   },
   'white-hsl': {
     base: `0 calc(${paletteConstants.saturationFactor} * 0%) 100`
@@ -156,15 +171,18 @@ paletteConstants = {
   primary: {
     '100': `hsl(${paletteConstants['primary-hsl'][100]} / 1)`,
     '130': `hsl(${paletteConstants['primary-hsl'][130]} / 1)`,
+    '230': `hsl(${paletteConstants['primary-hsl'][230]} / 1)`,
     '330': `hsl(${paletteConstants['primary-hsl'][330]} / 1)`,
     '360': `hsl(${paletteConstants['primary-hsl'][360]} / 1)`,
     '600': `hsl(${paletteConstants['primary-hsl'][600]} / 1)`,
     '630': `hsl(${paletteConstants['primary-hsl'][630]} / 1)`,
     '700': `hsl(${paletteConstants['primary-hsl'][700]} / 1)`,
-    '730': `hsl(${paletteConstants['primary-hsl'][730]} / 1)`
+    '730': `hsl(${paletteConstants['primary-hsl'][730]} / 1)`,
+    '800': `hsl(${paletteConstants['primary-hsl'][800]} / 1)`
   },
   red: {
-    '400': `hsl(${paletteConstants['red-hsl'][400]} / 1)`
+    '400': `hsl(${paletteConstants['red-hsl'][400]} / 1)`,
+    '430': `hsl(${paletteConstants['red-hsl'][430]} / 1)`
   },
   white: {
     base: `hsl(${paletteConstants['white-hsl'].base} / 1)`
@@ -174,6 +192,7 @@ declare module '@mui/material/styles' {
   interface Theme {
     dcPalette: {
       background: {
+        floating: string;
         modifierAccent: string;
         modifierHover: string;
         modifierSelected: string;
@@ -191,10 +210,15 @@ declare module '@mui/material/styles' {
       };
       header: {
         primary: string;
+        secondary: string;
       };
       interactive: {
         active: string;
+        hover: string;
         normal: string;
+      };
+      menuItem: {
+        dangerHoverBg: string;
       };
       primary: {
         '100': string;
@@ -246,6 +270,7 @@ declare module '@mui/material/styles' {
   interface ThemeOptions {
     dcPalette?: {
       background: {
+        floating: string;
         modifierAccent: string;
         modifierHover: string;
         modifierSelected: string;
@@ -263,10 +288,15 @@ declare module '@mui/material/styles' {
       };
       header: {
         primary: string;
+        secondary: string;
       };
       interactive: {
         active: string;
+        hover: string;
         normal: string;
+      };
+      menuItem: {
+        dangerHoverBg: string;
       };
       primary: {
         '100': string;
@@ -377,6 +407,7 @@ const defaultThemeOptions: ThemeOptions = {
   },
   dcPalette: {
     background: {
+      floating: `color-mix(in oklab, ${paletteConstants.primary[800]} 100%, black 0%)`,
       modifierAccent: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.48) 100%, hsl(0 0% 0% / 0.48) 0%)`,
       modifierHover: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.3) 100%, hsl(0 0% 0% / 0.3) 0%)`,
       modifierSelected: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.6) 100%, hsl(0 0% 0% / 0.6) 0%)`,
@@ -393,11 +424,16 @@ const defaultThemeOptions: ThemeOptions = {
       '430': paletteConstants.green[430]
     },
     header: {
-      primary: `color-mix(in oklab, ${paletteConstants.primary[130]} 100%, black 0%)`
+      primary: `color-mix(in oklab, ${paletteConstants.primary[130]} 100%, black 0%)`,
+      secondary: `color-mix(in oklab, ${paletteConstants.primary[330]} 100%, black 0%)`
     },
     interactive: {
       active: `color-mix(in oklab, ${paletteConstants.white.base} 100%, black 0%)`,
+      hover: `color-mix(in oklab, ${paletteConstants.primary[230]} 100%, black 0%)`,
       normal: `color-mix(in oklab, ${paletteConstants.primary[330]} 100%, black 0%)`
+    },
+    menuItem: {
+      dangerHoverBg: `color-mix(in oklab, ${paletteConstants.red[430]} 100%, black 0%)`
     },
     primary: {
       '100': paletteConstants.primary[100],

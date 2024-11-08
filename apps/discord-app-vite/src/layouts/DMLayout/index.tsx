@@ -2,12 +2,12 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import { Outlet } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import Tooltip from '@mui/material/Tooltip';
 
 import Searchbar from './components/Searchbar';
 import FeatureNav from './components/FeatureNav';
 import SectionHeader from './components/SectionHeader';
 import { getScrollbarStyle } from '@utils';
-import Tooltip from '@mui/material/Tooltip';
 import DMNav from './components/DMNav';
 
 const DMLayout = () => {

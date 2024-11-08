@@ -79,7 +79,8 @@ interface RelationshipDto {
   createdAt: string;
   updatedAt: string;
 }
-interface AccountDto {
+
+export interface AccountDto {
   id: string;
   email: string;
   username: string;
@@ -94,6 +95,7 @@ interface AccountDto {
   isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
+  connectionStatus?: 'ONLINE' | 'OFFLINE';
   relationshipWith?: RelationshipDto | undefined;
 }
 

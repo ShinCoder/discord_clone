@@ -1,6 +1,8 @@
 import { apiClient, apiClientWithAuth } from './client';
 
 import {
+  IGetFriendsDto,
+  IGetFriendsResult,
   IGetMeResult,
   ILoginDto,
   ILoginResult,
@@ -22,4 +24,10 @@ export const register = (data: IRegisterDto) => {
 
 export const verify = (data: IVerifyDto) => {
   return apiClient.patch('/auth/verify', data);
+};
+
+export const getFriends = (data: IGetFriendsDto) => {
+  return apiClientWithAuth.get<IGetFriendsResult>(
+    `/auth/${data.accountId}/friends`
+  );
 };

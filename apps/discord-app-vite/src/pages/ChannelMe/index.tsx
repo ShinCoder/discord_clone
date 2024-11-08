@@ -1,16 +1,79 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Tabs from '@mui/material/Tabs';
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
 import { AddFriendHeaderTab, FriendHeaderTab } from './elements';
+import OnlineFriends from './components/OnlineFriends';
+import AllFriends from './components/AllFriends';
+import { getFriends } from '@services';
+import { useAppSelector } from '@redux/hooks';
+import { useNavigate } from 'react-router-dom';
+import { protectedRoutes } from '@constants';
 
 const ChannelMe = () => {
   const theme = useTheme();
 
   const [activeTab, setActiveTab] = useState<number>(0);
+
+  const authState = useAppSelector((state) => state.auth);
+
+  const { data: friends, refetch } = useQuery({
+    queryKey: ['friends', authState.data?.id || ''],
+    queryFn: ({ queryKey }) => getFriends({ accountId: queryKey[1] }),
+    enabled: false
+  });
+
+  useEffect(() => {
+    if (authState.token) {
+      refetch();
+    }
+  }, [authState.token, refetch]);
+
+  const onlineFriends = useMemo(
+    () =>
+      friends?.data.friends.filter(
+        (_friend) => _friend.connectionStatus === 'ONLINE'
+      ) || [],
+    [friends?.data.friends]
+  );
+
+  const allFriends = useMemo(
+    () => friends?.data.friends || [],
+    [friends?.data.friends]
+  );
+
+  const navigate = useNavigate();
+
+  const handleDirectMessage = useCallback(
+    (id: string) => () => {
+      navigate(protectedRoutes.directMessages('absolute', id));
+    },
+    [navigate]
+  );
+
+  const renderTabContent = useCallback(() => {
+    switch (activeTab) {
+      case 0:
+        return (
+          <OnlineFriends
+            data={onlineFriends}
+            onDM={handleDirectMessage}
+          />
+        );
+      case 1:
+        return (
+          <AllFriends
+            data={allFriends}
+            onDM={handleDirectMessage}
+          />
+        );
+    }
+  }, [activeTab, allFriends, handleDirectMessage, onlineFriends]);
 
   return (
     <Box style={{ flex: 1 }}>
@@ -89,10 +152,21 @@ const ChannelMe = () => {
           </Box>
         </Box>
       </Box>
-      {
-        // Tabs content
-      }
-      <Box>Comming soon</Box>
+      <Box sx={{ display: 'flex', height: '100%' }}>
+        <Box sx={{ flex: '1 1 auto' }}>{renderTabContent()}</Box>
+        <Box
+          sx={{
+            flex: '1 0 30%',
+            minWidth: '360px',
+            maxWidth: '420px',
+            height: '100%',
+            padding: '16px',
+            borderLeft: `1px solid ${theme.dcPalette.background.modifierAccent}`
+          }}
+        >
+          Comming not soon
+        </Box>
+      </Box>
     </Box>
   );
 };

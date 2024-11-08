@@ -19,6 +19,14 @@ export const protectedRoutes = {
         return `/channels/${id}`;
     }
   },
+  directMessages: (type: 'pattern' | 'absolute' = 'pattern', id?: string) => {
+    switch (type) {
+      case 'pattern':
+        return '/channels/@me/:id';
+      case 'absolute':
+        return `/channels/@me/${id}`;
+    }
+  },
   myChannels: '/channels/@me',
   discoverServers: '/channels/guild-discovery',
   shop: '/shop'
