@@ -7,6 +7,7 @@ import {
   ILoginDto,
   ILoginResult,
   IRegisterDto,
+  ISendFriendRequestDto,
   IVerifyDto
 } from '@prj/types/api';
 
@@ -30,4 +31,8 @@ export const getFriends = (data: IGetFriendsDto) => {
   return apiClientWithAuth.get<IGetFriendsResult>(
     `/auth/${data.accountId}/friends`
   );
+};
+
+export const sendFriendRequest = (data: ISendFriendRequestDto) => {
+  return apiClientWithAuth.post(`/auth/friend-request`, data);
 };

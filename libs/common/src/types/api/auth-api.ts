@@ -53,7 +53,8 @@ export interface IVerifyDto {
 
 export interface ISendFriendRequestDto {
   accountId: string;
-  targetId: string;
+  targetId?: string;
+  targetUsername?: string;
 }
 
 export interface IAcceptFriendRequestDto {

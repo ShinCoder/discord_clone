@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
@@ -10,9 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 import { AddFriendHeaderTab, FriendHeaderTab } from './elements';
 import OnlineFriends from './components/OnlineFriends';
 import AllFriends from './components/AllFriends';
+import AddFriend from './components/AddFriend';
 import { getFriends } from '@services';
 import { useAppSelector } from '@redux/hooks';
-import { useNavigate } from 'react-router-dom';
 import { protectedRoutes } from '@constants';
 
 const ChannelMe = () => {
@@ -29,10 +30,10 @@ const ChannelMe = () => {
   });
 
   useEffect(() => {
-    if (authState.token) {
+    if (authState.data) {
       refetch();
     }
-  }, [authState.token, refetch]);
+  }, [authState.data, refetch]);
 
   const onlineFriends = useMemo(
     () =>
@@ -72,6 +73,8 @@ const ChannelMe = () => {
             onDM={handleDirectMessage}
           />
         );
+      case 4:
+        return <AddFriend />;
     }
   }, [activeTab, allFriends, handleDirectMessage, onlineFriends]);
 
@@ -156,7 +159,7 @@ const ChannelMe = () => {
         <Box sx={{ flex: '1 1 auto' }}>{renderTabContent()}</Box>
         <Box
           sx={{
-            flex: '1 0 30%',
+            flex: '1 0 25%',
             minWidth: '360px',
             maxWidth: '420px',
             height: '100%',
