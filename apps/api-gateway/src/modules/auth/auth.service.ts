@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -17,6 +18,7 @@ import {
   AccountStatus as RpcAccountStatus,
   AuthServiceAccountModuleClient,
   AuthServiceAuthModuleClient,
+  ConnectionStatus as RpcConnectionStatus,
   GetAccountDto,
   LoginDto,
   RegisterDto,
@@ -24,7 +26,8 @@ import {
   RefreshDto,
   LogoutDto,
   RelationshipStatus as RpcRelationshipStatus,
-  RelationshipStatus
+  RelationshipStatus,
+  AccountDto
 } from '@prj/types/grpc/auth-service';
 import {
   MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME,
@@ -125,16 +128,23 @@ export class AuthService implements OnModuleInit {
   }
 
   async sendFriendRequest(data: SendFriendRequestDto) {
+    if (!data.targetId && !data.targetUsername) {
+      throw new BadRequestException(
+        ApiErrorMessages.SEND_FRIEND_REQUEST_NO_TARGET
+      );
+    }
+
     const target = handleRpcResult(
       await lastValueFrom(
         this.authServiceAccountModule.getAccount({
           id: data.targetId,
+          username: data.targetUsername,
           includeRelationshipWith: data.accountId
         })
       )
     );
 
-    if (target.relationshipWith.status === RpcRelationshipStatus.FRIEND)
+    if (target.relationshipWith?.status === RpcRelationshipStatus.FRIEND)
       throw new ConflictException(
         ApiErrorMessages.SEND_FRIEND_REQUEST_ALREADY_FRIEND
       );
@@ -146,7 +156,7 @@ export class AuthService implements OnModuleInit {
           status: RpcRelationshipStatus.REQUESTING
         },
         target: {
-          id: data.targetId,
+          id: target.id,
           status: RpcRelationshipStatus.PENDING
         }
       })
@@ -192,37 +202,61 @@ export class AuthService implements OnModuleInit {
       friends:
         handleRpcResult(result).accounts?.map((e) => ({
           ...e,
+          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
+            | 'ONLINE'
+            | 'OFFLINE',
           status: RpcAccountStatus[e.status],
-          relationshipWith: {
-            ...e.relationshipWith,
-            status: RpcRelationshipStatus[e.relationshipWith.status],
-            previousStatus:
-              RpcRelationshipStatus[e.relationshipWith.previousStatus]
-          }
+          relationshipWith: e.relationshipWith
+            ? {
+                ...e.relationshipWith,
+                status: RpcRelationshipStatus[e.relationshipWith.status],
+                previousStatus:
+                  RpcRelationshipStatus[e.relationshipWith.previousStatus]
+              }
+            : undefined
         })) || []
     };
   }
 
   async getPendingFriendRequest(accountId: string) {
-    const result = await lastValueFrom(
-      this.authServiceAccountModule.getAccounts({
-        haveRelationshipWith: accountId,
-        relationshipStatus: RelationshipStatus.PENDING
-      })
-    );
+    const pending =
+      handleRpcResult(
+        await lastValueFrom(
+          this.authServiceAccountModule.getAccounts({
+            haveRelationshipWith: accountId,
+            relationshipStatus: RelationshipStatus.PENDING
+          })
+        )
+      ).accounts || ([] as AccountDto[]);
+
+    const requesting =
+      handleRpcResult(
+        await lastValueFrom(
+          this.authServiceAccountModule.getAccounts({
+            haveRelationshipWith: accountId,
+            relationshipStatus: RelationshipStatus.REQUESTING
+          })
+        )
+      ).accounts || ([] as AccountDto[]);
+
+    // console.log(requesting);
 
     return {
-      accounts:
-        handleRpcResult(result).accounts?.map((e) => ({
-          ...e,
-          status: RpcAccountStatus[e.status],
-          relationshipWith: {
-            ...e.relationshipWith,
-            status: RpcRelationshipStatus[e.relationshipWith.status],
-            previousStatus:
-              RpcRelationshipStatus[e.relationshipWith.previousStatus]
-          }
-        })) || []
+      accounts: [...requesting, ...pending].map((e) => ({
+        ...e,
+        connectionStatus: RpcConnectionStatus[e.connectionStatus] as
+          | 'ONLINE'
+          | 'OFFLINE',
+        status: RpcAccountStatus[e.status],
+        relationshipWith: e.relationshipWith
+          ? {
+              ...e.relationshipWith,
+              status: RpcRelationshipStatus[e.relationshipWith.status],
+              previousStatus:
+                RpcRelationshipStatus[e.relationshipWith.previousStatus]
+            }
+          : undefined
+      }))
     };
   }
 }

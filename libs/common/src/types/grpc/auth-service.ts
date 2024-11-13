@@ -116,7 +116,8 @@ export interface AccountDto {
 }
 
 export interface GetAccountDto {
-  id: string;
+  id?: string | undefined;
+  username?: string | undefined;
   status?: AccountStatus | undefined;
   includeRelationshipWith?: string | undefined;
 }
