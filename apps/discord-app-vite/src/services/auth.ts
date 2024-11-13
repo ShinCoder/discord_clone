@@ -1,6 +1,9 @@
 import { apiClient, apiClientWithAuth } from './client';
 
 import {
+  IAcceptFriendRequestDto,
+  IDeclineFriendRequestDto,
+  IGetFriendRequestsResult,
   IGetFriendsDto,
   IGetFriendsResult,
   IGetMeResult,
@@ -34,5 +37,19 @@ export const getFriends = (data: IGetFriendsDto) => {
 };
 
 export const sendFriendRequest = (data: ISendFriendRequestDto) => {
-  return apiClientWithAuth.post(`/auth/friend-request`, data);
+  return apiClientWithAuth.post('/auth/friend-request', data);
+};
+
+export const getPendingFriendRequest = (id: string) => {
+  return apiClientWithAuth.get<IGetFriendRequestsResult>(
+    `/auth/${id}/friend-request`
+  );
+};
+
+export const acceptFriendRequest = (data: IAcceptFriendRequestDto) => {
+  return apiClientWithAuth.patch('/auth/friend-request/accept', data);
+};
+
+export const declineFriendRequest = (data: IDeclineFriendRequestDto) => {
+  return apiClientWithAuth.patch('/auth/friend-request/decline', data);
 };

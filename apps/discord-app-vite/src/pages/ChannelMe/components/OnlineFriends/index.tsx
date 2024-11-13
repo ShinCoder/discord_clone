@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
 import { memo } from 'react';
 
-import { AccountDto } from '@prj/types/api';
-import { FriendTabTitle } from '@pages/ChannelMe/elements';
+import { FriendTabTitle } from '../../elements';
 import FriendItems from '../FriendItem';
 import { getScrollbarStyle } from '@utils';
+
+import { AccountDto } from '@prj/types/api';
 
 interface OnlineFriendProps {
   data: Array<AccountDto>;

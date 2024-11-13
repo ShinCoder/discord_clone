@@ -71,6 +71,14 @@ export interface IGetFriendsDto {
   accountId: string;
 }
 
+export enum RelationshipStatus {
+  REQUESTING = 'REQUESTING',
+  PENDING = 'PENDING',
+  FRIEND = 'FRIEND',
+  BLOCKED = 'BLOCKED',
+  BEING_BLOCKED = 'BEING_BLOCKED'
+}
+
 interface RelationshipDto {
   id: string;
   accountId: string;

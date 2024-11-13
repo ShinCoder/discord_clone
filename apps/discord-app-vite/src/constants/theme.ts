@@ -245,6 +245,14 @@ declare module '@mui/material/styles' {
         primary: string;
         secondary: string;
       };
+      info: {
+        danger: {
+          foreground: string;
+        };
+        positive: {
+          foreground: string;
+        };
+      };
       interactive: {
         active: string;
         hover: string;
@@ -327,6 +335,14 @@ declare module '@mui/material/styles' {
       header: {
         primary: string;
         secondary: string;
+      };
+      info: {
+        danger: {
+          foreground: string;
+        };
+        positive: {
+          foreground: string;
+        };
       };
       interactive: {
         active: string;
@@ -469,6 +485,14 @@ const defaultThemeOptions: ThemeOptions = {
     header: {
       primary: `color-mix(in oklab, ${paletteConstants.primary[130]} 100%, black 0%)`,
       secondary: `color-mix(in oklab, ${paletteConstants.primary[330]} 100%, black 0%)`
+    },
+    info: {
+      danger: {
+        foreground: `color-mix(in oklab, ${paletteConstants.red[400]} 100%, black 0%)`
+      },
+      positive: {
+        foreground: `color-mix(in oklab, ${paletteConstants.green[360]} 100%, black 0%)`
+      }
     },
     interactive: {
       active: `color-mix(in oklab, ${paletteConstants.white.base} 100%, black 0%)`,

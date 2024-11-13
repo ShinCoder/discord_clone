@@ -12,28 +12,25 @@ import { AddFriendHeaderTab, FriendHeaderTab } from './elements';
 import OnlineFriends from './components/OnlineFriends';
 import AllFriends from './components/AllFriends';
 import AddFriend from './components/AddFriend';
-import { getFriends } from '@services';
+import Blocked from './components/Blocked';
+import PendingRequests from './components/PendingRequests';
+import { getFriends, getPendingFriendRequest } from '@services';
 import { useAppSelector } from '@redux/hooks';
 import { protectedRoutes } from '@constants';
+import { AccountDto } from '@prj/types/api';
 
 const ChannelMe = () => {
   const theme = useTheme();
-
-  const [activeTab, setActiveTab] = useState<number>(0);
+  const navigate = useNavigate();
 
   const authState = useAppSelector((state) => state.auth);
 
-  const { data: friends, refetch } = useQuery({
+  // Friend list
+  const { data: friends, refetch: fetchFriends } = useQuery({
     queryKey: ['friends', authState.data?.id || ''],
     queryFn: ({ queryKey }) => getFriends({ accountId: queryKey[1] }),
     enabled: false
   });
-
-  useEffect(() => {
-    if (authState.data) {
-      refetch();
-    }
-  }, [authState.data, refetch]);
 
   const onlineFriends = useMemo(
     () =>
@@ -48,14 +45,59 @@ const ChannelMe = () => {
     [friends?.data.friends]
   );
 
-  const navigate = useNavigate();
-
   const handleDirectMessage = useCallback(
     (id: string) => () => {
       navigate(protectedRoutes.directMessages('absolute', id));
     },
     [navigate]
   );
+  // Friend list -- end
+
+  // Friend request
+  const [friendRequestList, setFriendRequestList] = useState<Array<AccountDto>>(
+    []
+  );
+
+  const { data: friendRequests, refetch: fetchFriendRequests } = useQuery({
+    queryKey: ['friend-requests', authState.data?.id || ''],
+    queryFn: ({ queryKey }) => getPendingFriendRequest(queryKey[1]),
+    enabled: false
+  });
+
+  useEffect(() => {
+    if (friendRequests?.data) {
+      setFriendRequestList(friendRequests.data.accounts);
+    }
+  }, [friendRequests?.data]);
+
+  const onAcceptFriendRequest = useCallback(
+    (targetId: string) => {
+      setFriendRequestList((pre) => pre.filter((e) => e.id !== targetId));
+      fetchFriends();
+    },
+    [fetchFriends]
+  );
+
+  const onDeclineFriendRequest = useCallback((targetId: string) => {
+    setFriendRequestList((pre) => pre.filter((e) => e.id !== targetId));
+  }, []);
+  // Friend request --end
+
+  // Add friend
+  const onSendRequest = useCallback(() => {
+    fetchFriendRequests();
+  }, [fetchFriendRequests]);
+  // Add friend --end
+
+  useEffect(() => {
+    if (authState.data) {
+      fetchFriends();
+      fetchFriendRequests();
+    }
+  }, [authState.data, fetchFriendRequests, fetchFriends]);
+
+  // Tabs
+  const [activeTab, setActiveTab] = useState<number>(0);
 
   const renderTabContent = useCallback(() => {
     switch (activeTab) {
@@ -73,10 +115,30 @@ const ChannelMe = () => {
             onDM={handleDirectMessage}
           />
         );
+      case 2:
+        return (
+          <PendingRequests
+            data={friendRequestList}
+            onAcceptFriendRequest={onAcceptFriendRequest}
+            onDeclineFriendRequest={onDeclineFriendRequest}
+          />
+        );
+      case 3:
+        return <Blocked data={[]} />;
       case 4:
-        return <AddFriend />;
+        return <AddFriend onSendRequest={onSendRequest} />;
     }
-  }, [activeTab, allFriends, handleDirectMessage, onlineFriends]);
+  }, [
+    activeTab,
+    allFriends,
+    friendRequestList,
+    handleDirectMessage,
+    onAcceptFriendRequest,
+    onDeclineFriendRequest,
+    onSendRequest,
+    onlineFriends
+  ]);
+  // Tabs --end
 
   return (
     <Box style={{ flex: 1 }}>

@@ -7,15 +7,22 @@ import Button from '@mui/material/Button';
 import { useMutation } from '@tanstack/react-query';
 
 import { sendFriendRequest } from '@services';
-import { useAppSelector } from '@redux/hooks';
+import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { useForm } from 'react-hook-form';
+import { setLoading } from '@redux/slices/statusSlice';
 
+interface AddFriendProps {
+  onSendRequest: () => void;
+}
 interface FormData {
   username: string;
 }
 
-const AddFriend = () => {
+const AddFriend = (props: AddFriendProps) => {
+  const { onSendRequest } = props;
+
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.auth);
 
   const [status, setStatus] = useState<'PENDING' | 'SUCCESS' | 'ERROR'>(
@@ -38,10 +45,17 @@ const AddFriend = () => {
 
   const mutation = useMutation({
     mutationFn: sendFriendRequest,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
     onSuccess: () => {
       preText.current = formValues.username;
       reset({ username: '' });
       setStatus('SUCCESS');
+      onSendRequest();
     },
     onError: () => {
       reset({ username: formValues.username });
