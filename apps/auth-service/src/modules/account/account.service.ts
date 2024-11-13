@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
@@ -96,7 +101,8 @@ export class AccountService {
     try {
       const account = await this.prismaService.accounts.findFirst({
         where: {
-          id: data.id,
+          ...(data.id && { id: data.id }),
+          ...(data.username && { username: data.username }),
           status: data.status
             ? AccountStatus[RpcAccountStatus[data.status]]
             : AccountStatus.ACTIVE
@@ -129,22 +135,31 @@ export class AccountService {
 
   async getAccounts(data: GetAccountsDto): Promise<GetAccountsResult> {
     try {
-      const accounts = await this.prismaService.accounts.findMany({
-        where: {
-          ...(data.haveRelationshipWith && {
-            relationshipWith: {
-              some: {
-                accountId: data.haveRelationshipWith,
-                ...(data.relationshipStatus && {
-                  status:
-                    RelationshipStatus[
-                      RpcRelationshipStatus[data.relationshipStatus]
-                    ]
-                })
-              }
+      let condition = {};
+
+      if (
+        data.haveRelationshipWith != undefined &&
+        data.relationshipStatus != undefined
+      ) {
+        const relationships = await this.prismaService.relationships.findMany({
+          where: {
+            accountId: data.haveRelationshipWith,
+            status:
+              RelationshipStatus[RpcRelationshipStatus[data.relationshipStatus]]
+          }
+        });
+
+        condition = {
+          where: {
+            id: {
+              in: relationships.map((e) => e.targetId)
             }
-          })
-        },
+          }
+        };
+      }
+
+      const accounts = await this.prismaService.accounts.findMany({
+        ...condition,
         include: {
           ...(data.haveRelationshipWith && {
             relationshipWith: {
@@ -173,6 +188,14 @@ export class AccountService {
 
   async createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
     try {
+      if (data.account.id === data.target.id) {
+        throw new RpcException(
+          new BadRequestException(
+            ApiErrorMessages.SEND_FRIEND_REQUEST_SELF_REQUEST
+          )
+        );
+      }
+
       await this.prismaService.$transaction(async (tx) => {
         const account = await tx.accounts.findFirst({
           where: { id: data.account.id }
@@ -214,8 +237,16 @@ export class AccountService {
         } else {
           await tx.relationships.create({
             data: {
-              accountId: data.account.id,
-              targetId: data.target.id,
+              account: {
+                connect: {
+                  id: data.account.id
+                }
+              },
+              target: {
+                connect: {
+                  id: data.target.id
+                }
+              },
               status:
                 RelationshipStatus[RpcRelationshipStatus[data.account.status]]
             }
@@ -243,8 +274,16 @@ export class AccountService {
         } else {
           await tx.relationships.create({
             data: {
-              accountId: data.target.id,
-              targetId: data.account.id,
+              account: {
+                connect: {
+                  id: data.target.id
+                }
+              },
+              target: {
+                connect: {
+                  id: data.account.id
+                }
+              },
               status:
                 RelationshipStatus[RpcRelationshipStatus[data.target.status]]
             }

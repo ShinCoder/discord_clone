@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { ISendFriendRequestDto } from '@prj/types/api';
 
@@ -7,7 +7,11 @@ export class SendFriendRequestDto implements ISendFriendRequestDto {
   @IsString()
   accountId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  targetId: string;
+  targetId?: string;
+
+  @IsOptional()
+  @IsString()
+  targetUsername?: string;
 }
