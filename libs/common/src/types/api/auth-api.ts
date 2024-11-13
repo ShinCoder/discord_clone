@@ -53,7 +53,8 @@ export interface IVerifyDto {
 
 export interface ISendFriendRequestDto {
   accountId: string;
-  targetId: string;
+  targetId?: string;
+  targetUsername?: string;
 }
 
 export interface IAcceptFriendRequestDto {
@@ -70,6 +71,14 @@ export interface IGetFriendsDto {
   accountId: string;
 }
 
+export enum RelationshipStatus {
+  REQUESTING = 'REQUESTING',
+  PENDING = 'PENDING',
+  FRIEND = 'FRIEND',
+  BLOCKED = 'BLOCKED',
+  BEING_BLOCKED = 'BEING_BLOCKED'
+}
+
 interface RelationshipDto {
   id: string;
   accountId: string;
@@ -79,7 +88,8 @@ interface RelationshipDto {
   createdAt: string;
   updatedAt: string;
 }
-interface AccountDto {
+
+export interface AccountDto {
   id: string;
   email: string;
   username: string;
@@ -94,6 +104,7 @@ interface AccountDto {
   isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
+  connectionStatus?: 'ONLINE' | 'OFFLINE';
   relationshipWith?: RelationshipDto | undefined;
 }
 

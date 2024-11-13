@@ -17,8 +17,6 @@ const initialState: AuthSlice = {
   token: readLocalStorage(StorageKey.TOKEN, undefined)
 };
 
-console.log(initialState);
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,

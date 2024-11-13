@@ -1,7 +1,6 @@
 import { styled } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
-
-// ! need updating color
+import Typography from '@mui/material/Typography';
 
 export const FriendHeaderTab = styled(Tab)(({ theme }) => ({
   minHeight: 'auto',
@@ -31,3 +30,11 @@ export const AddFriendHeaderTab = styled(FriendHeaderTab)(({ theme }) => ({
     backgroundColor: 'transparent'
   }
 }));
+
+export const FriendTabTitle = styled(Typography)(({ theme }) => ({
+  color: theme.dcPalette.header.secondary,
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  lineHeight: '16px',
+  textTransform: 'uppercase'
+})) as typeof Typography;

@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import NavItem from './components/NavItem';
 
 import NavItemDM from './components/NavItemDM';
 import NavItemAdd from './components/NavItemAdd';
