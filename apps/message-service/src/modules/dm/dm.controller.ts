@@ -3,8 +3,8 @@ import { Controller } from '@nestjs/common';
 import DmService from './dm.service';
 
 import {
-  CreateDirectMessageChannelDto,
-  GetDirectMessageChannelsDto,
+  CreateDirectMessageDto,
+  GetDirectMessagesDto,
   MessageServiceDirectMessageModuleController,
   MessageServiceDirectMessageModuleControllerMethods
 } from '@prj/types/grpc/message-service';
@@ -16,11 +16,11 @@ export default class DmController
 {
   constructor(private readonly dmService: DmService) {}
 
-  getDirectMessageChannels(data: GetDirectMessageChannelsDto) {
-    return this.dmService.getChannels(data);
+  createDirectMessage(data: CreateDirectMessageDto) {
+    return this.dmService.createDirectMessage(data);
   }
 
-  createDirectMessageChannel(data: CreateDirectMessageChannelDto) {
-    return this.dmService.createChannel(data);
+  getDirectMessages(data: GetDirectMessagesDto) {
+    return this.dmService.getDirectMessages(data);
   }
 }

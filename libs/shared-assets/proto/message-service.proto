@@ -5,46 +5,31 @@ package com.message_service;
 import "common.proto";
 
 service MessageServiceDirectMessageModule {
-    rpc GetDirectMessageChannels (GetDirectMessageChannelsDto) returns (GetDirectMessageChannelsResult) {};
-    rpc CreateDirectMessageChannel (CreateDirectMessageChannelDto) returns (CreateDirectMessageChannelResult) {};
+    rpc CreateDirectMessage(CreateDirectMessageDto) returns (CreateDirectMessageResult) {}; 
+    rpc GetDirectMessages(GetDirectMessagesDto) returns (GetDirectMessagesResult) {};
 }
 
 service MessageServiceMessageModule {
     rpc GetChannelMessages (GetChannelMessagesDto) returns (GetChannelMessagesResult) {};
 }
 
-enum ChannelTypes {
-    DIRECT_MESSAGE = 0;
-    GROUP_CHANNEL = 1;
-}
-
-enum MessageTypes {
+enum MessageType {
     TEXT = 0;
     IMAGE = 1;
 }
 
 message ChannelDto {
     string id = 1;
-    ChannelTypes type = 2;
-    repeated string ownerIds = 3;
-    optional string serverId = 4;
-    optional string name = 5;
-    optional string topic = 6;
-    string createdAt = 7;
-    string updatedAt = 8;
+    repeated string ownerId = 2;
+    optional string serverId = 3;
+    optional string name = 4;
+    optional string topic = 5;
+    string createdAt = 6;
+    string updatedAt = 7;
 }
 
 message ChannelsDto {
     repeated ChannelDto channels = 1;
-}
-
-message GetDirectMessageChannelsDto {
-    string ownerId = 1;
-}
-
-message GetDirectMessageChannelsResult {
-    com.common.MessageStatus status = 1;
-    optional ChannelsDto payload = 2;
 }
 
 message MessageDto {
@@ -52,20 +37,20 @@ message MessageDto {
     string senderId = 2;
     string channelId = 3;
     string content = 4;
-    MessageTypes type = 5;
+    MessageType type = 5;
     string createdAt = 6;
     string updatedAt = 7;
 }
 
 message MessagesDto {
     repeated MessageDto messages = 1;
-    int32 totalPage = 2;
+    int32 totalPages = 2;
 }
 
 message GetChannelMessagesDto {
     string id = 1;
-    int32 take = 2;
-    int32 page = 3;
+    int32 page = 2;
+    int32 take = 3;
 }
 
 message GetChannelMessagesResult {
@@ -73,10 +58,40 @@ message GetChannelMessagesResult {
     optional MessagesDto payload = 2;
 }
 
-message CreateDirectMessageChannelDto {
-    repeated string ownerIds = 1;
+message DirectMessageDto {
+    string id = 1;
+    string senderId = 2;
+    string targetId = 3;
+    string content = 4;
+    MessageType type = 5;
+    string createdAt = 6;
+    string updatedAt = 7;
 }
 
-message CreateDirectMessageChannelResult {
+message DirectMessagesDto {
+    repeated DirectMessageDto messages = 1;
+    int32 totalPages = 3;
+}
+
+message CreateDirectMessageDto {
+    string senderId = 1;
+    string targetId = 2;
+    string content = 3;
+    MessageType type = 4;
+}
+
+message CreateDirectMessageResult {
     com.common.MessageStatus status = 1;
+}
+
+message GetDirectMessagesDto {
+    string senderId = 1;
+    string targetId = 2;
+    int32 page = 3;
+    int32 take = 4;
+}
+
+message GetDirectMessagesResult {
+    com.common.MessageStatus status = 1;
+    optional DirectMessagesDto payload = 2;
 }
