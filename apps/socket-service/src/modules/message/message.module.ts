@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
-import { ChannelsController } from './channels.controller';
-import { ChannelsService } from './channels.service';
-import { MESSAGE_SERVICE } from '../../constants';
+import { MessageService } from './message.service';
+import { MESSAGE_SERVICE } from '../../constants/services';
 
 import { COM_MESSAGE_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/message-service';
 
@@ -27,7 +26,7 @@ import { COM_MESSAGE_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/message-servic
       }
     ])
   ],
-  controllers: [ChannelsController],
-  providers: [ChannelsService]
+  providers: [MessageService],
+  exports: [MessageService]
 })
-export class ChannelsModule {}
+export class MessageModule {}

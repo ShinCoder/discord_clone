@@ -1,24 +1,15 @@
-import {
-  BadRequestException,
-  ConflictException,
-  HttpStatus,
-  Injectable
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RpcException } from '@nestjs/microservices';
-
-import { Channels, ChannelTypes } from '@prisma/message-client';
+import { DirectMessages, MessageTypes, Prisma } from '@prisma/message-client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utlis';
 
 import {
-  ChannelDto,
-  CreateDirectMessageChannelDto,
-  CreateDirectMessageChannelResult,
-  GetDirectMessageChannelsDto,
-  GetDirectMessageChannelsResult,
-  ChannelTypes as RpcChannelTypes
+  CreateDirectMessageDto,
+  DirectMessageDto,
+  GetDirectMessagesDto,
+  MessageType as RpcMessageType
 } from '@prj/types/grpc/message-service';
 import { getRpcSuccessMessage } from '@prj/common';
 
@@ -29,65 +20,68 @@ export default class DmService {
     private readonly configService: ConfigService
   ) {}
 
-  private toChannelDto(data: Channels): ChannelDto {
+  private toDirectMessageDto(data: DirectMessages): DirectMessageDto {
     return {
-      id: data.id,
-      type: RpcChannelTypes[data.type],
-      ownerIds: data.ownerIds,
+      ...data,
+      type: RpcMessageType[data.type],
       createdAt: data.createdAt.toISOString(),
       updatedAt: data.updatedAt.toISOString()
     };
   }
 
-  async getChannels(
-    data: GetDirectMessageChannelsDto
-  ): Promise<GetDirectMessageChannelsResult> {
+  async createDirectMessage(data: CreateDirectMessageDto) {
     try {
-      const channels = await this.prismaService.channels.findMany({
-        where: {
-          ownerIds: {
-            has: data.ownerId
-          }
+      const message = await this.prismaService.directMessages.create({
+        data: {
+          ...data,
+          type: MessageTypes[RpcMessageType[data.type]]
         }
       });
 
-      return getRpcSuccessMessage(HttpStatus.OK, {
-        channels:
-          channels.length > 0 ? channels.map((e) => this.toChannelDto(e)) : []
-      });
+      return getRpcSuccessMessage(
+        HttpStatus.CREATED,
+        this.toDirectMessageDto(message)
+      );
     } catch (err) {
       return handleThrowError(err);
     }
   }
 
-  async createChannel(
-    data: CreateDirectMessageChannelDto
-  ): Promise<CreateDirectMessageChannelResult> {
+  async getDirectMessages(data: GetDirectMessagesDto) {
     try {
-      if (data.ownerIds.length < 2)
-        throw new RpcException(new BadRequestException());
-
-      await this.prismaService.$transaction(async (tx) => {
-        const existed = await tx.channels.findFirst({
-          where: {
-            ownerIds: {
-              hasEvery: data.ownerIds
+      const query = {
+        where: {
+          OR: [
+            {
+              senderId: data.senderId,
+              targetId: data.targetId
+            },
+            {
+              senderId: data.targetId,
+              targetId: data.senderId
             }
-          }
-        });
+          ]
+        },
+        take: data.take,
+        skip: data.skip || data.page ? data.take * (data.page - 1) : 0,
+        orderBy: {
+          createdAt: 'asc'
+        }
+      } satisfies Prisma.DirectMessagesFindManyArgs;
 
-        if (existed)
-          throw new RpcException(new ConflictException('Channel existed'));
+      const [messages, count] = await this.prismaService.$transaction(
+        async (tx) => {
+          return [
+            await tx.directMessages.findMany(query),
+            await tx.directMessages.count({ where: query.where })
+          ];
+        }
+      );
 
-        await tx.channels.create({
-          data: {
-            type: ChannelTypes.DIRECT_MESSAGE,
-            ownerIds: data.ownerIds
-          }
-        });
+      return getRpcSuccessMessage(HttpStatus.OK, {
+        messages: messages.map((e) => this.toDirectMessageDto(e)),
+        totalPages: count / data.take + (count % data.take === 0 ? 0 : 1)
       });
-
-      return getRpcSuccessMessage(HttpStatus.CREATED);
     } catch (err) {
       return handleThrowError(err);
     }

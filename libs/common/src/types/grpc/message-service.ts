@@ -5,13 +5,7 @@ import { MessageStatus } from './common';
 
 export const protobufPackage = 'com.message_service';
 
-export enum ChannelTypes {
-  DIRECT_MESSAGE = 0,
-  GROUP_CHANNEL = 1,
-  UNRECOGNIZED = -1
-}
-
-export enum MessageTypes {
+export enum MessageType {
   TEXT = 0,
   IMAGE = 1,
   UNRECOGNIZED = -1
@@ -19,8 +13,7 @@ export enum MessageTypes {
 
 export interface ChannelDto {
   id: string;
-  type: ChannelTypes;
-  ownerIds: string[];
+  ownerId: string[];
   serverId?: string | undefined;
   name?: string | undefined;
   topic?: string | undefined;
@@ -32,34 +25,25 @@ export interface ChannelsDto {
   channels: ChannelDto[];
 }
 
-export interface GetDirectMessageChannelsDto {
-  ownerId: string;
-}
-
-export interface GetDirectMessageChannelsResult {
-  status: MessageStatus | undefined;
-  payload?: ChannelsDto | undefined;
-}
-
 export interface MessageDto {
   id: string;
   senderId: string;
   channelId: string;
   content: string;
-  type: MessageTypes;
+  type: MessageType;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface MessagesDto {
   messages: MessageDto[];
-  totalPage: number;
+  totalPages: number;
 }
 
 export interface GetChannelMessagesDto {
   id: string;
-  take: number;
   page: number;
+  take: number;
 }
 
 export interface GetChannelMessagesResult {
@@ -67,48 +51,77 @@ export interface GetChannelMessagesResult {
   payload?: MessagesDto | undefined;
 }
 
-export interface CreateDirectMessageChannelDto {
-  ownerIds: string[];
+export interface DirectMessageDto {
+  id: string;
+  senderId: string;
+  targetId: string;
+  content: string;
+  type: MessageType;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CreateDirectMessageChannelResult {
+export interface DirectMessagesDto {
+  messages: DirectMessageDto[];
+  totalPages: number;
+}
+
+export interface CreateDirectMessageDto {
+  senderId: string;
+  targetId: string;
+  content: string;
+  type: MessageType;
+}
+
+export interface CreateDirectMessageResult {
   status: MessageStatus | undefined;
+  payload?: DirectMessageDto | undefined;
+}
+
+export interface GetDirectMessagesDto {
+  senderId: string;
+  targetId: string;
+  take: number;
+  page?: number | undefined;
+  skip?: number | undefined;
+}
+
+export interface GetDirectMessagesResult {
+  status: MessageStatus | undefined;
+  payload?: DirectMessagesDto | undefined;
 }
 
 export const COM_MESSAGE_SERVICE_PACKAGE_NAME = 'com.message_service';
 
 export interface MessageServiceDirectMessageModuleClient {
-  getDirectMessageChannels(
-    request: GetDirectMessageChannelsDto
-  ): Observable<GetDirectMessageChannelsResult>;
+  createDirectMessage(
+    request: CreateDirectMessageDto
+  ): Observable<CreateDirectMessageResult>;
 
-  createDirectMessageChannel(
-    request: CreateDirectMessageChannelDto
-  ): Observable<CreateDirectMessageChannelResult>;
+  getDirectMessages(
+    request: GetDirectMessagesDto
+  ): Observable<GetDirectMessagesResult>;
 }
 
 export interface MessageServiceDirectMessageModuleController {
-  getDirectMessageChannels(
-    request: GetDirectMessageChannelsDto
+  createDirectMessage(
+    request: CreateDirectMessageDto
   ):
-    | Promise<GetDirectMessageChannelsResult>
-    | Observable<GetDirectMessageChannelsResult>
-    | GetDirectMessageChannelsResult;
+    | Promise<CreateDirectMessageResult>
+    | Observable<CreateDirectMessageResult>
+    | CreateDirectMessageResult;
 
-  createDirectMessageChannel(
-    request: CreateDirectMessageChannelDto
+  getDirectMessages(
+    request: GetDirectMessagesDto
   ):
-    | Promise<CreateDirectMessageChannelResult>
-    | Observable<CreateDirectMessageChannelResult>
-    | CreateDirectMessageChannelResult;
+    | Promise<GetDirectMessagesResult>
+    | Observable<GetDirectMessagesResult>
+    | GetDirectMessagesResult;
 }
 
 export function MessageServiceDirectMessageModuleControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [
-      'getDirectMessageChannels',
-      'createDirectMessageChannel'
-    ];
+    const grpcMethods: string[] = ['createDirectMessage', 'getDirectMessages'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

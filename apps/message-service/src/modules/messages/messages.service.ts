@@ -10,7 +10,7 @@ import {
   GetChannelMessagesDto,
   GetChannelMessagesResult,
   MessageDto,
-  MessageTypes as RpcMessageTypes
+  MessageType as RpcMessageType
 } from '@prj/types/grpc/message-service';
 import { getRpcSuccessMessage } from '@prj/common';
 
@@ -27,7 +27,7 @@ export default class MessagesService {
       senderId: data.senderId,
       channelId: data.channelId,
       content: data.content,
-      type: RpcMessageTypes[data.type],
+      type: RpcMessageType[data.type],
       createdAt: data.createdAt.toISOString(),
       updatedAt: data.updatedAt.toISOString()
     };
@@ -45,7 +45,7 @@ export default class MessagesService {
 
       return getRpcSuccessMessage(HttpStatus.OK, {
         messages: messages.map((e) => this.toMessageDto(e)),
-        totalPage: 1 // !TEMPORARY ONLY
+        totalPages: 1 // !TEMPORARY ONLY
       });
     } catch (err) {
       return handleThrowError(err);

@@ -4,7 +4,7 @@ import joi from 'joi';
 
 import { CustomLoggerMiddleware } from '../../middlewares/custom-logger.middleware';
 import { AuthModule } from '../auth/auth.module';
-import { ChannelsModule } from '../channels/channels.module';
+import { MessageModule } from '../message/message.module';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { ChannelsModule } from '../channels/channels.module';
       envFilePath: '.env'
     }),
     AuthModule,
-    ChannelsModule
+    MessageModule
   ]
 })
 export class AppModule implements NestModule {
