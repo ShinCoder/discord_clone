@@ -12,3 +12,16 @@ export interface DirectMessageDto {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IGetDirectMessagesQuery {
+  senderId: string;
+  targetId: string;
+  take?: number;
+  page?: number;
+  skip?: number;
+}
+
+export interface IGetDirectMessagesResult {
+  messages: Array<DirectMessageDto>;
+  totalPages: number;
+}

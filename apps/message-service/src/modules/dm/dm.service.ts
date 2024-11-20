@@ -7,10 +7,8 @@ import { handleThrowError } from '../../utlis';
 
 import {
   CreateDirectMessageDto,
-  CreateDirectMessageResult,
   DirectMessageDto,
   GetDirectMessagesDto,
-  GetDirectMessagesResult,
   MessageType as RpcMessageType
 } from '@prj/types/grpc/message-service';
 import { getRpcSuccessMessage } from '@prj/common';
@@ -31,9 +29,7 @@ export default class DmService {
     };
   }
 
-  async createDirectMessage(
-    data: CreateDirectMessageDto
-  ): Promise<CreateDirectMessageResult> {
+  async createDirectMessage(data: CreateDirectMessageDto) {
     try {
       const message = await this.prismaService.directMessages.create({
         data: {
@@ -51,9 +47,7 @@ export default class DmService {
     }
   }
 
-  async getDirectMessages(
-    data: GetDirectMessagesDto
-  ): Promise<GetDirectMessagesResult> {
+  async getDirectMessages(data: GetDirectMessagesDto) {
     try {
       const query = {
         where: {
@@ -69,7 +63,7 @@ export default class DmService {
           ]
         },
         take: data.take,
-        skip: data.take * (data.page - 1),
+        skip: data.skip || data.page ? data.take * (data.page - 1) : 0,
         orderBy: {
           createdAt: 'asc'
         }

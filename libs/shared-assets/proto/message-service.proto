@@ -88,8 +88,9 @@ message CreateDirectMessageResult {
 message GetDirectMessagesDto {
     string senderId = 1;
     string targetId = 2;
-    int32 page = 3;
-    int32 take = 4;
+    int32 take = 3;
+    optional int32 page = 4;
+    optional int32 skip = 5;
 }
 
 message GetDirectMessagesResult {

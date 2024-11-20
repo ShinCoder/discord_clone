@@ -81,8 +81,9 @@ export interface CreateDirectMessageResult {
 export interface GetDirectMessagesDto {
   senderId: string;
   targetId: string;
-  page: number;
   take: number;
+  page?: number | undefined;
+  skip?: number | undefined;
 }
 
 export interface GetDirectMessagesResult {
