@@ -82,6 +82,7 @@ message CreateDirectMessageDto {
 
 message CreateDirectMessageResult {
     com.common.MessageStatus status = 1;
+    optional DirectMessageDto payload = 2;
 }
 
 message GetDirectMessagesDto {

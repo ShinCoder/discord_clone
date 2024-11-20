@@ -75,6 +75,7 @@ export interface CreateDirectMessageDto {
 
 export interface CreateDirectMessageResult {
   status: MessageStatus | undefined;
+  payload?: DirectMessageDto | undefined;
 }
 
 export interface GetDirectMessagesDto {

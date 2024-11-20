@@ -35,14 +35,17 @@ export default class DmService {
     data: CreateDirectMessageDto
   ): Promise<CreateDirectMessageResult> {
     try {
-      await this.prismaService.directMessages.create({
+      const message = await this.prismaService.directMessages.create({
         data: {
           ...data,
           type: MessageTypes[RpcMessageType[data.type]]
         }
       });
 
-      return getRpcSuccessMessage(HttpStatus.CREATED);
+      return getRpcSuccessMessage(
+        HttpStatus.CREATED,
+        this.toDirectMessageDto(message)
+      );
     } catch (err) {
       return handleThrowError(err);
     }

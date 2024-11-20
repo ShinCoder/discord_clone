@@ -32,7 +32,7 @@ export class SocketIOAdapter extends IoAdapter {
 
     const authService = this.app.get<AuthService>(AuthService);
 
-    server.of('general').use(this.createAuthMiddleware(authService));
+    server.of('chat').use(this.createAuthMiddleware(authService));
 
     return server;
   }

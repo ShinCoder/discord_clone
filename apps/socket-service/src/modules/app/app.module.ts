@@ -11,6 +11,7 @@ import { GatewayModule } from '../gateway/gateway.module';
       validationSchema: joi.object({
         PORT: joi.string(),
         AUTH_SERVICE_GRPC_URL: joi.string().required(),
+        MESSAGE_SERVICE_GRPC_URL: joi.string().required(),
         ALLOW_ORIGINS: joi.string().required(),
         JWT_AT_PUBLIC: joi.string().required()
       }),
