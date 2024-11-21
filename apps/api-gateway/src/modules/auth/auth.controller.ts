@@ -31,6 +31,7 @@ import {
   IGetFriendRequestsResult,
   IGetFriendsResult,
   IGetMeResult,
+  IGetUserProfileResult,
   ILoginResult,
   IRefreshResult
 } from '@prj/types/api';
@@ -145,5 +146,19 @@ export class AuthController {
     @Param('id') accountId: string
   ): Promise<IGetFriendRequestsResult> {
     return this.authService.getPendingFriendRequest(accountId);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Get(':id/profile')
+  async getUserProfile(
+    @Param('id') accountId: string,
+    @Req() req: IRequestWithUser
+  ): Promise<IGetUserProfileResult> {
+    return {
+      profile: await this.authService.getAccount({
+        id: accountId,
+        includeRelationshipWith: req.user.sub
+      })
+    };
   }
 }

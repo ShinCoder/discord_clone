@@ -110,7 +110,21 @@ export class AuthService implements OnModuleInit {
 
     const account = handleRpcResult(result);
 
-    return { ...account, status: RpcAccountStatus[account.status] };
+    return {
+      ...account,
+      connectionStatus: RpcConnectionStatus[account.connectionStatus] as
+        | 'ONLINE'
+        | 'OFFLINE',
+      status: RpcAccountStatus[account.status],
+      relationshipWith: account.relationshipWith
+        ? {
+            ...account.relationshipWith,
+            status: RpcRelationshipStatus[account.relationshipWith.status],
+            previousStatus:
+              RpcRelationshipStatus[account.relationshipWith.previousStatus]
+          }
+        : undefined
+    };
   }
 
   async refresh(data: RefreshDto) {
