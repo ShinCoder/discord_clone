@@ -1,8 +1,5 @@
-'use client';
-
 import { useCallback, useMemo, useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import joi from 'joi';
 import { useForm } from 'react-hook-form';

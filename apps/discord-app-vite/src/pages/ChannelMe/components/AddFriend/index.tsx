@@ -1,15 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import Box from '@mui/material/Box';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { useMutation } from '@tanstack/react-query';
-
-import { sendFriendRequest } from '@services';
-import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { useForm } from 'react-hook-form';
+
+import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
+import { sendFriendRequest } from '@services';
 
 interface AddFriendProps {
   onSendRequest: () => void;

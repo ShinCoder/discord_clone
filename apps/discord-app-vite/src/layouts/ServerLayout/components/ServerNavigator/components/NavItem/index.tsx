@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Tooltip } from '@mui/material';
 
 import { NavItemAvatar } from '../../elements';
 

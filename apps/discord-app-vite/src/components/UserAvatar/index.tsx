@@ -1,6 +1,5 @@
 import { memo, useCallback } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
+import { Avatar, Badge } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import BrandIcon from '@components/BrandIcon';

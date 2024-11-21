@@ -1,9 +1,7 @@
 import { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import Button from '@mui/material/Button';
+import { Box, Button, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 
 import { ellipsisTextWrapStyle } from '@utils';
 

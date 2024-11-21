@@ -1,6 +1,5 @@
 import { memo } from 'react';
-import MUIInputLabel from '@mui/material/InputLabel';
-import Typography from '@mui/material/Typography';
+import { InputLabel as MUIInputLabel, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 interface InputLabelProps {

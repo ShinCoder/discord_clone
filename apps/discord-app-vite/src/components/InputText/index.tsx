@@ -1,9 +1,5 @@
-'use client';
-
 import { memo, useId, useState } from 'react';
-import Box from '@mui/material/Box';
-import Input, { InputProps } from '@mui/material/Input';
-import FormHelperText from '@mui/material/FormHelperText';
+import { Box, FormHelperText, Input, InputProps } from '@mui/material';
 import { SxProps, Theme, useTheme } from '@mui/material/styles';
 import Collapse from '@mui/material/Collapse';
 

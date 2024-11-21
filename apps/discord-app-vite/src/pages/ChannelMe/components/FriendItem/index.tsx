@@ -1,14 +1,11 @@
-import Box from '@mui/material/Box';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
 import UserAvatar from '@components/UserAvatar';
+import MoreButton from './components/MoreButton';
 
 import { AccountDto } from '@prj/types/api';
-import MoreButton from './components/MoreButton';
 
 interface FriendItemProps {
   data: AccountDto;

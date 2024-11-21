@@ -1,11 +1,7 @@
 import { memo, useState } from 'react';
-import IconButton from '@mui/material/IconButton';
+import { Box, IconButton, Popover, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Tooltip from '@mui/material/Tooltip';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Popover from '@mui/material/Popover';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 const MoreButton = () => {
   const theme = useTheme();

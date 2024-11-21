@@ -1,5 +1,6 @@
-import CustomLink from '@elements/CustomLink';
 import { styled } from '@mui/material/styles';
+
+import CustomLink from '@elements/CustomLink';
 
 export const TermsLink = styled(CustomLink)(({ theme }) => ({
   fontSize: 'inherit'

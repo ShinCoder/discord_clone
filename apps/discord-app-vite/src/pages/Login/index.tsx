@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+
 import MainLoginForm from './components/MainLoginForm';
 import { RegisterLink } from './elements';
 import VerticalSeperator from '@components/VerticalSeperator';

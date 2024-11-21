@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
+import { Box, Divider, Tabs, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import Tabs from '@mui/material/Tabs';
 import { useQuery } from '@tanstack/react-query';
 
 import { AddFriendHeaderTab, FriendHeaderTab } from './elements';
@@ -17,6 +14,7 @@ import PendingRequests from './components/PendingRequests';
 import { getFriends, getPendingFriendRequest } from '@services';
 import { useAppSelector } from '@redux/hooks';
 import { protectedRoutes } from '@constants';
+
 import { AccountDto } from '@prj/types/api';
 
 const ChannelMe = () => {
