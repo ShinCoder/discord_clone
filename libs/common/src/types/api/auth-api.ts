@@ -115,3 +115,7 @@ export interface IGetFriendsResult {
 export interface IGetFriendRequestsResult {
   accounts: Array<AccountDto>;
 }
+
+export interface IGetUserProfileResult {
+  profile: AccountDto;
+}
