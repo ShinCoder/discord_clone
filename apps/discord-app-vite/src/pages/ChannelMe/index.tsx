@@ -12,7 +12,8 @@ import AddFriend from './components/AddFriend';
 import Blocked from './components/Blocked';
 import PendingRequests from './components/PendingRequests';
 import { getFriends, getPendingFriendRequest } from '@services';
-import { useAppSelector } from '@redux/hooks';
+import { useAppDispatch, useAppSelector } from '@redux/hooks';
+import { setLoading } from '@redux/slices/statusSlice';
 import { protectedRoutes } from '@constants';
 
 import { AccountDto } from '@prj/types/api';
@@ -87,12 +88,24 @@ const ChannelMe = () => {
   }, [fetchFriendRequests]);
   // Add friend --end
 
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (authState.data) {
-      fetchFriends();
-      fetchFriendRequests();
+      const fetch = async () => {
+        try {
+          dispatch(setLoading(true));
+          await fetchFriends();
+          await fetchFriendRequests();
+        } catch {
+          /* empty */
+        } finally {
+          dispatch(setLoading(false));
+        }
+      };
+      fetch();
     }
-  }, [authState.data, fetchFriendRequests, fetchFriends]);
+  }, [authState.data, dispatch, fetchFriendRequests, fetchFriends]);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<number>(0);

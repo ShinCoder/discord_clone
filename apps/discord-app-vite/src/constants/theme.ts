@@ -23,6 +23,7 @@ interface PaletteConstants {
     '330': string;
     '360': string;
     '500': string;
+    '560': string;
     '600': string;
     '630': string;
     '700': string;
@@ -56,6 +57,7 @@ interface PaletteConstants {
     '230': string;
     '330': string;
     '360': string;
+    '560': string;
     '600': string;
     '630': string;
     '700': string;
@@ -94,6 +96,7 @@ let paletteConstants: PaletteConstants = {
     '330': placeholderColor,
     '360': placeholderColor,
     '500': placeholderColor,
+    '560': placeholderColor,
     '600': placeholderColor,
     '630': placeholderColor,
     '700': placeholderColor,
@@ -127,6 +130,7 @@ let paletteConstants: PaletteConstants = {
     '230': placeholderColor,
     '330': placeholderColor,
     '360': placeholderColor,
+    '560': placeholderColor,
     '600': placeholderColor,
     '630': placeholderColor,
     '700': placeholderColor,
@@ -165,6 +169,7 @@ paletteConstants = {
     '330': `215 calc(${paletteConstants.saturationFactor} * 8.8%) 73.3%`,
     '360': `214 calc(${paletteConstants.saturationFactor} * 8.1%) 61.2%`,
     '500': `228 calc(${paletteConstants.saturationFactor} * 6%) 32.5%`,
+    '560': `225 calc(${paletteConstants.saturationFactor} * 6.667%) 23.529%`,
     '600': `223 calc(${paletteConstants.saturationFactor} * 6.7%) 20.6%`,
     '630': `220 calc(${paletteConstants.saturationFactor} * 6.5%) 18%`,
     '700': `225 calc(${paletteConstants.saturationFactor} * 6.3%) 12.5%`,
@@ -202,6 +207,7 @@ paletteConstants = {
     '230': `hsl(${paletteConstants['primary-hsl'][230]} / 1)`,
     '330': `hsl(${paletteConstants['primary-hsl'][330]} / 1)`,
     '360': `hsl(${paletteConstants['primary-hsl'][360]} / 1)`,
+    '560': `hsl(${paletteConstants['primary-hsl'][560]} / 1)`,
     '600': `hsl(${paletteConstants['primary-hsl'][600]} / 1)`,
     '630': `hsl(${paletteConstants['primary-hsl'][630]} / 1)`,
     '700': `hsl(${paletteConstants['primary-hsl'][700]} / 1)`,
@@ -223,6 +229,7 @@ declare module '@mui/material/styles' {
     dcPalette: {
       background: {
         floating: string;
+        messageHover: string;
         modifierAccent: string;
         modifierHover: string;
         modifierSelected: string;
@@ -235,6 +242,9 @@ declare module '@mui/material/styles' {
       };
       button: {
         secondaryBackground: string;
+      };
+      channel: {
+        textareaBackground: string;
       };
       green: {
         '330': string;
@@ -304,6 +314,9 @@ declare module '@mui/material/styles' {
       defaultHeight: {
         header: string;
       };
+      maxHeight: {
+        customChannelTextArea: string;
+      };
       boxShadow: {
         elevationLow: string;
       };
@@ -314,6 +327,7 @@ declare module '@mui/material/styles' {
     dcPalette?: {
       background: {
         floating: string;
+        messageHover: string;
         modifierAccent: string;
         modifierHover: string;
         modifierSelected: string;
@@ -326,6 +340,9 @@ declare module '@mui/material/styles' {
       };
       button: {
         secondaryBackground: string;
+      };
+      channel: {
+        textareaBackground: string;
       };
       green: {
         '330': string;
@@ -394,6 +411,9 @@ declare module '@mui/material/styles' {
       };
       defaultHeight: {
         header: string;
+      };
+      maxHeight: {
+        customChannelTextArea: string;
       };
       boxShadow: {
         elevationLow: string;
@@ -464,6 +484,8 @@ const defaultThemeOptions: ThemeOptions = {
   dcPalette: {
     background: {
       floating: `color-mix(in oklab, ${paletteConstants.primary[800]} 100%, black 0%)`,
+      messageHover:
+        'color-mix(in oklab, hsl(0 calc(1 * 0%) 0.784% / 0.06) 100%, hsl(0 0% 0% / 0.06) 0%)',
       modifierAccent: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.48) 100%, hsl(0 0% 0% / 0.48) 0%)`,
       modifierHover: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.3) 100%, hsl(0 0% 0% / 0.3) 0%)`,
       modifierSelected: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.6) 100%, hsl(0 0% 0% / 0.6) 0%)`,
@@ -476,6 +498,9 @@ const defaultThemeOptions: ThemeOptions = {
     },
     button: {
       secondaryBackground: 'rgb(78, 80, 88)'
+    },
+    channel: {
+      textareaBackground: `color-mix(in oklab, ${paletteConstants.primary[560]} 100%, black 0%)`
     },
     green: {
       '330': paletteConstants.green[330],
@@ -544,6 +569,9 @@ const defaultThemeOptions: ThemeOptions = {
     },
     defaultHeight: {
       header: '48px'
+    },
+    maxHeight: {
+      customChannelTextArea: '50vh'
     },
     boxShadow: {
       elevationLow:

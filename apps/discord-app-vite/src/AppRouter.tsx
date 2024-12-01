@@ -18,6 +18,7 @@ import Register from '@pages/Register';
 import Verify from '@pages/Verify';
 import DiscoverableServer from '@pages/DiscoverableServer';
 import Shop from '@pages/Shop';
+import DirectMessage from '@pages/DirectMessage';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { clearAuthState, setAccountData } from '@redux/slices/authSlice';
 import { setErrorMessage, setLoading } from '@redux/slices/statusSlice';
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
                   {
                     path: protectedRoutes.myChannels,
                     element: <ChannelMe />
+                  },
+                  {
+                    path: protectedRoutes.directMessages('pattern'),
+                    element: <DirectMessage />
                   },
                   {
                     path: protectedRoutes.shop,

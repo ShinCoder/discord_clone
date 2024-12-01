@@ -7,6 +7,7 @@ import {
   IGetFriendsDto,
   IGetFriendsResult,
   IGetMeResult,
+  IGetUserProfileResult,
   ILoginDto,
   ILoginResult,
   IRegisterDto,
@@ -52,4 +53,8 @@ export const acceptFriendRequest = (data: IAcceptFriendRequestDto) => {
 
 export const declineFriendRequest = (data: IDeclineFriendRequestDto) => {
   return apiClientWithAuth.patch('/auth/friend-request/decline', data);
+};
+
+export const getUserProfile = (id: string) => {
+  return apiClientWithAuth.get<IGetUserProfileResult>(`/auth/${id}/profile`);
 };

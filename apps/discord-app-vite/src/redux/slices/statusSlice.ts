@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import toast from 'react-hot-toast';
 
 export interface StatusSlice {
   isLoading: boolean;

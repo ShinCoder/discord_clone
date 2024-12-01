@@ -4,6 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 
 import statusReducer from './slices/statusSlice';
 import authReducer from './slices/authSlice';
+import socketReducer from './slices/socketSlice';
 import rootSaga from './saga';
 import { IS_DEV } from '@constants';
 
@@ -21,7 +22,8 @@ const getMiddlewares = () => {
 export const store = configureStore({
   reducer: {
     status: statusReducer,
-    auth: authReducer
+    auth: authReducer,
+    socket: socketReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({})

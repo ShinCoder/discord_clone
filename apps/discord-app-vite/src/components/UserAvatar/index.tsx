@@ -10,6 +10,7 @@ interface UserAvatarProps {
   color?: string;
   showStatus?: boolean;
   status?: 'ONLINE' | 'OFFLINE';
+  size?: string;
 }
 
 const UserAvatar = (props: UserAvatarProps) => {
@@ -18,7 +19,8 @@ const UserAvatar = (props: UserAvatarProps) => {
     alt,
     color = 'transparent',
     showStatus = false,
-    status = 'OFFLINE'
+    status = 'OFFLINE',
+    size = '32px'
   } = props;
 
   const theme = useTheme();
@@ -26,20 +28,20 @@ const UserAvatar = (props: UserAvatarProps) => {
   const renderAvatar = useCallback(() => {
     return (
       <Avatar
-        sx={{ width: '32px', height: '32px', backgroundColor: color }}
+        sx={{ width: size, height: size, backgroundColor: color }}
         src={src}
         alt={alt}
       >
         {!src && (
           <BrandIcon
             color='white'
-            width='20px'
-            height='20px'
+            width={`calc(${size} * 0.625)`}
+            height={`calc(${size} * 0.625)`}
           />
         )}
       </Avatar>
     );
-  }, [alt, color, src]);
+  }, [alt, color, size, src]);
 
   const render = useCallback(() => {
     if (showStatus) {

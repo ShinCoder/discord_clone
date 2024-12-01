@@ -17,7 +17,10 @@ const NavItem = (props: NavItemProps) => {
 
   return (
     <Box sx={{ padding: `${theme.spacing(0.125)} 0` }}>
-      <NavLink to={href}>
+      <NavLink
+        to={href}
+        end
+      >
         {({ isActive }) => (
           <Button
             disableElevation
