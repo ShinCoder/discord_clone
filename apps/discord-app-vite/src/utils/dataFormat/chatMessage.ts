@@ -121,3 +121,50 @@ export const processMessageForDisplay = (data: {
 
   return filterBySender;
 };
+
+export const concatenateProcessedMessages = (
+  data1: Array<ProcessedMessageDate>,
+  data2: Array<ProcessedMessageDate>
+): Array<ProcessedMessageDate> => {
+  if (data1.length > 0 && data2.length > 0) {
+    const data1Last = data1[data1.length - 1];
+    const data2First = data2[0];
+
+    if (data1Last.date.isSame(data2First.date, 'day')) {
+      let mergedItem: ProcessedMessageDate;
+
+      const data1LastClump =
+        data1Last.messageClumps[data1Last.messageClumps.length - 1];
+      const data2FirstClumb = data2First.messageClumps[0];
+
+      if (data1LastClump.sender.id === data2FirstClumb.sender.id) {
+        mergedItem = {
+          date: data1Last.date,
+          messageClumps: [
+            ...data1Last.messageClumps.slice(0, -1),
+            {
+              sender: data1LastClump.sender,
+              messages: [
+                ...data1LastClump.messages,
+                ...data2FirstClumb.messages
+              ]
+            },
+            ...data2First.messageClumps.slice(1)
+          ]
+        };
+      } else {
+        mergedItem = {
+          date: data1Last.date,
+          messageClumps: [
+            ...data1Last.messageClumps,
+            ...data2First.messageClumps
+          ]
+        };
+      }
+
+      return [...data1.slice(0, -1), mergedItem, ...data2.slice(1)];
+    }
+  }
+
+  return [...data1, ...data2];
+};

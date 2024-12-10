@@ -27,7 +27,7 @@ const TextChatItem = (props: TextChatItemProps) => {
         sx={{
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           width: '56px',
           opacity: 0
         }}

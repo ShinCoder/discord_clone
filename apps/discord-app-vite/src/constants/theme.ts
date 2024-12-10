@@ -10,6 +10,7 @@ interface PaletteConstants {
   };
   'brand-hsl': {
     '500': string;
+    '560': string;
   };
   'green-hsl': {
     '330': string;
@@ -22,7 +23,9 @@ interface PaletteConstants {
     '230': string;
     '330': string;
     '360': string;
+    '430': string;
     '500': string;
+    '530': string;
     '560': string;
     '600': string;
     '630': string;
@@ -45,6 +48,7 @@ interface PaletteConstants {
   };
   brand: {
     '500': string;
+    '560': string;
   };
   green: {
     '330': string;
@@ -57,6 +61,9 @@ interface PaletteConstants {
     '230': string;
     '330': string;
     '360': string;
+    '430': string;
+    '530': string;
+    '500': string;
     '560': string;
     '600': string;
     '630': string;
@@ -82,7 +89,8 @@ let paletteConstants: PaletteConstants = {
     '345': placeholderColor
   },
   'brand-hsl': {
-    '500': placeholderColor
+    '500': placeholderColor,
+    '560': placeholderColor
   },
   'green-hsl': {
     '330': placeholderColor,
@@ -95,7 +103,9 @@ let paletteConstants: PaletteConstants = {
     '230': placeholderColor,
     '330': placeholderColor,
     '360': placeholderColor,
+    '430': placeholderColor,
     '500': placeholderColor,
+    '530': placeholderColor,
     '560': placeholderColor,
     '600': placeholderColor,
     '630': placeholderColor,
@@ -117,7 +127,8 @@ let paletteConstants: PaletteConstants = {
     '345': placeholderColor
   },
   brand: {
-    '500': placeholderColor
+    '500': placeholderColor,
+    '560': placeholderColor
   },
   green: {
     '330': placeholderColor,
@@ -130,6 +141,9 @@ let paletteConstants: PaletteConstants = {
     '230': placeholderColor,
     '330': placeholderColor,
     '360': placeholderColor,
+    '430': placeholderColor,
+    '500': placeholderColor,
+    '530': placeholderColor,
     '560': placeholderColor,
     '600': placeholderColor,
     '630': placeholderColor,
@@ -155,7 +169,8 @@ paletteConstants = {
     '345': `201 calc(${paletteConstants.saturationFactor} * 100%) 59%`
   },
   'brand-hsl': {
-    '500': `234.935 calc(${paletteConstants.saturationFactor} * 85.556%) 64.706%`
+    '500': `234.935 calc(${paletteConstants.saturationFactor} * 85.556%) 64.706%`,
+    '560': `234.72 calc(${paletteConstants.saturationFactor} * 51.44%) 52.353%`
   },
   'green-hsl': {
     '330': `146 calc(${paletteConstants.saturationFactor} * 63.1%) 47.8%`,
@@ -168,7 +183,9 @@ paletteConstants = {
     '230': `210 calc(${paletteConstants.saturationFactor} * 9.091%) 87.059%`,
     '330': `215 calc(${paletteConstants.saturationFactor} * 8.8%) 73.3%`,
     '360': `214 calc(${paletteConstants.saturationFactor} * 8.1%) 61.2%`,
+    '430': `229.091 calc(${paletteConstants.saturationFactor} * 4.803%) 44.902%`,
     '500': `228 calc(${paletteConstants.saturationFactor} * 6%) 32.5%`,
+    '530': `226.667 calc(${paletteConstants.saturationFactor} * 6.475%) 27.255%`,
     '560': `225 calc(${paletteConstants.saturationFactor} * 6.667%) 23.529%`,
     '600': `223 calc(${paletteConstants.saturationFactor} * 6.7%) 20.6%`,
     '630': `220 calc(${paletteConstants.saturationFactor} * 6.5%) 18%`,
@@ -194,7 +211,8 @@ paletteConstants = {
     '345': `hsl(${paletteConstants['blue-hsl'][345]} / 1)`
   },
   brand: {
-    '500': `hsl(${paletteConstants['brand-hsl'][500]} / 1)`
+    '500': `hsl(${paletteConstants['brand-hsl'][500]} / 1)`,
+    '560': `hsl(${paletteConstants['brand-hsl'][560]} / 1)`
   },
   green: {
     '330': `hsl(${paletteConstants['green-hsl'][330]} / 1)`,
@@ -207,6 +225,9 @@ paletteConstants = {
     '230': `hsl(${paletteConstants['primary-hsl'][230]} / 1)`,
     '330': `hsl(${paletteConstants['primary-hsl'][330]} / 1)`,
     '360': `hsl(${paletteConstants['primary-hsl'][360]} / 1)`,
+    '430': `hsl(${paletteConstants['primary-hsl'][430]} / 1)`,
+    '500': `hsl(${paletteConstants['primary-hsl'][500]} / 1)`,
+    '530': `hsl(${paletteConstants['primary-hsl'][530]} / 1)`,
     '560': `hsl(${paletteConstants['primary-hsl'][560]} / 1)`,
     '600': `hsl(${paletteConstants['primary-hsl'][600]} / 1)`,
     '630': `hsl(${paletteConstants['primary-hsl'][630]} / 1)`,
@@ -228,6 +249,7 @@ declare module '@mui/material/styles' {
   interface Theme {
     dcPalette: {
       background: {
+        accent: string;
         floating: string;
         messageHover: string;
         modifierAccent: string;
@@ -241,7 +263,12 @@ declare module '@mui/material/styles' {
         '500': string;
       };
       button: {
+        filledBrandBackground: string;
+        filledBrandBackgroundHover: string;
+        filledBrandText: string;
         secondaryBackground: string;
+        secondaryBackgroundHover: string;
+        secondaryText: string;
       };
       channel: {
         textareaBackground: string;
@@ -326,6 +353,7 @@ declare module '@mui/material/styles' {
   interface ThemeOptions {
     dcPalette?: {
       background: {
+        accent: string;
         floating: string;
         messageHover: string;
         modifierAccent: string;
@@ -339,7 +367,12 @@ declare module '@mui/material/styles' {
         '500': string;
       };
       button: {
+        filledBrandBackground: string;
+        filledBrandBackgroundHover: string;
+        filledBrandText: string;
         secondaryBackground: string;
+        secondaryBackgroundHover: string;
+        secondaryText: string;
       };
       channel: {
         textareaBackground: string;
@@ -483,6 +516,7 @@ const defaultThemeOptions: ThemeOptions = {
   },
   dcPalette: {
     background: {
+      accent: `color-mix(in oklab, ${paletteConstants.primary[530]} 100%, black 0%)`,
       floating: `color-mix(in oklab, ${paletteConstants.primary[800]} 100%, black 0%)`,
       messageHover:
         'color-mix(in oklab, hsl(0 calc(1 * 0%) 0.784% / 0.06) 100%, hsl(0 0% 0% / 0.06) 0%)',
@@ -497,7 +531,12 @@ const defaultThemeOptions: ThemeOptions = {
       '500': paletteConstants.brand[500]
     },
     button: {
-      secondaryBackground: 'rgb(78, 80, 88)'
+      filledBrandBackground: paletteConstants.brand[500],
+      filledBrandBackgroundHover: paletteConstants.brand[560],
+      filledBrandText: paletteConstants.white.base,
+      secondaryBackground: paletteConstants.primary[500],
+      secondaryBackgroundHover: paletteConstants.primary[430],
+      secondaryText: paletteConstants.white[500]
     },
     channel: {
       textareaBackground: `color-mix(in oklab, ${paletteConstants.primary[560]} 100%, black 0%)`

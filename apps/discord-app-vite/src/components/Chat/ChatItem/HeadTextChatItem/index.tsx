@@ -74,8 +74,11 @@ const HeadTextChatItem = (props: HeadTextChatItemProps) => {
           >
             {data.createdAt.calendar(null, {
               sameDay: '[Today at] h:mm A',
+              nexDay: 'M/DD/YY, h:mm A',
+              nextWeek: 'M/DD/YY, h:mm A',
               lastDay: '[Yesterday at] h:mm A',
-              sameElse: 'M/DD/YY'
+              lastWeek: 'M/DD/YY, h:mm A',
+              sameElse: 'M/DD/YY, h:mm A'
             })}
           </Typography>
         </Typography>

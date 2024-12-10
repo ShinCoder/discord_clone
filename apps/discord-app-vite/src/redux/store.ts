@@ -26,7 +26,12 @@ export const store = configureStore({
     socket: socketReducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({})
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['socket/setSocket'],
+        ignoredPaths: ['socket.socket']
+      }
+    })
       .concat(...getMiddlewares())
       .concat(sagaMiddleware)
 });

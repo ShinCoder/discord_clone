@@ -1,38 +1,45 @@
-import { useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { useQuery } from '@tanstack/react-query';
 
+import MessageArea from './components/MessageArea';
 import { getUserProfile } from '@services';
 import UserAvatar from '@components/UserAvatar';
 import ChannelTextarea from '@components/ChannelTextarea';
-import { ChatDate } from '@components/Chat';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
 import {
-  getScrollbarStyle,
   processMessageForDisplay,
-  ProcessedMessageDate
+  ProcessedMessageDate,
+  concatenateProcessedMessages
 } from '@utils';
-import { getDirectMessages } from '@services';
+import { protectedRoutes } from '@constants';
 
 import { SocketEvents } from '@prj/common';
 import {
   IJoinDirectMessageRoomData,
-  ILeaveDirectMessageRoomData
+  ILeaveDirectMessageRoomData,
+  IReceiveDirectMessageDto,
+  ISendDirectMessageData,
+  MessageType
 } from '@prj/types/api';
-
-const PAGE_LIMIT = 10;
 
 const DirectMessage = () => {
   const theme = useTheme();
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { socket } = useAppSelector((state) => state.socket);
   const { data: userData } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (id === userData?.id) {
+      navigate(protectedRoutes.myChannels, { replace: true });
+    }
+  }, [id, navigate, userData?.id]);
 
   // Get target profile
   const { data: targetData, refetch } = useQuery({
@@ -50,54 +57,38 @@ const DirectMessage = () => {
   // Get dm
   const [dms, setDms] = useState<Array<ProcessedMessageDate>>([]);
   const [dmsNumber, setDmsNumber] = useState<number>(0);
-  const [isAll, setIsAll] = useState<boolean>(false);
 
-  const { data: fetchedDms, refetch: fetchDms } = useQuery({
-    queryKey: ['dms', userData?.id || '', id || '', dmsNumber],
-    queryFn: ({
-      queryKey
-    }: QueryFunctionContext<[string, string, string, number]>) =>
-      getDirectMessages({
-        senderId: queryKey[1],
-        targetId: queryKey[2],
-        take: PAGE_LIMIT,
-        skip: queryKey[3]
-      }),
-    enabled: false
-  });
-
-  useEffect(() => {
-    if (fetchedDms) {
-      if (userData && targetData?.data.profile) {
-        setDms((pre) => [
-          ...processMessageForDisplay({
-            messages: [...fetchedDms.data.messages].reverse(),
-            senders: [userData, targetData.data.profile]
-          }),
-          ...pre
-        ]);
-        setDmsNumber((pre) => pre + fetchedDms.data.messages.length);
-        if (fetchedDms.data.messages.length < PAGE_LIMIT) {
-          setIsAll(true);
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchedDms]);
-
-  const fetchNextDmPage = useCallback(async () => {
-    if (!isAll && userData?.id && id) {
-      fetchDms();
-    }
-  }, [fetchDms, id, isAll, userData?.id]);
+  const handleAddDms = useCallback((_data: Array<ProcessedMessageDate>) => {
+    setDms((pre) => concatenateProcessedMessages(_data, pre));
+  }, []);
+  const handleAddDmsNumber = useCallback((_data: number) => {
+    setDmsNumber((pre) => pre + _data);
+  }, []);
   // Get dm --end
 
-  // Send dm
+  // Send & receive dm
   useEffect(() => {
+    const onReceiveDm = (_data: IReceiveDirectMessageDto) => {
+      if (userData && targetData?.data.profile) {
+        setDms((pre) =>
+          concatenateProcessedMessages(
+            pre,
+            processMessageForDisplay({
+              messages: [_data.message],
+              senders: [userData, targetData.data.profile]
+            })
+          )
+        );
+        setDmsNumber((pre) => pre + 1);
+      }
+    };
+
     if (socket && id) {
       socket.emit(SocketEvents.joinDirectMessageRoom, {
         targetId: id
       } satisfies IJoinDirectMessageRoomData);
+
+      socket.on(SocketEvents.receiveDirectMessage, onReceiveDm);
     }
 
     return () => {
@@ -105,10 +96,26 @@ const DirectMessage = () => {
         socket.emit(SocketEvents.leaveDirectMessageRoom, {
           targetId: id
         } satisfies ILeaveDirectMessageRoomData);
+
+        socket.off(SocketEvents.receiveDirectMessage, onReceiveDm);
       }
     };
-  }, [id, socket]);
-  // Send dm --end
+  }, [id, socket, targetData?.data.profile, userData]);
+
+  const sendDm = useCallback(
+    (data: { message: string }) => {
+      if (socket && id) {
+        // !!! HARD CODED
+        socket.emit(SocketEvents.sendDirectMessage, {
+          targetId: id,
+          content: data.message,
+          type: MessageType.TEXT
+        } satisfies ISendDirectMessageData);
+      }
+    },
+    [id, socket]
+  );
+  // Send & receive dm --end
 
   useEffect(() => {
     if (id) {
@@ -116,7 +123,6 @@ const DirectMessage = () => {
         try {
           dispatch(setLoading(true));
           await refetch();
-          await fetchNextDmPage();
         } catch {
           /* empty */
         } finally {
@@ -128,10 +134,8 @@ const DirectMessage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id, refetch]);
 
-  const messageAreaId = useId();
-
-  return (
-    profile && (
+  return id ? (
+    profile && userData && (
       <Box style={{ flex: 1 }}>
         <Box
           sx={{
@@ -181,38 +185,15 @@ const DirectMessage = () => {
           <Box
             sx={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}
           >
-            <Box
-              sx={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column-reverse',
-                overflowY: 'auto',
-                ...getScrollbarStyle('auto')
-              }}
-              id={messageAreaId}
-            >
-              <InfiniteScroll
-                dataLength={dms.length}
-                next={fetchNextDmPage}
-                hasMore={!isAll}
-                loader={<h4>Loading...</h4>}
-                inverse
-                endMessage={<h4>That's all!</h4>}
-                scrollableTarget={messageAreaId}
-              >
-                {dms.map((e) => (
-                  <ChatDate
-                    data={e}
-                    key={e.date.format()}
-                  />
-                ))}
-              </InfiniteScroll>
-            </Box>
-            <ChannelTextarea
-              onSubmit={() => {
-                console.log('SUBMIT');
-              }}
+            <MessageArea
+              sender={userData}
+              target={profile}
+              dms={dms}
+              onAddDms={handleAddDms}
+              dmsNumber={dmsNumber}
+              onAddDmsNumber={handleAddDmsNumber}
             />
+            <ChannelTextarea onSubmit={sendDm} />
           </Box>
           <Box
             sx={{
@@ -229,6 +210,11 @@ const DirectMessage = () => {
         </Box>
       </Box>
     )
+  ) : (
+    <Navigate
+      to={protectedRoutes.myChannels}
+      replace
+    />
   );
 };
 
