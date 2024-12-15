@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Modal, Tooltip, Typography, Zoom } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
@@ -17,15 +17,19 @@ import { AccountDto, RelationshipStatus } from '@prj/types/api';
 
 export interface ProfileModalExtraProps {
   profile: AccountDto;
+  onAddFriend?: () => void;
+  onAcceptFriend?: () => void;
+  onIgnoreFriend?: () => void;
 }
 
 interface ProfileModalState extends ModalState {
-  extraProps: ProfileModalExtraProps;
+  extraProps?: ProfileModalExtraProps;
 }
 
 const ProfileModal = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const modalState = useAppSelector((state) => state.modal)[
     ModalKey.PROFILE
@@ -37,15 +41,15 @@ const ProfileModal = () => {
 
   const handleDm = useCallback(() => {
     if (modalState?.extraProps?.profile) {
-      navigate(
-        protectedRoutes.directMessages(
-          'absolute',
-          modalState.extraProps.profile.id
-        )
+      const navTo = protectedRoutes.directMessages(
+        'absolute',
+        modalState.extraProps.profile.id
       );
+
+      if (location.pathname !== navTo) navigate(navTo);
       dispatch(hideModal(ModalKey.PROFILE));
     }
-  }, [dispatch, modalState?.extraProps?.profile, navigate]);
+  }, [dispatch, location.pathname, modalState?.extraProps?.profile, navigate]);
 
   const renderFriendAction = useCallback(() => {
     switch (modalState?.extraProps?.profile.relationshipWith?.status) {
@@ -85,6 +89,10 @@ const ProfileModal = () => {
       default:
         return (
           <Button
+            onClick={() => {
+              modalState.extraProps?.onAddFriend?.();
+              handleClose();
+            }}
             startIcon={
               <PersonAddAlt1Icon sx={{ width: '16px', height: '16px' }} />
             }
@@ -107,7 +115,8 @@ const ProfileModal = () => {
         );
     }
   }, [
-    modalState?.extraProps?.profile.relationshipWith?.status,
+    handleClose,
+    modalState?.extraProps,
     theme.dcPalette.button.filledBrandBackground,
     theme.dcPalette.button.filledBrandBackgroundHover,
     theme.dcPalette.button.filledBrandText,
@@ -262,8 +271,22 @@ const ProfileModal = () => {
                         sent you a friend request.
                       </Typography>
                       <Box sx={{ display: 'flex', columnGap: '8px' }}>
-                        <PrimaryActionBtn>Accept</PrimaryActionBtn>
-                        <SecondaryActionBtn>Ignore</SecondaryActionBtn>
+                        <PrimaryActionBtn
+                          onClick={() => {
+                            modalState.extraProps?.onAcceptFriend?.();
+                            handleClose();
+                          }}
+                        >
+                          Accept
+                        </PrimaryActionBtn>
+                        <SecondaryActionBtn
+                          onClick={() => {
+                            modalState.extraProps?.onIgnoreFriend?.();
+                            handleClose();
+                          }}
+                        >
+                          Ignore
+                        </SecondaryActionBtn>
                       </Box>
                     </Box>
                   )}

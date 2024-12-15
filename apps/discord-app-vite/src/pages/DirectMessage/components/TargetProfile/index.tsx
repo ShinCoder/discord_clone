@@ -10,10 +10,13 @@ import { AccountDto, RelationshipStatus } from '@prj/types/api';
 
 interface TargetProfileProps {
   data: AccountDto;
+  onAddFriend: () => void;
+  onAcceptFriend: () => void;
+  onIgnoreFriend: () => void;
 }
 
 const TargetProfile = (props: TargetProfileProps) => {
-  const { data } = props;
+  const { data, onAddFriend, onAcceptFriend, onIgnoreFriend } = props;
   const theme = useTheme();
 
   const renderFriendAction = useCallback(() => {
@@ -31,8 +34,10 @@ const TargetProfile = (props: TargetProfileProps) => {
             >
               Sent you a friend request:
             </Typography>
-            <PrimaryActionBtn>Accept</PrimaryActionBtn>
-            <SecondaryActionBtn>Ignore</SecondaryActionBtn>
+            <PrimaryActionBtn onClick={onAcceptFriend}>Accept</PrimaryActionBtn>
+            <SecondaryActionBtn onClick={onIgnoreFriend}>
+              Ignore
+            </SecondaryActionBtn>
           </Box>
         );
       case RelationshipStatus.REQUESTING:
@@ -42,9 +47,17 @@ const TargetProfile = (props: TargetProfileProps) => {
       case RelationshipStatus.FRIEND:
         return <SecondaryActionBtn>Remove Friend</SecondaryActionBtn>;
       default:
-        return <PrimaryActionBtn>Add Friend</PrimaryActionBtn>;
+        return (
+          <PrimaryActionBtn onClick={onAddFriend}>Add Friend</PrimaryActionBtn>
+        );
     }
-  }, [data.relationshipWith?.status, theme.dcPalette.header.secondary]);
+  }, [
+    data.relationshipWith?.status,
+    onAcceptFriend,
+    onAddFriend,
+    onIgnoreFriend,
+    theme.dcPalette.header.secondary
+  ]);
 
   const renderBlockAction = useCallback(() => {
     switch (data.relationshipWith?.status) {

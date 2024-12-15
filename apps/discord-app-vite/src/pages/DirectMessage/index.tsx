@@ -2,10 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Box, Grid2, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import MessageArea from './components/MessageArea';
-import { getUserProfile } from '@services';
+import {
+  acceptFriendRequest,
+  declineFriendRequest,
+  getUserProfile,
+  sendFriendRequest
+} from '@services';
 import UserAvatar from '@components/UserAvatar';
 import ChannelTextarea from '@components/ChannelTextarea';
 import { ProfileModalExtraProps } from '@components/GlobalModal/ProfileModal';
@@ -55,16 +60,94 @@ const DirectMessage = () => {
     [targetData?.data.profile]
   );
 
+  const addFriendMutation = useMutation({
+    mutationFn: sendFriendRequest,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
+  const acceptRequestMutation = useMutation({
+    mutationFn: acceptFriendRequest,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
+  const declineRequestMutation = useMutation({
+    mutationFn: declineFriendRequest,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
+  const handleAddFriend = useCallback(() => {
+    if (userData && profile) {
+      addFriendMutation.mutate({
+        accountId: userData.id,
+        targetId: profile.id
+      });
+    }
+  }, [addFriendMutation, profile, userData]);
+
+  const handleAcceptRequest = useCallback(() => {
+    if (userData && profile) {
+      acceptRequestMutation.mutate({
+        accountId: userData.id,
+        targetId: profile.id
+      });
+    }
+  }, [acceptRequestMutation, profile, userData]);
+
+  const handleDeclineRequest = useCallback(() => {
+    if (userData && profile) {
+      declineRequestMutation.mutate({
+        accountId: userData.id,
+        targetId: profile.id
+      });
+    }
+  }, [userData, profile, declineRequestMutation]);
+
   const handleOpenProfileModal = useCallback(() => {
     if (profile) {
       dispatch(
         showModal({
           key: ModalKey.PROFILE,
-          extraProps: { profile }
+          extraProps: {
+            profile,
+            onAddFriend: handleAddFriend,
+            onAcceptFriend: handleAcceptRequest,
+            onIgnoreFriend: handleDeclineRequest
+          }
         } satisfies { key: string; extraProps: ProfileModalExtraProps })
       );
     }
-  }, [dispatch, profile]);
+  }, [
+    dispatch,
+    handleAcceptRequest,
+    handleAddFriend,
+    handleDeclineRequest,
+    profile
+  ]);
+
   // Get target profile --end
 
   // Get dm
@@ -212,6 +295,9 @@ const DirectMessage = () => {
                 onAddDms={handleAddDms}
                 dmsNumber={dmsNumber}
                 onAddDmsNumber={handleAddDmsNumber}
+                onAddFriend={handleAddFriend}
+                onAcceptFriend={handleAcceptRequest}
+                onIgnoreFriend={handleDeclineRequest}
               />
               <ChannelTextarea onSubmit={sendDm} />
             </Box>

@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { InView, useInView } from 'react-intersection-observer';
+import { InView } from 'react-intersection-observer';
 import { Box } from '@mui/material';
 import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
 
@@ -21,12 +21,25 @@ interface MessageAreaProps {
   onAddDms: (_data: Array<ProcessedMessageDate>) => void;
   dmsNumber: number;
   onAddDmsNumber: (_data: number) => void;
+  onAddFriend: () => void;
+  onAcceptFriend: () => void;
+  onIgnoreFriend: () => void;
 }
 
 const PAGE_LIMIT = 10;
 
 const MessageArea = (props: MessageAreaProps) => {
-  const { sender, target, dms, onAddDms, dmsNumber, onAddDmsNumber } = props;
+  const {
+    sender,
+    target,
+    dms,
+    onAddDms,
+    dmsNumber,
+    onAddDmsNumber,
+    onAddFriend,
+    onAcceptFriend,
+    onIgnoreFriend
+  } = props;
 
   const [hasMore, setHasMore] = useState<boolean>(true);
 
@@ -69,21 +82,6 @@ const MessageArea = (props: MessageAreaProps) => {
     }
   }, [hasMore, isFetching, processing, refetch]);
 
-  const { ref: dummyISRef, inView: dummyISInView } = useInView({
-    threshold: 1,
-    rootMargin: '1000px'
-  });
-
-  useEffect(() => {
-    const fetchNext = async () => {
-      if (dummyISInView) {
-        await fetchDms();
-      }
-    };
-
-    fetchNext();
-  }, [dummyISInView, fetchDms]);
-
   return (
     <Box
       sx={{
@@ -108,7 +106,14 @@ const MessageArea = (props: MessageAreaProps) => {
           }}
         />
       )}
-      {!hasMore && <TargetProfile data={target} />}
+      {!hasMore && (
+        <TargetProfile
+          data={target}
+          onAddFriend={onAddFriend}
+          onAcceptFriend={onAcceptFriend}
+          onIgnoreFriend={onIgnoreFriend}
+        />
+      )}
     </Box>
   );
 };

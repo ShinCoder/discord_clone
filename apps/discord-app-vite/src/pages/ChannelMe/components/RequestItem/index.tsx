@@ -29,10 +29,14 @@ const RequestItem = (props: RequestItemProps) => {
     dispatch(
       showModal({
         key: ModalKey.PROFILE,
-        extraProps: { profile: data }
+        extraProps: {
+          profile: data,
+          onAcceptFriend: onAccept,
+          onIgnoreFriend: onDecline
+        }
       } satisfies { key: string; extraProps: ProfileModalExtraProps })
     );
-  }, [data, dispatch]);
+  }, [data, dispatch, onAccept, onDecline]);
 
   return (
     <Box
