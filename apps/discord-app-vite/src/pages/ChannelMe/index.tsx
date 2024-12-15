@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Divider, Tabs, Typography } from '@mui/material';
+import { Box, Divider, Tabs, Typography, Grid2 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import { useQuery } from '@tanstack/react-query';
@@ -228,21 +228,23 @@ const ChannelMe = () => {
           </Box>
         </Box>
       </Box>
-      <Box sx={{ display: 'flex', height: '100%' }}>
-        <Box sx={{ flex: '1 1 auto' }}>{renderTabContent()}</Box>
-        <Box
-          sx={{
-            flex: '1 0 25%',
-            minWidth: '360px',
-            maxWidth: '420px',
-            height: '100%',
-            padding: '16px',
-            borderLeft: `1px solid ${theme.dcPalette.background.modifierAccent}`
-          }}
-        >
-          Comming not soon
-        </Box>
-      </Box>
+      <Grid2
+        container
+        height='100%'
+      >
+        <Grid2 size={8}>{renderTabContent()}</Grid2>
+        <Grid2 size={4}>
+          <Box
+            sx={{
+              height: '100%',
+              padding: '16px',
+              borderLeft: `1px solid ${theme.dcPalette.background.modifierAccent}`
+            }}
+          >
+            Comming not soon
+          </Box>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

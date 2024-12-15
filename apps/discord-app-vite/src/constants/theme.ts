@@ -252,6 +252,7 @@ declare module '@mui/material/styles' {
         accent: string;
         floating: string;
         messageHover: string;
+        modFaint: string;
         modifierAccent: string;
         modifierHover: string;
         modifierSelected: string;
@@ -267,6 +268,7 @@ declare module '@mui/material/styles' {
         filledBrandBackgroundHover: string;
         filledBrandText: string;
         secondaryBackground: string;
+        secondaryBackgroundDisabled: string;
         secondaryBackgroundHover: string;
         secondaryText: string;
       };
@@ -304,6 +306,7 @@ declare module '@mui/material/styles' {
         '360': string;
         '630': string;
         '730': string;
+        '800': string;
       };
       status: {
         danger: {
@@ -356,6 +359,7 @@ declare module '@mui/material/styles' {
         accent: string;
         floating: string;
         messageHover: string;
+        modFaint: string;
         modifierAccent: string;
         modifierHover: string;
         modifierSelected: string;
@@ -371,6 +375,7 @@ declare module '@mui/material/styles' {
         filledBrandBackgroundHover: string;
         filledBrandText: string;
         secondaryBackground: string;
+        secondaryBackgroundDisabled: string;
         secondaryBackgroundHover: string;
         secondaryText: string;
       };
@@ -408,6 +413,7 @@ declare module '@mui/material/styles' {
         '360': string;
         '630': string;
         '730': string;
+        '800': string;
       };
       status: {
         danger: {
@@ -520,6 +526,8 @@ const defaultThemeOptions: ThemeOptions = {
       floating: `color-mix(in oklab, ${paletteConstants.primary[800]} 100%, black 0%)`,
       messageHover:
         'color-mix(in oklab, hsl(0 calc(1 * 0%) 0.784% / 0.06) 100%, hsl(0 0% 0% / 0.06) 0%)',
+      modFaint:
+        'color-mix(in oklab, hsl(228 calc(1 * 6.024%) 32.549% / 0.3) 100%, hsl(0 0% 0% / 0.3) 0%)',
       modifierAccent: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.48) 100%, hsl(0 0% 0% / 0.48) 0%)`,
       modifierHover: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.3) 100%, hsl(0 0% 0% / 0.3) 0%)`,
       modifierSelected: `color-mix(in oklab, hsl(${paletteConstants['primary-hsl'][500]} / 0.6) 100%, hsl(0 0% 0% / 0.6) 0%)`,
@@ -535,6 +543,7 @@ const defaultThemeOptions: ThemeOptions = {
       filledBrandBackgroundHover: paletteConstants.brand[560],
       filledBrandText: paletteConstants.white.base,
       secondaryBackground: paletteConstants.primary[500],
+      secondaryBackgroundDisabled: paletteConstants.primary[500],
       secondaryBackgroundHover: paletteConstants.primary[430],
       secondaryText: paletteConstants.white[500]
     },
@@ -571,7 +580,8 @@ const defaultThemeOptions: ThemeOptions = {
       '330': paletteConstants.primary[330],
       '360': paletteConstants.primary[360],
       '630': paletteConstants.primary[630],
-      '730': paletteConstants.primary[730]
+      '730': paletteConstants.primary[730],
+      '800': paletteConstants.primary[800]
     },
     status: {
       danger: {

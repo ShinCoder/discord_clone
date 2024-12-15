@@ -18,6 +18,23 @@ const TargetProfile = (props: TargetProfileProps) => {
 
   const renderFriendAction = useCallback(() => {
     switch (data.relationshipWith?.status) {
+      case RelationshipStatus.PENDING:
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', columnGap: '8px' }}>
+            <Typography
+              sx={{
+                color: theme.dcPalette.header.secondary,
+                fontSize: '0.875rem',
+                fontWeight: 400,
+                lineHeight: 1.25
+              }}
+            >
+              Sent you a friend request:
+            </Typography>
+            <PrimaryActionBtn>Accept</PrimaryActionBtn>
+            <SecondaryActionBtn>Ignore</SecondaryActionBtn>
+          </Box>
+        );
       case RelationshipStatus.REQUESTING:
         return (
           <PrimaryActionBtn disabled>Friend Request Sent</PrimaryActionBtn>
@@ -25,9 +42,9 @@ const TargetProfile = (props: TargetProfileProps) => {
       case RelationshipStatus.FRIEND:
         return <SecondaryActionBtn>Remove Friend</SecondaryActionBtn>;
       default:
-        return <Box />;
+        return <PrimaryActionBtn>Add Friend</PrimaryActionBtn>;
     }
-  }, [data.relationshipWith?.status]);
+  }, [data.relationshipWith?.status, theme.dcPalette.header.secondary]);
 
   const renderBlockAction = useCallback(() => {
     switch (data.relationshipWith?.status) {
@@ -87,6 +104,16 @@ const TargetProfile = (props: TargetProfileProps) => {
         .
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '16px' }}>
+        <Typography
+          sx={{
+            color: theme.dcPalette.header.secondary,
+            fontSize: '0.875rem',
+            fontWeight: 400,
+            lineHeight: 1.25
+          }}
+        >
+          No servers in common
+        </Typography>
         <Box
           sx={{
             width: '4px',

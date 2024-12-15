@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -6,8 +6,12 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
 import UserAvatar from '@components/UserAvatar';
+import { useAppDispatch } from '@redux/hooks';
+import { showModal } from '@redux/slices/modalSlice';
+import { ModalKey } from '@constants';
 
 import { AccountDto, RelationshipStatus } from '@prj/types/api';
+import { ProfileModalExtraProps } from '@components/GlobalModal/ProfileModal';
 
 interface RequestItemProps {
   data: AccountDto;
@@ -19,9 +23,20 @@ const RequestItem = (props: RequestItemProps) => {
   const { data, onAccept, onDecline } = props;
 
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+
+  const handleClick = useCallback(() => {
+    dispatch(
+      showModal({
+        key: ModalKey.PROFILE,
+        extraProps: { profile: data }
+      } satisfies { key: string; extraProps: ProfileModalExtraProps })
+    );
+  }, [data, dispatch]);
 
   return (
     <Box
+      onClick={handleClick}
       sx={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -55,7 +70,9 @@ const RequestItem = (props: RequestItemProps) => {
           alt={data.username}
           color={data.bannerColor}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', userSelect: 'none' }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography
               component='span'
@@ -70,7 +87,7 @@ const RequestItem = (props: RequestItemProps) => {
             <Typography
               component='span'
               sx={{
-                fontSize: '0/875rem',
+                fontSize: '0.875rem',
                 color: theme.dcPalette.header.secondary,
                 marginLeft: '5px',
                 visibility: 'hidden'
@@ -87,12 +104,14 @@ const RequestItem = (props: RequestItemProps) => {
               textTransform: 'capitalize'
             }}
           >
-            {data.connectionStatus?.toLowerCase() || 'Offline'}
+            {(data.relationshipWith?.status === RelationshipStatus.REQUESTING
+              ? 'Outgoing'
+              : 'Incoming') + ' Friend Request'}
           </Typography>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', columnGap: '10px' }}>
-        {data.relationshipWith?.status === RelationshipStatus.REQUESTING && (
+        {data.relationshipWith?.status === RelationshipStatus.PENDING && (
           <Tooltip
             title='Accept'
             placement='top'

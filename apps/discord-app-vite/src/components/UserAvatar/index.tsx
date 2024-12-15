@@ -56,8 +56,8 @@ const UserAvatar = (props: UserAvatarProps) => {
                 height: 'fit-content',
 
                 '& .MuiBadge-badge': {
-                  width: '10px',
-                  height: '10px',
+                  width: `calc(${size} * 0.2)`,
+                  height: `calc(${size} * 0.2)`,
                   borderRadius: '50%',
                   backgroundColor: theme.dcPalette.green[360]
                 }
@@ -74,8 +74,8 @@ const UserAvatar = (props: UserAvatarProps) => {
               variant='dot'
               sx={{
                 '& .MuiBadge-badge': {
-                  width: '10px',
-                  height: '10px',
+                  width: `calc(${size} * 0.2)`,
+                  height: `calc(${size} * 0.2)`,
                   borderRadius: '50%',
                   backgroundColor: 'rgb(128, 132, 142)'
                 }
@@ -90,7 +90,7 @@ const UserAvatar = (props: UserAvatarProps) => {
     } else {
       return renderAvatar();
     }
-  }, [renderAvatar, showStatus, status, theme.dcPalette.green]);
+  }, [renderAvatar, showStatus, size, status, theme.dcPalette.green]);
 
   return render();
 };

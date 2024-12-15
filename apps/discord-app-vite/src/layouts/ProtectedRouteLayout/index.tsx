@@ -2,6 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 
+import GlobalModal from '@components/GlobalModal';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setSocket } from '@redux/slices/socketSlice';
 
@@ -27,7 +28,14 @@ const ProtectedRouteLayout = () => {
     };
   }, [authState.token, dispatch]);
 
-  return authState.token ? <Outlet /> : <Navigate to='/login' />;
+  return authState.token ? (
+    <>
+      <GlobalModal />
+      <Outlet />
+    </>
+  ) : (
+    <Navigate to='/login' />
+  );
 };
 
 export default ProtectedRouteLayout;
