@@ -102,19 +102,20 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
-  @Post('friend-request')
+  @Post(':id/friend-request')
   sendFriendRequest(
     @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
     @Body() body: SendFriendRequestDto
   ) {
-    if (req.user.sub !== body.accountId)
+    if (req.user.sub !== accountId)
       throw new ForbiddenException('Forbidden resource');
 
-    return this.authService.sendFriendRequest(body);
+    return this.authService.sendFriendRequest(accountId, body);
   }
 
   @UseGuards(JwtAtGuard)
-  @Get(':id/friend-request')
+  @Get(':id/friend-requests')
   getPendingFriendRequest(
     @Req() req: IRequestWithUser,
     @Param('id') accountId: string
@@ -126,27 +127,29 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
-  @Patch('friend-request/accept')
+  @Patch(':id/friend-request/accept')
   acceptFriendRequest(
     @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
     @Body() body: AcceptFriendRequestDto
   ) {
-    if (req.user.sub !== body.accountId)
+    if (req.user.sub !== accountId)
       throw new ForbiddenException('Forbidden resource');
 
-    return this.authService.acceptFriendRequest(body);
+    return this.authService.acceptFriendRequest(accountId, body);
   }
 
   @UseGuards(JwtAtGuard)
-  @Patch('friend-request/decline')
+  @Patch(':id/friend-request/decline')
   declineFriendRequest(
     @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
     @Body() body: DeclineFriendRequestDto
   ) {
-    if (req.user.sub !== body.accountId)
+    if (req.user.sub !== accountId)
       throw new ForbiddenException('Forbidden resource');
 
-    return this.authService.declineFriendRequest(body);
+    return this.authService.declineFriendRequest(accountId, body);
   }
 
   @UseGuards(JwtAtGuard)

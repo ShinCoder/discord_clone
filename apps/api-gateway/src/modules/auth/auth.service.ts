@@ -141,7 +141,7 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
-  async sendFriendRequest(data: SendFriendRequestDto) {
+  async sendFriendRequest(accountId: string, data: SendFriendRequestDto) {
     if (!data.targetId && !data.targetUsername) {
       throw new BadRequestException(
         ApiErrorMessages.SEND_FRIEND_REQUEST_NO_TARGET
@@ -153,7 +153,7 @@ export class AuthService implements OnModuleInit {
         this.authServiceAccountModule.getAccount({
           id: data.targetId,
           username: data.targetUsername,
-          includeRelationshipWith: data.accountId
+          includeRelationshipWith: accountId
         })
       )
     );
@@ -163,10 +163,13 @@ export class AuthService implements OnModuleInit {
         ApiErrorMessages.SEND_FRIEND_REQUEST_ALREADY_FRIEND
       );
 
+    if (target.relationshipWith?.status === RpcRelationshipStatus.BEING_BLOCKED)
+      throw new ConflictException(ApiErrorMessages.SEND_FRIEND_REQUEST_BLOCKED);
+
     const result = await lastValueFrom(
       this.authServiceAccountModule.createOrUpdateRelationship({
         account: {
-          id: data.accountId,
+          id: accountId,
           status: RpcRelationshipStatus.REQUESTING
         },
         target: {
@@ -179,11 +182,11 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
-  async acceptFriendRequest(data: AcceptFriendRequestDto) {
+  async acceptFriendRequest(accountId: string, data: AcceptFriendRequestDto) {
     const result = await lastValueFrom(
       this.authServiceAccountModule.createOrUpdateRelationship({
         account: {
-          id: data.accountId,
+          id: accountId,
           status: RpcRelationshipStatus.FRIEND
         },
         target: {
@@ -196,10 +199,10 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
-  async declineFriendRequest(data: DeclineFriendRequestDto) {
+  async declineFriendRequest(accountId: string, data: DeclineFriendRequestDto) {
     const result = await lastValueFrom(
       this.authServiceAccountModule.deleteRelationship({
-        accountId: data.accountId,
+        accountId: accountId,
         targetId: data.targetId
       })
     );

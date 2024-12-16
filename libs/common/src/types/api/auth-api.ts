@@ -52,18 +52,15 @@ export interface IVerifyDto {
 }
 
 export interface ISendFriendRequestDto {
-  accountId: string;
   targetId?: string;
   targetUsername?: string;
 }
 
 export interface IAcceptFriendRequestDto {
-  accountId: string;
   targetId: string;
 }
 
 export interface IDeclineFriendRequestDto {
-  accountId: string;
   targetId: string;
 }
 
