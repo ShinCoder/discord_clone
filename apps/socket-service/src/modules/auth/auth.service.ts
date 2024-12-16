@@ -6,16 +6,21 @@ import { lastValueFrom } from 'rxjs';
 
 import { AUTH_SERVICE } from '../../constants/services';
 import { AuthPayload } from './auth.type';
+import { handleRpcResult } from '../../utils';
 
 import {
+  AUTH_SERVICE_ACCOUNT_MODULE_SERVICE_NAME,
   AUTH_SERVICE_AUTH_MODULE_SERVICE_NAME,
+  AuthServiceAccountModuleClient,
   AuthServiceAuthModuleClient,
+  GetAccountDto,
   UpdateConnectionStatusDto
 } from '@prj/types/grpc/auth-service';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
   private authServiceAuthModule: AuthServiceAuthModuleClient;
+  private authServiceAccountModule: AuthServiceAccountModuleClient;
 
   constructor(
     @Inject(AUTH_SERVICE) private readonly authClient: ClientGrpc,
@@ -27,6 +32,10 @@ export class AuthService implements OnModuleInit {
     this.authServiceAuthModule =
       this.authClient.getService<AuthServiceAuthModuleClient>(
         AUTH_SERVICE_AUTH_MODULE_SERVICE_NAME
+      );
+    this.authServiceAccountModule =
+      this.authClient.getService<AuthServiceAccountModuleClient>(
+        AUTH_SERVICE_ACCOUNT_MODULE_SERVICE_NAME
       );
   }
 
@@ -42,5 +51,13 @@ export class AuthService implements OnModuleInit {
     return this.jwtService.verify(token, {
       publicKey
     }) as AuthPayload;
+  }
+
+  async getAccount(data: GetAccountDto) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.getAccount(data)
+    );
+
+    return handleRpcResult(result);
   }
 }
