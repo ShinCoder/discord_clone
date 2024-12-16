@@ -71,6 +71,14 @@ export interface IGetFriendsDto {
   accountId: string;
 }
 
+export interface IBlockDto {
+  targetId: string;
+}
+
+export interface IUnblockDto {
+  targetId: string;
+}
+
 export enum RelationshipStatus {
   REQUESTING = 'REQUESTING',
   PENDING = 'PENDING',

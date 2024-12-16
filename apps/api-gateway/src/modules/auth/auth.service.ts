@@ -279,4 +279,29 @@ export class AuthService implements OnModuleInit {
       }))
     };
   }
+
+  async blockUser(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.createOrUpdateRelationship({
+        account: {
+          id: accountId,
+          status: RpcRelationshipStatus.BLOCKED
+        },
+        target: {
+          id: targetId,
+          status: RpcRelationshipStatus.BEING_BLOCKED
+        }
+      })
+    );
+
+    return handleRpcResult(result);
+  }
+
+  async unblockUser(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.deleteRelationship({ accountId, targetId })
+    );
+
+    return handleRpcResult(result);
+  }
 }

@@ -4,6 +4,8 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -15,6 +17,7 @@ import {
 import { AuthService } from './auth.service';
 import {
   AcceptFriendRequestDto,
+  BlockDto,
   DeclineFriendRequestDto,
   LogoutDto,
   RefreshDto,
@@ -159,6 +162,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id/friend/:target')
   removeFriend(
     @Req() req: IRequestWithUser,
@@ -183,5 +187,32 @@ export class AuthController {
         includeRelationshipWith: req.user.sub
       })
     };
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Post(':id/block')
+  async blockUser(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
+    @Body() body: BlockDto
+  ) {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.blockUser(accountId, body.targetId);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':id/block/:target')
+  async unblockUser(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
+    @Param('target') targetId: string
+  ) {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.unblockUser(accountId, targetId);
   }
 }
