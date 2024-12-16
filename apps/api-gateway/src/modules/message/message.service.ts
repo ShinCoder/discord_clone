@@ -36,10 +36,11 @@ export class MessageService implements OnModuleInit {
 
     return {
       ...result,
-      messages: result.messages.map((e) => ({
-        ...e,
-        type: MessageType[e.type]
-      }))
+      messages:
+        result.messages?.map((e) => ({
+          ...e,
+          type: MessageType[e.type]
+        })) || []
     };
   }
 }

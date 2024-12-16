@@ -63,9 +63,9 @@ export default class DmService {
           ]
         },
         take: data.take,
-        skip: data.skip || data.page ? data.take * (data.page - 1) : 0,
+        skip: data.skip || (data.page ? data.take * (data.page - 1) : 0),
         orderBy: {
-          createdAt: 'asc'
+          createdAt: 'desc'
         }
       } satisfies Prisma.DirectMessagesFindManyArgs;
 

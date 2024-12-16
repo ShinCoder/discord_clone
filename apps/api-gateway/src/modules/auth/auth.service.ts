@@ -253,8 +253,6 @@ export class AuthService implements OnModuleInit {
         )
       ).accounts || ([] as AccountDto[]);
 
-    // console.log(requesting);
-
     return {
       accounts: [...requesting, ...pending].map((e) => ({
         ...e,
