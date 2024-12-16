@@ -166,6 +166,10 @@ export class AuthService implements OnModuleInit {
     if (target.relationshipWith?.status === RpcRelationshipStatus.BEING_BLOCKED)
       throw new ConflictException(ApiErrorMessages.SEND_FRIEND_REQUEST_BLOCKED);
 
+    if (target.relationshipWith?.status === RpcRelationshipStatus.PENDING) {
+      return this.acceptFriendRequest(accountId, { targetId: target.id });
+    }
+
     const result = await lastValueFrom(
       this.authServiceAccountModule.createOrUpdateRelationship({
         account: {
