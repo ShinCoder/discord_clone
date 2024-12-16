@@ -111,6 +111,18 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
+  @Get(':id/friend-request')
+  getPendingFriendRequest(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string
+  ): Promise<IGetFriendRequestsResult> {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.getPendingFriendRequest(accountId);
+  }
+
+  @UseGuards(JwtAtGuard)
   @Patch('friend-request/accept')
   acceptFriendRequest(
     @Req() req: IRequestWithUser,
@@ -136,16 +148,27 @@ export class AuthController {
 
   @UseGuards(JwtAtGuard)
   @Get(':id/friends')
-  getFriends(@Param('id') accountId: string): Promise<IGetFriendsResult> {
+  getFriends(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string
+  ): Promise<IGetFriendsResult> {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
     return this.authService.getFriends(accountId);
   }
 
   @UseGuards(JwtAtGuard)
-  @Get(':id/friend-request')
-  getPendingFriendRequest(
-    @Param('id') accountId: string
-  ): Promise<IGetFriendRequestsResult> {
-    return this.authService.getPendingFriendRequest(accountId);
+  @Delete(':id/friend/:target')
+  removeFriend(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
+    @Param('target') targetId: string
+  ) {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.removeFriend(accountId, targetId);
   }
 
   @UseGuards(JwtAtGuard)

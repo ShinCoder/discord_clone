@@ -232,6 +232,14 @@ export class AuthService implements OnModuleInit {
     };
   }
 
+  async removeFriend(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.deleteRelationship({ accountId, targetId })
+    );
+
+    return handleRpcResult(result);
+  }
+
   async getPendingFriendRequest(accountId: string) {
     const pending =
       handleRpcResult(
