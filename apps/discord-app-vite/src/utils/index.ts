@@ -6,3 +6,4 @@ export const getErrorMessage = (error: Error) => {
 
 export * from './browser';
 export * from './styles';
+export * from './dataFormat';

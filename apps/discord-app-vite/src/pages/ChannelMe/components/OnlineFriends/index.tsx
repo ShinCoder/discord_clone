@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { memo } from 'react';
 
 import { FriendTabTitle } from '../../elements';

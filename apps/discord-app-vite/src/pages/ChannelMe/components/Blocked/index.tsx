@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 
 import { FriendTabTitle } from '../../elements';
 import { getScrollbarStyle } from '@utils';

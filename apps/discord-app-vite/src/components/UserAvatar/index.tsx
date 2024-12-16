@@ -1,6 +1,5 @@
 import { memo, useCallback } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
+import { Avatar, Badge } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import BrandIcon from '@components/BrandIcon';
@@ -11,6 +10,7 @@ interface UserAvatarProps {
   color?: string;
   showStatus?: boolean;
   status?: 'ONLINE' | 'OFFLINE';
+  size?: string;
 }
 
 const UserAvatar = (props: UserAvatarProps) => {
@@ -19,7 +19,8 @@ const UserAvatar = (props: UserAvatarProps) => {
     alt,
     color = 'transparent',
     showStatus = false,
-    status = 'OFFLINE'
+    status = 'OFFLINE',
+    size = '32px'
   } = props;
 
   const theme = useTheme();
@@ -27,20 +28,20 @@ const UserAvatar = (props: UserAvatarProps) => {
   const renderAvatar = useCallback(() => {
     return (
       <Avatar
-        sx={{ width: '32px', height: '32px', backgroundColor: color }}
+        sx={{ width: size, height: size, backgroundColor: color }}
         src={src}
         alt={alt}
       >
         {!src && (
           <BrandIcon
             color='white'
-            width='20px'
-            height='20px'
+            width={`calc(${size} * 0.625)`}
+            height={`calc(${size} * 0.625)`}
           />
         )}
       </Avatar>
     );
-  }, [alt, color, src]);
+  }, [alt, color, size, src]);
 
   const render = useCallback(() => {
     if (showStatus) {
@@ -55,8 +56,8 @@ const UserAvatar = (props: UserAvatarProps) => {
                 height: 'fit-content',
 
                 '& .MuiBadge-badge': {
-                  width: '10px',
-                  height: '10px',
+                  width: `calc(${size} * 0.2)`,
+                  height: `calc(${size} * 0.2)`,
                   borderRadius: '50%',
                   backgroundColor: theme.dcPalette.green[360]
                 }
@@ -73,8 +74,8 @@ const UserAvatar = (props: UserAvatarProps) => {
               variant='dot'
               sx={{
                 '& .MuiBadge-badge': {
-                  width: '10px',
-                  height: '10px',
+                  width: `calc(${size} * 0.2)`,
+                  height: `calc(${size} * 0.2)`,
                   borderRadius: '50%',
                   backgroundColor: 'rgb(128, 132, 142)'
                 }
@@ -89,7 +90,7 @@ const UserAvatar = (props: UserAvatarProps) => {
     } else {
       return renderAvatar();
     }
-  }, [renderAvatar, showStatus, status, theme.dcPalette.green]);
+  }, [renderAvatar, showStatus, size, status, theme.dcPalette.green]);
 
   return render();
 };

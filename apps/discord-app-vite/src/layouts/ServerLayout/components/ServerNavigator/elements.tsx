@@ -1,4 +1,4 @@
-import Avatar, { AvatarProps } from '@mui/material/Avatar';
+import { Avatar, AvatarProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const NavItemAvatar = styled(Avatar, {

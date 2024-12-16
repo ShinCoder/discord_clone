@@ -1,6 +1,9 @@
-import Box from '@mui/material/Box';
-import MUISelect, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  Box,
+  MenuItem,
+  Select as MUISelect,
+  SelectChangeEvent
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTheme } from '@mui/material/styles';
 

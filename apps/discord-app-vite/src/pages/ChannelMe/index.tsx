@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
+import { Box, Divider, Tabs, Typography, Grid2 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import Tabs from '@mui/material/Tabs';
 import { useQuery } from '@tanstack/react-query';
 
 import { AddFriendHeaderTab, FriendHeaderTab } from './elements';
@@ -15,8 +12,10 @@ import AddFriend from './components/AddFriend';
 import Blocked from './components/Blocked';
 import PendingRequests from './components/PendingRequests';
 import { getFriends, getPendingFriendRequest } from '@services';
-import { useAppSelector } from '@redux/hooks';
+import { useAppDispatch, useAppSelector } from '@redux/hooks';
+import { setLoading } from '@redux/slices/statusSlice';
 import { protectedRoutes } from '@constants';
+
 import { AccountDto } from '@prj/types/api';
 
 const ChannelMe = () => {
@@ -89,12 +88,24 @@ const ChannelMe = () => {
   }, [fetchFriendRequests]);
   // Add friend --end
 
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (authState.data) {
-      fetchFriends();
-      fetchFriendRequests();
+      const fetch = async () => {
+        try {
+          dispatch(setLoading(true));
+          await fetchFriends();
+          await fetchFriendRequests();
+        } catch {
+          /* empty */
+        } finally {
+          dispatch(setLoading(false));
+        }
+      };
+      fetch();
     }
-  }, [authState.data, fetchFriendRequests, fetchFriends]);
+  }, [authState.data, dispatch, fetchFriendRequests, fetchFriends]);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -217,21 +228,23 @@ const ChannelMe = () => {
           </Box>
         </Box>
       </Box>
-      <Box sx={{ display: 'flex', height: '100%' }}>
-        <Box sx={{ flex: '1 1 auto' }}>{renderTabContent()}</Box>
-        <Box
-          sx={{
-            flex: '1 0 25%',
-            minWidth: '360px',
-            maxWidth: '420px',
-            height: '100%',
-            padding: '16px',
-            borderLeft: `1px solid ${theme.dcPalette.background.modifierAccent}`
-          }}
-        >
-          Comming not soon
-        </Box>
-      </Box>
+      <Grid2
+        container
+        height='100%'
+      >
+        <Grid2 size={8}>{renderTabContent()}</Grid2>
+        <Grid2 size={4}>
+          <Box
+            sx={{
+              height: '100%',
+              padding: '16px',
+              borderLeft: `1px solid ${theme.dcPalette.background.modifierAccent}`
+            }}
+          >
+            Comming not soon
+          </Box>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

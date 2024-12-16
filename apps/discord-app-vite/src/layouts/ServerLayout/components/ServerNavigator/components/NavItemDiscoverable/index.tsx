@@ -1,9 +1,8 @@
 import { useCallback } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
-import ExploreIcon from '@mui/icons-material/Explore';
+import { Box, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import ExploreIcon from '@mui/icons-material/Explore';
 
 import { NavItemAvatar } from '../../elements';
 import { protectedRoutes } from '@constants';

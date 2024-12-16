@@ -1,5 +1,4 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import loadingIconMp4Vid from './assets/loading_icon.mp4';

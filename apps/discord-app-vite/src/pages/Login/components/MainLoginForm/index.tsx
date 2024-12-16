@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';

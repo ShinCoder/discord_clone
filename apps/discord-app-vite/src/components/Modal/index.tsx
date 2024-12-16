@@ -1,9 +1,6 @@
 import { ReactNode } from 'react';
-import MUIModal from '@mui/material/Modal';
-import Zoom from '@mui/material/Zoom';
-import Box from '@mui/material/Box';
+import { Box, Modal as MUIModal, Zoom } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Backdrop from '@mui/material/Backdrop';
 
 interface ModalProps {
   children: ReactNode;

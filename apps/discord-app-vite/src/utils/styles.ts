@@ -30,11 +30,11 @@ export const getScrollbarStyle: (variant?: 'thin' | 'auto') => SxProps = (
 ) => {
   const multiplier = variant === 'auto' ? 4 : 2;
   return {
-    scrollbarWidth: variant,
-    scrollbarColor: (theme) =>
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      `${theme.dcPalette.primary[730]} ${theme.dcPalette.primary[630]}`,
+    // scrollbarWidth: variant,
+    // scrollbarColor: (theme) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    // `${theme.dcPalette.primary[730]} ${theme.dcPalette.primary[630]}`,
 
     '&::-webkit-scrollbar': {
       width: `${4 * multiplier}px`,

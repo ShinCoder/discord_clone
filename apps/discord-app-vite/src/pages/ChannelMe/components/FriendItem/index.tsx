@@ -1,14 +1,16 @@
-import Box from '@mui/material/Box';
+import { memo, useCallback } from 'react';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
 import UserAvatar from '@components/UserAvatar';
+import MoreButton from './components/MoreButton';
+import { ProfileModalExtraProps } from '@components/GlobalModal/ProfileModal';
+import { useAppDispatch } from '@redux/hooks';
 
 import { AccountDto } from '@prj/types/api';
-import MoreButton from './components/MoreButton';
+import { showModal } from '@redux/slices/modalSlice';
+import { ModalKey } from '@constants';
 
 interface FriendItemProps {
   data: AccountDto;
@@ -18,9 +20,20 @@ interface FriendItemProps {
 const FriendItems = (props: FriendItemProps) => {
   const { data, onDM } = props;
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+
+  const handleClick = useCallback(() => {
+    dispatch(
+      showModal({
+        key: ModalKey.PROFILE,
+        extraProps: { profile: data }
+      } satisfies { key: string; extraProps: ProfileModalExtraProps })
+    );
+  }, [data, dispatch]);
 
   return (
     <Box
+      onClick={handleClick}
       sx={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -121,4 +134,4 @@ const FriendItems = (props: FriendItemProps) => {
   );
 };
 
-export default FriendItems;
+export default memo(FriendItems);

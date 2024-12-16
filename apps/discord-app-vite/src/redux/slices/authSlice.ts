@@ -3,14 +3,14 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { clearLocalStorage, readLocalStorage, writeLocalStorage } from '@utils';
 import { StorageKey } from '@constants';
 
-import { ILoginResult, IGetMeResult } from '@prj/types/api';
+import { ILoginResult, AccountDto } from '@prj/types/api';
 
 export interface AuthSlice {
   token?: {
     accessToken?: string;
     refreshToken?: string;
   };
-  data?: IGetMeResult;
+  data?: AccountDto;
 }
 
 const initialState: AuthSlice = {
@@ -25,7 +25,7 @@ export const authSlice = createSlice({
       state.token = action.payload;
       writeLocalStorage(StorageKey.TOKEN, action.payload);
     },
-    setAccountData: (state, action: PayloadAction<IGetMeResult>) => {
+    setAccountData: (state, action: PayloadAction<AccountDto>) => {
       state.data = action.payload;
     },
     clearAuthState: (state) => {

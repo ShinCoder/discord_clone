@@ -1,6 +1,5 @@
+import { Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 
 export const FriendHeaderTab = styled(Tab)(({ theme }) => ({
   minHeight: 'auto',

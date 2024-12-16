@@ -1,6 +1,7 @@
-import Box from '@mui/material/Box';
-import ServerNavigator from './components/ServerNavigator';
 import { Outlet } from 'react-router-dom';
+import { Box } from '@mui/material';
+
+import ServerNavigator from './components/ServerNavigator';
 
 const ServerLayout = () => {
   return (

@@ -1,9 +1,10 @@
 import { memo } from 'react';
-import MUICheckbox, {
-  CheckboxProps as MUICheckboxProps
-} from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Box from '@mui/material/Box';
+import {
+  Box,
+  Checkbox as MUICheckbox,
+  CheckboxProps as MUICheckboxProps,
+  FormControlLabel
+} from '@mui/material';
 import { SxProps } from '@mui/material/styles';
 import CheckIcon from '@mui/icons-material/Check';
 
@@ -21,9 +22,6 @@ const Checkbox = (props: CheckboxProps) => {
       control={
         <MUICheckbox
           {...inputProps}
-          // sx={{
-          //   ...inputProps?.sx
-          // }}
           icon={
             <Box
               sx={{
