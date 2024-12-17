@@ -141,7 +141,7 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
-  async sendFriendRequest(data: SendFriendRequestDto) {
+  async sendFriendRequest(accountId: string, data: SendFriendRequestDto) {
     if (!data.targetId && !data.targetUsername) {
       throw new BadRequestException(
         ApiErrorMessages.SEND_FRIEND_REQUEST_NO_TARGET
@@ -153,7 +153,7 @@ export class AuthService implements OnModuleInit {
         this.authServiceAccountModule.getAccount({
           id: data.targetId,
           username: data.targetUsername,
-          includeRelationshipWith: data.accountId
+          includeRelationshipWith: accountId
         })
       )
     );
@@ -163,10 +163,17 @@ export class AuthService implements OnModuleInit {
         ApiErrorMessages.SEND_FRIEND_REQUEST_ALREADY_FRIEND
       );
 
+    if (target.relationshipWith?.status === RpcRelationshipStatus.BEING_BLOCKED)
+      throw new ConflictException(ApiErrorMessages.SEND_FRIEND_REQUEST_BLOCKED);
+
+    if (target.relationshipWith?.status === RpcRelationshipStatus.PENDING) {
+      return this.acceptFriendRequest(accountId, { targetId: target.id });
+    }
+
     const result = await lastValueFrom(
       this.authServiceAccountModule.createOrUpdateRelationship({
         account: {
-          id: data.accountId,
+          id: accountId,
           status: RpcRelationshipStatus.REQUESTING
         },
         target: {
@@ -179,11 +186,11 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
-  async acceptFriendRequest(data: AcceptFriendRequestDto) {
+  async acceptFriendRequest(accountId: string, data: AcceptFriendRequestDto) {
     const result = await lastValueFrom(
       this.authServiceAccountModule.createOrUpdateRelationship({
         account: {
-          id: data.accountId,
+          id: accountId,
           status: RpcRelationshipStatus.FRIEND
         },
         target: {
@@ -196,10 +203,10 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
-  async declineFriendRequest(data: DeclineFriendRequestDto) {
+  async declineFriendRequest(accountId: string, data: DeclineFriendRequestDto) {
     const result = await lastValueFrom(
       this.authServiceAccountModule.deleteRelationship({
-        accountId: data.accountId,
+        accountId: accountId,
         targetId: data.targetId
       })
     );
@@ -232,6 +239,14 @@ export class AuthService implements OnModuleInit {
     };
   }
 
+  async removeFriend(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.deleteRelationship({ accountId, targetId })
+    );
+
+    return handleRpcResult(result);
+  }
+
   async getPendingFriendRequest(accountId: string) {
     const pending =
       handleRpcResult(
@@ -253,8 +268,6 @@ export class AuthService implements OnModuleInit {
         )
       ).accounts || ([] as AccountDto[]);
 
-    // console.log(requesting);
-
     return {
       accounts: [...requesting, ...pending].map((e) => ({
         ...e,
@@ -272,5 +285,55 @@ export class AuthService implements OnModuleInit {
           : undefined
       }))
     };
+  }
+
+  async getBlockedUsers(accountId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.getBlocked({ accountId })
+    );
+
+    return {
+      blocked:
+        handleRpcResult(result).accounts?.map((e) => ({
+          ...e,
+          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
+            | 'ONLINE'
+            | 'OFFLINE',
+          status: RpcAccountStatus[e.status],
+          relationshipWith: e.relationshipWith
+            ? {
+                ...e.relationshipWith,
+                status: RpcRelationshipStatus[e.relationshipWith.status],
+                previousStatus:
+                  RpcRelationshipStatus[e.relationshipWith.previousStatus]
+              }
+            : undefined
+        })) || []
+    };
+  }
+
+  async blockUser(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.createOrUpdateRelationship({
+        account: {
+          id: accountId,
+          status: RpcRelationshipStatus.BLOCKED
+        },
+        target: {
+          id: targetId,
+          status: RpcRelationshipStatus.BEING_BLOCKED
+        }
+      })
+    );
+
+    return handleRpcResult(result);
+  }
+
+  async unblockUser(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.deleteRelationship({ accountId, targetId })
+    );
+
+    return handleRpcResult(result);
   }
 }

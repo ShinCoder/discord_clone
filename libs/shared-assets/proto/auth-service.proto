@@ -19,6 +19,7 @@ service AuthServiceAccountModule {
     rpc CreateOrUpdateRelationship (CreateOrUpdateRelationshipDto) returns (CreateOrUpdateRelationshipResult) {};
     rpc DeleteRelationship (DeleteRelationshipDto) returns (DeleteRelationshipResult) {};
     rpc GetFriends (GetFriendsDto) returns (GetFriendsResult) {};
+    rpc GetBlocked (GetBlockedDto) returns (GetBlockedResult) {};
 }
 
 enum AccountStatus {
@@ -195,4 +196,13 @@ message UpdateConnectionStatusDto {
 
 message UpdateConnectionStatusResult {
     com.common.MessageStatus status = 1;
+}
+
+message GetBlockedDto {
+    string accountId = 1;
+}
+
+message GetBlockedResult {
+    com.common.MessageStatus status = 1;
+    optional AccountsDto payload = 2;
 }

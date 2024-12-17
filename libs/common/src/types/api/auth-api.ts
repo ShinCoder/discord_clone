@@ -52,23 +52,28 @@ export interface IVerifyDto {
 }
 
 export interface ISendFriendRequestDto {
-  accountId: string;
   targetId?: string;
   targetUsername?: string;
 }
 
 export interface IAcceptFriendRequestDto {
-  accountId: string;
   targetId: string;
 }
 
 export interface IDeclineFriendRequestDto {
-  accountId: string;
   targetId: string;
 }
 
 export interface IGetFriendsDto {
   accountId: string;
+}
+
+export interface IBlockDto {
+  targetId: string;
+}
+
+export interface IUnblockDto {
+  targetId: string;
 }
 
 export enum RelationshipStatus {
@@ -118,4 +123,8 @@ export interface IGetFriendRequestsResult {
 
 export interface IGetUserProfileResult {
   profile: AccountDto;
+}
+
+export interface IGetBlockedResult {
+  blocked: Array<AccountDto>;
 }

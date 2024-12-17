@@ -5,8 +5,11 @@ import {
   SubscribeMessage,
   ConnectedSocket,
   MessageBody,
-  WebSocketServer
+  WebSocketServer,
+  WsException
 } from '@nestjs/websockets';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { Server } from 'socket.io';
 
 import { AuthService } from '../auth/auth.service';
 import { MessageService } from '../message/message.service';
@@ -19,10 +22,11 @@ import {
   IReceiveDirectMessageDto,
   ISendDirectMessageData
 } from '@prj/types/api';
-import { ConnectionStatus } from '@prj/types/grpc/auth-service';
+import {
+  ConnectionStatus,
+  RelationshipStatus
+} from '@prj/types/grpc/auth-service';
 import { MessageType } from '@prj/types/grpc/message-service';
-import { Server } from 'socket.io';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -75,10 +79,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SocketEvents.joinDirectMessageRoom)
-  handleJoinDirectMessageRoom(
+  async handleJoinDirectMessageRoom(
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: IJoinDirectMessageRoomData
   ) {
+    const account = await this.authService.getAccount({
+      id: data.targetId,
+      includeRelationshipWith: client.auth.sub
+    });
+
+    if (
+      account.relationshipWith?.status === RelationshipStatus.BLOCKED ||
+      account.relationshipWith?.status === RelationshipStatus.BEING_BLOCKED
+    ) {
+      client.allowDm = false;
+    } else {
+      client.allowDm = true;
+    }
     client.join([client.auth.sub, data.targetId].sort().join('-'));
   }
 
@@ -88,6 +105,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: ILeaveDirectMessageRoomData
   ) {
     client.leave([client.auth.sub, data.targetId].sort().join('-'));
+    client.allowDm = true;
   }
 
   @UsePipes(new ValidationPipe())
@@ -96,6 +114,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: ISendDirectMessageData
   ) {
+    if (!client.allowDm) throw new WsException('Blocked');
+
     const message = await this.messageService.createDirectMessage({
       senderId: client.auth.sub,
       ...data,
