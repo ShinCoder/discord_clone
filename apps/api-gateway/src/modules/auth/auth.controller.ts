@@ -31,6 +31,7 @@ import { JwtAtGuard, JwtRtGuard, JwtVtGuard } from '../../guards';
 import { IRequestWithUser } from '../../types';
 
 import {
+  IGetBlockedResult,
   IGetFriendRequestsResult,
   IGetFriendsResult,
   IGetMeResult,
@@ -190,6 +191,18 @@ export class AuthController {
         includeRelationshipWith: req.user.sub
       })
     };
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Get(':id/blocked')
+  async getBlockedUsers(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string
+  ): Promise<IGetBlockedResult> {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.getBlockedUsers(accountId);
   }
 
   @UseGuards(JwtAtGuard)

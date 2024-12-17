@@ -182,6 +182,15 @@ export interface UpdateConnectionStatusResult {
   status: MessageStatus | undefined;
 }
 
+export interface GetBlockedDto {
+  accountId: string;
+}
+
+export interface GetBlockedResult {
+  status: MessageStatus | undefined;
+  payload?: AccountsDto | undefined;
+}
+
 export const COM_AUTH_SERVICE_PACKAGE_NAME = 'com.auth_service';
 
 export interface AuthServiceAuthModuleClient {
@@ -281,6 +290,8 @@ export interface AuthServiceAccountModuleClient {
   ): Observable<DeleteRelationshipResult>;
 
   getFriends(request: GetFriendsDto): Observable<GetFriendsResult>;
+
+  getBlocked(request: GetBlockedDto): Observable<GetBlockedResult>;
 }
 
 export interface AuthServiceAccountModuleController {
@@ -318,6 +329,13 @@ export interface AuthServiceAccountModuleController {
     | Promise<GetFriendsResult>
     | Observable<GetFriendsResult>
     | GetFriendsResult;
+
+  getBlocked(
+    request: GetBlockedDto
+  ):
+    | Promise<GetBlockedResult>
+    | Observable<GetBlockedResult>
+    | GetBlockedResult;
 }
 
 export function AuthServiceAccountModuleControllerMethods() {
@@ -327,7 +345,8 @@ export function AuthServiceAccountModuleControllerMethods() {
       'getAccounts',
       'createOrUpdateRelationship',
       'deleteRelationship',
-      'getFriends'
+      'getFriends',
+      'getBlocked'
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

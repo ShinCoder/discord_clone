@@ -287,6 +287,31 @@ export class AuthService implements OnModuleInit {
     };
   }
 
+  async getBlockedUsers(accountId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.getBlocked({ accountId })
+    );
+
+    return {
+      blocked:
+        handleRpcResult(result).accounts?.map((e) => ({
+          ...e,
+          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
+            | 'ONLINE'
+            | 'OFFLINE',
+          status: RpcAccountStatus[e.status],
+          relationshipWith: e.relationshipWith
+            ? {
+                ...e.relationshipWith,
+                status: RpcRelationshipStatus[e.relationshipWith.status],
+                previousStatus:
+                  RpcRelationshipStatus[e.relationshipWith.previousStatus]
+              }
+            : undefined
+        })) || []
+    };
+  }
+
   async blockUser(accountId: string, targetId: string) {
     const result = await lastValueFrom(
       this.authServiceAccountModule.createOrUpdateRelationship({

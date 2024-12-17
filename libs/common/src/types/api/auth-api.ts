@@ -124,3 +124,7 @@ export interface IGetFriendRequestsResult {
 export interface IGetUserProfileResult {
   profile: AccountDto;
 }
+
+export interface IGetBlockedResult {
+  blocked: Array<AccountDto>;
+}
