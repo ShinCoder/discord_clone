@@ -13,10 +13,12 @@ interface TargetProfileProps {
   onAddFriend: () => void;
   onAcceptFriend: () => void;
   onIgnoreFriend: () => void;
+  onRemoveFriend: () => void;
 }
 
 const TargetProfile = (props: TargetProfileProps) => {
-  const { data, onAddFriend, onAcceptFriend, onIgnoreFriend } = props;
+  const { data, onAddFriend, onAcceptFriend, onIgnoreFriend, onRemoveFriend } =
+    props;
   const theme = useTheme();
 
   const renderFriendAction = useCallback(() => {
@@ -45,7 +47,11 @@ const TargetProfile = (props: TargetProfileProps) => {
           <PrimaryActionBtn disabled>Friend Request Sent</PrimaryActionBtn>
         );
       case RelationshipStatus.FRIEND:
-        return <SecondaryActionBtn>Remove Friend</SecondaryActionBtn>;
+        return (
+          <SecondaryActionBtn onClick={onRemoveFriend}>
+            Remove Friend
+          </SecondaryActionBtn>
+        );
       default:
         return (
           <PrimaryActionBtn onClick={onAddFriend}>Add Friend</PrimaryActionBtn>
@@ -56,6 +62,7 @@ const TargetProfile = (props: TargetProfileProps) => {
     onAcceptFriend,
     onAddFriend,
     onIgnoreFriend,
+    onRemoveFriend,
     theme.dcPalette.header.secondary
   ]);
 

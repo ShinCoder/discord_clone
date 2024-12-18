@@ -9,6 +9,7 @@ import {
   acceptFriendRequest,
   declineFriendRequest,
   getUserProfile,
+  removeFriend,
   sendFriendRequest
 } from '@services';
 import UserAvatar from '@components/UserAvatar';
@@ -99,6 +100,19 @@ const DirectMessage = () => {
     }
   });
 
+  const removeFriendMutation = useMutation({
+    mutationFn: removeFriend,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
   const handleAddFriend = useCallback(() => {
     if (userData && profile) {
       addFriendMutation.mutate({
@@ -107,6 +121,15 @@ const DirectMessage = () => {
       });
     }
   }, [addFriendMutation, profile, userData]);
+
+  const handleRemoveFriend = useCallback(() => {
+    if (userData && profile) {
+      removeFriendMutation.mutate({
+        accountId: userData.id,
+        targetId: profile.id
+      });
+    }
+  }, [profile, removeFriendMutation, userData]);
 
   const handleAcceptRequest = useCallback(() => {
     if (userData && profile) {
@@ -281,9 +304,13 @@ const DirectMessage = () => {
           container
           height={`calc(100dvh - ${theme.dcShape.defaultHeight.header})`}
         >
-          <Grid2 size={8}>
+          <Grid2
+            size={8}
+            height='100%'
+          >
             <Box
               sx={{
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column'
               }}
@@ -298,6 +325,7 @@ const DirectMessage = () => {
                 onAddFriend={handleAddFriend}
                 onAcceptFriend={handleAcceptRequest}
                 onIgnoreFriend={handleDeclineRequest}
+                onRemoveFriend={handleRemoveFriend}
               />
               <ChannelTextarea onSubmit={sendDm} />
             </Box>

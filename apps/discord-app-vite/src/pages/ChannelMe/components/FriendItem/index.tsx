@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, MouseEvent } from 'react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
@@ -13,14 +13,24 @@ import { showModal } from '@redux/slices/modalSlice';
 import { ModalKey } from '@constants';
 
 interface FriendItemProps {
+  userData: AccountDto;
   data: AccountDto;
   onDM: () => void;
+  onRemove: () => void;
 }
 
 const FriendItems = (props: FriendItemProps) => {
-  const { data, onDM } = props;
+  const { userData, data, onDM, onRemove } = props;
   const theme = useTheme();
   const dispatch = useAppDispatch();
+
+  const handleDm = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      onDM();
+    },
+    [onDM]
+  );
 
   const handleClick = useCallback(() => {
     dispatch(
@@ -123,12 +133,16 @@ const FriendItems = (props: FriendItemProps) => {
               }
             }}
             className='action-button'
-            onClick={onDM}
+            onClick={handleDm}
           >
             <ChatBubbleIcon sx={{ width: '20px', height: '20px' }} />
           </IconButton>
         </Tooltip>
-        <MoreButton />
+        <MoreButton
+          userData={userData}
+          data={data}
+          onRemove={onRemove}
+        />
       </Box>
     </Box>
   );

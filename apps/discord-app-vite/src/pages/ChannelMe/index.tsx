@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Divider, Tabs, Typography, Grid2 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { AddFriendHeaderTab, FriendHeaderTab } from './elements';
 import OnlineFriends from './components/OnlineFriends';
@@ -11,7 +11,7 @@ import AllFriends from './components/AllFriends';
 import AddFriend from './components/AddFriend';
 import Blocked from './components/Blocked';
 import PendingRequests from './components/PendingRequests';
-import { getFriends, getPendingFriendRequest } from '@services';
+import { getFriends, getPendingFriendRequest, removeFriend } from '@services';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
 import { protectedRoutes } from '@constants';
@@ -25,24 +25,27 @@ const ChannelMe = () => {
   const authState = useAppSelector((state) => state.auth);
 
   // Friend list
-  const { data: friends, refetch: fetchFriends } = useQuery({
+  const [friends, setFriends] = useState<Array<AccountDto>>([]);
+
+  const { data: rawFriends, refetch: fetchFriends } = useQuery({
     queryKey: ['friends', authState.data?.id || ''],
     queryFn: ({ queryKey }) => getFriends({ accountId: queryKey[1] }),
     enabled: false
   });
 
+  useEffect(() => {
+    if (rawFriends?.data.friends) {
+      setFriends(rawFriends.data.friends);
+    }
+  }, [rawFriends?.data.friends]);
+
   const onlineFriends = useMemo(
     () =>
-      friends?.data.friends.filter(
-        (_friend) => _friend.connectionStatus === 'ONLINE'
-      ) || [],
-    [friends?.data.friends]
+      friends.filter((_friend) => _friend.connectionStatus === 'ONLINE') || [],
+    [friends]
   );
 
-  const allFriends = useMemo(
-    () => friends?.data.friends || [],
-    [friends?.data.friends]
-  );
+  const allFriends = useMemo(() => friends || [], [friends]);
 
   const handleDirectMessage = useCallback(
     (id: string) => () => {
@@ -84,9 +87,37 @@ const ChannelMe = () => {
 
   // Add friend
   const onSendRequest = useCallback(() => {
+    fetchFriends();
     fetchFriendRequests();
-  }, [fetchFriendRequests]);
+  }, [fetchFriendRequests, fetchFriends]);
   // Add friend --end
+
+  // Remove friend
+  const removeFriendMutation = useMutation({
+    mutationFn: removeFriend,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: (data, variables, context) => {
+      setFriends((pre) => pre.filter((e) => e.id !== variables.targetId));
+    }
+  });
+
+  const onRemoveFriend = useCallback(
+    (_id: string) => () => {
+      if (authState.data) {
+        removeFriendMutation.mutate({
+          accountId: authState.data.id,
+          targetId: _id
+        });
+      }
+    },
+    [authState.data, removeFriendMutation]
+  );
+  // Remove friend --end
 
   const dispatch = useAppDispatch();
 
@@ -111,41 +142,49 @@ const ChannelMe = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const renderTabContent = useCallback(() => {
-    switch (activeTab) {
-      case 0:
-        return (
-          <OnlineFriends
-            data={onlineFriends}
-            onDM={handleDirectMessage}
-          />
-        );
-      case 1:
-        return (
-          <AllFriends
-            data={allFriends}
-            onDM={handleDirectMessage}
-          />
-        );
-      case 2:
-        return (
-          <PendingRequests
-            data={friendRequestList}
-            onAcceptFriendRequest={onAcceptFriendRequest}
-            onDeclineFriendRequest={onDeclineFriendRequest}
-          />
-        );
-      case 3:
-        return <Blocked data={[]} />;
-      case 4:
-        return <AddFriend onSendRequest={onSendRequest} />;
+    if (authState.data) {
+      switch (activeTab) {
+        case 0:
+          return (
+            <OnlineFriends
+              userData={authState.data}
+              data={onlineFriends}
+              onDM={handleDirectMessage}
+              onRemove={onRemoveFriend}
+            />
+          );
+        case 1:
+          return (
+            <AllFriends
+              userData={authState.data}
+              data={allFriends}
+              onDM={handleDirectMessage}
+              onRemove={onRemoveFriend}
+            />
+          );
+        case 2:
+          return (
+            <PendingRequests
+              data={friendRequestList}
+              onAcceptFriendRequest={onAcceptFriendRequest}
+              onDeclineFriendRequest={onDeclineFriendRequest}
+            />
+          );
+        case 3:
+          return <Blocked data={[]} />;
+        case 4:
+          return <AddFriend onSendRequest={onSendRequest} />;
+      }
     }
   }, [
     activeTab,
     allFriends,
+    authState.data,
     friendRequestList,
     handleDirectMessage,
     onAcceptFriendRequest,
     onDeclineFriendRequest,
+    onRemoveFriend,
     onSendRequest,
     onlineFriends
   ]);

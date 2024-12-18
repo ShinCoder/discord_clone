@@ -8,12 +8,14 @@ import { getScrollbarStyle } from '@utils';
 import { AccountDto } from '@prj/types/api';
 
 interface OnlineFriendProps {
+  userData: AccountDto;
   data: Array<AccountDto>;
   onDM: (id: string) => () => void;
+  onRemove: (id: string) => () => void;
 }
 
 const OnlineFriends = (props: OnlineFriendProps) => {
-  const { data, onDM } = props;
+  const { userData, data, onDM, onRemove } = props;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -30,8 +32,10 @@ const OnlineFriends = (props: OnlineFriendProps) => {
         {data.map((_friend) => (
           <FriendItems
             key={_friend.id}
+            userData={userData}
             data={_friend}
             onDM={onDM(_friend.id)}
+            onRemove={onRemove(_friend.id)}
           />
         ))}
       </Box>

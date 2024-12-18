@@ -2,7 +2,9 @@ import { apiClient, apiClientWithAuth } from './client';
 
 import {
   IAcceptFriendRequestDto,
+  IBlockDto,
   IDeclineFriendRequestDto,
+  IGetBlockedResult,
   IGetFriendRequestsResult,
   IGetFriendsDto,
   IGetFriendsResult,
@@ -37,24 +39,62 @@ export const getFriends = (data: IGetFriendsDto) => {
   );
 };
 
-export const sendFriendRequest = (data: ISendFriendRequestDto) => {
-  return apiClientWithAuth.post('/auth/friend-request', data);
+interface SendFriendRequestDto extends ISendFriendRequestDto {
+  accountId: string;
+}
+export const sendFriendRequest = (data: SendFriendRequestDto) => {
+  return apiClientWithAuth.post(`/auth/${data.accountId}/friend-request`, data);
 };
 
 export const getPendingFriendRequest = (id: string) => {
   return apiClientWithAuth.get<IGetFriendRequestsResult>(
-    `/auth/${id}/friend-request`
+    `/auth/${id}/friend-requests`
   );
 };
 
-export const acceptFriendRequest = (data: IAcceptFriendRequestDto) => {
-  return apiClientWithAuth.patch('/auth/friend-request/accept', data);
+interface AcceptFriendRequestDto extends IAcceptFriendRequestDto {
+  accountId: string;
+}
+export const acceptFriendRequest = (data: AcceptFriendRequestDto) => {
+  return apiClientWithAuth.patch(
+    `/auth/${data.accountId}/friend-request/accept`,
+    data
+  );
 };
 
-export const declineFriendRequest = (data: IDeclineFriendRequestDto) => {
-  return apiClientWithAuth.patch('/auth/friend-request/decline', data);
+interface DeclineFriendRequestDto extends IDeclineFriendRequestDto {
+  accountId: string;
+}
+export const declineFriendRequest = (data: DeclineFriendRequestDto) => {
+  return apiClientWithAuth.patch(
+    `/auth/${data.accountId}/friend-request/decline`,
+    data
+  );
 };
 
 export const getUserProfile = (id: string) => {
   return apiClientWithAuth.get<IGetUserProfileResult>(`/auth/${id}/profile`);
+};
+
+export const removeFriend = (data: { accountId: string; targetId: string }) => {
+  return apiClientWithAuth.delete(
+    `/auth/${data.accountId}/friend/${data.targetId}`
+  );
+};
+
+export const getBlocked = (id: string) => {
+  return apiClientWithAuth.get<IGetBlockedResult>(`/auth/${id}/blocked`);
+};
+
+interface BlockDto extends IBlockDto {
+  accountId: string;
+}
+export const blockUser = (data: BlockDto) => {
+  return apiClientWithAuth.post(`/auth/${data.accountId}/block`, data);
+};
+
+export const unblockUser = (data: { accountId: string; targetId: string }) => {
+  return apiClientWithAuth.delete(
+    `/auth/${data.accountId}/block/${data.targetId}`
+  );
 };

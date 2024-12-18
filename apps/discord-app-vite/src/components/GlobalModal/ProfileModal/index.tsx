@@ -20,6 +20,7 @@ export interface ProfileModalExtraProps {
   onAddFriend?: () => void;
   onAcceptFriend?: () => void;
   onIgnoreFriend?: () => void;
+  onRemoveFriend?: () => void;
 }
 
 interface ProfileModalState extends ModalState {

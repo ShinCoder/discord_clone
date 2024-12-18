@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, MouseEvent } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -24,6 +24,22 @@ const RequestItem = (props: RequestItemProps) => {
 
   const theme = useTheme();
   const dispatch = useAppDispatch();
+
+  const handleAccept = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      onAccept();
+    },
+    [onAccept]
+  );
+
+  const handleDecline = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      onDecline();
+    },
+    [onDecline]
+  );
 
   const handleClick = useCallback(() => {
     dispatch(
@@ -133,7 +149,7 @@ const RequestItem = (props: RequestItemProps) => {
                 }
               }}
               className='action-button'
-              onClick={onAccept}
+              onClick={handleAccept}
             >
               <CheckIcon sx={{ width: '20px', height: '20px' }} />
             </IconButton>
@@ -160,7 +176,7 @@ const RequestItem = (props: RequestItemProps) => {
               }
             }}
             className='action-button'
-            onClick={onDecline}
+            onClick={handleDecline}
           >
             <CloseIcon sx={{ width: '20px', height: '20px' }} />
           </IconButton>

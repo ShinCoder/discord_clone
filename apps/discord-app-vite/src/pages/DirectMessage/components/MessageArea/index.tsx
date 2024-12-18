@@ -24,6 +24,7 @@ interface MessageAreaProps {
   onAddFriend: () => void;
   onAcceptFriend: () => void;
   onIgnoreFriend: () => void;
+  onRemoveFriend: () => void;
 }
 
 const PAGE_LIMIT = 10;
@@ -38,7 +39,8 @@ const MessageArea = (props: MessageAreaProps) => {
     onAddDmsNumber,
     onAddFriend,
     onAcceptFriend,
-    onIgnoreFriend
+    onIgnoreFriend,
+    onRemoveFriend
   } = props;
 
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -112,6 +114,7 @@ const MessageArea = (props: MessageAreaProps) => {
           onAddFriend={onAddFriend}
           onAcceptFriend={onAcceptFriend}
           onIgnoreFriend={onIgnoreFriend}
+          onRemoveFriend={onRemoveFriend}
         />
       )}
     </Box>
