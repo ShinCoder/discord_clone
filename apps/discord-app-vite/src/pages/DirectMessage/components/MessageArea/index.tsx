@@ -1,10 +1,10 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { Box } from '@mui/material';
 import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
 
 import TargetProfile from '../TargetProfile';
-import { ChatDate } from '@components/Chat';
+import { ChatDate, ChatSkeleton } from '@components/Chat';
 import { getDirectMessages } from '@services';
 import {
   getScrollbarStyle,
@@ -27,7 +27,7 @@ interface MessageAreaProps {
   onRemoveFriend: () => void;
 }
 
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 50;
 
 const MessageArea = (props: MessageAreaProps) => {
   const {
@@ -45,7 +45,7 @@ const MessageArea = (props: MessageAreaProps) => {
 
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const { data, refetch, isFetching } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ['dms', sender.id, target.id, dmsNumber],
     queryFn: ({
       queryKey
@@ -61,28 +61,30 @@ const MessageArea = (props: MessageAreaProps) => {
 
   const [processing, setProcessing] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (data?.data.messages) {
-      onAddDms(
-        processMessageForDisplay({
-          messages: [...data.data.messages].reverse(),
-          senders: [sender, target]
-        })
-      );
-      onAddDmsNumber(data.data.messages.length);
-
-      if (data.data.messages.length < PAGE_LIMIT) setHasMore(false);
-
-      setProcessing(false);
-    }
-  }, [data, onAddDms, onAddDmsNumber, sender, target]);
-
   const fetchDms = useCallback(async () => {
-    if (hasMore && !isFetching && !processing) {
+    if (hasMore && !processing) {
       setProcessing(true);
-      await refetch();
+      try {
+        const result = await refetch();
+
+        if (result.data?.data) {
+          onAddDms(
+            processMessageForDisplay({
+              messages: [...result.data.data.messages].reverse(),
+              senders: [sender, target]
+            })
+          );
+          onAddDmsNumber(result.data.data.messages.length);
+
+          if (result.data.data.messages.length < PAGE_LIMIT) setHasMore(false);
+        }
+      } catch {
+        /* empty */
+      } finally {
+        setProcessing(false);
+      }
     }
-  }, [hasMore, isFetching, processing, refetch]);
+  }, [hasMore, onAddDms, onAddDmsNumber, processing, refetch, sender, target]);
 
   return (
     <Box
@@ -91,6 +93,7 @@ const MessageArea = (props: MessageAreaProps) => {
         display: 'flex',
         flexDirection: 'column-reverse',
         overflowY: 'auto',
+        paddingTop: '50px',
 
         ...getScrollbarStyle('auto')
       }}
@@ -103,10 +106,21 @@ const MessageArea = (props: MessageAreaProps) => {
       ))}
       {hasMore && !processing && (
         <InView
-          onChange={(inView) => {
-            if (inView) fetchDms();
+          onChange={async (inView) => {
+            if (inView) await fetchDms();
           }}
+          rootMargin='1000px'
         />
+      )}
+      {processing && (
+        <>
+          <ChatSkeleton />
+          <ChatSkeleton />
+          <ChatSkeleton />
+          <ChatSkeleton />
+          <ChatSkeleton />
+          <ChatSkeleton />
+        </>
       )}
       {!hasMore && (
         <TargetProfile
