@@ -11,7 +11,13 @@ import AllFriends from './components/AllFriends';
 import AddFriend from './components/AddFriend';
 import Blocked from './components/Blocked';
 import PendingRequests from './components/PendingRequests';
-import { getFriends, getPendingFriendRequest, removeFriend } from '@services';
+import {
+  getBlocked,
+  getFriends,
+  getPendingFriendRequest,
+  removeFriend,
+  unblockUser
+} from '@services';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
 import { protectedRoutes } from '@constants';
@@ -27,17 +33,11 @@ const ChannelMe = () => {
   // Friend list
   const [friends, setFriends] = useState<Array<AccountDto>>([]);
 
-  const { data: rawFriends, refetch: fetchFriends } = useQuery({
+  const { refetch: fetchFriends } = useQuery({
     queryKey: ['friends', authState.data?.id || ''],
     queryFn: ({ queryKey }) => getFriends({ accountId: queryKey[1] }),
     enabled: false
   });
-
-  useEffect(() => {
-    if (rawFriends?.data.friends) {
-      setFriends(rawFriends.data.friends);
-    }
-  }, [rawFriends?.data.friends]);
 
   const onlineFriends = useMemo(
     () =>
@@ -60,17 +60,11 @@ const ChannelMe = () => {
     []
   );
 
-  const { data: friendRequests, refetch: fetchFriendRequests } = useQuery({
+  const { refetch: fetchFriendRequests } = useQuery({
     queryKey: ['friend-requests', authState.data?.id || ''],
     queryFn: ({ queryKey }) => getPendingFriendRequest(queryKey[1]),
     enabled: false
   });
-
-  useEffect(() => {
-    if (friendRequests?.data) {
-      setFriendRequestList(friendRequests.data.accounts);
-    }
-  }, [friendRequests?.data]);
 
   const onAcceptFriendRequest = useCallback(
     (targetId: string) => {
@@ -84,6 +78,41 @@ const ChannelMe = () => {
     setFriendRequestList((pre) => pre.filter((e) => e.id !== targetId));
   }, []);
   // Friend request --end
+
+  // Blocked
+  const [blockedList, setBlockedList] = useState<Array<AccountDto>>([]);
+
+  const { refetch: fetchBlocked } = useQuery({
+    queryKey: ['friend-requests', authState.data?.id || ''],
+    queryFn: ({ queryKey }) => getBlocked(queryKey[1]),
+    enabled: false
+  });
+
+  const unblockMutation = useMutation({
+    mutationFn: unblockUser,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: (data, variables, context) => {
+      setBlockedList((pre) => pre.filter((e) => e.id !== variables.targetId));
+    }
+  });
+
+  const onUnblock = useCallback(
+    (_id: string) => () => {
+      if (authState.data) {
+        unblockMutation.mutate({
+          accountId: authState.data.id,
+          targetId: _id
+        });
+      }
+    },
+    [authState.data, unblockMutation]
+  );
+  // Blocked --end
 
   // Add friend
   const onSendRequest = useCallback(() => {
@@ -126,8 +155,18 @@ const ChannelMe = () => {
       const fetch = async () => {
         try {
           dispatch(setLoading(true));
-          await fetchFriends();
-          await fetchFriendRequests();
+          const rawFriends = await fetchFriends();
+          if (rawFriends.data?.data) {
+            setFriends(rawFriends.data.data.friends);
+          }
+          const rawFriendRequests = await fetchFriendRequests();
+          if (rawFriendRequests.data?.data) {
+            setFriendRequestList(rawFriendRequests.data.data.accounts);
+          }
+          const blocked = await fetchBlocked();
+          if (blocked.data?.data) {
+            setBlockedList(blocked.data.data.blocked);
+          }
         } catch {
           /* empty */
         } finally {
@@ -136,7 +175,13 @@ const ChannelMe = () => {
       };
       fetch();
     }
-  }, [authState.data, dispatch, fetchFriendRequests, fetchFriends]);
+  }, [
+    authState.data,
+    dispatch,
+    fetchBlocked,
+    fetchFriendRequests,
+    fetchFriends
+  ]);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -171,7 +216,12 @@ const ChannelMe = () => {
             />
           );
         case 3:
-          return <Blocked data={[]} />;
+          return (
+            <Blocked
+              data={blockedList}
+              onUnblock={onUnblock}
+            />
+          );
         case 4:
           return <AddFriend onSendRequest={onSendRequest} />;
       }
@@ -180,12 +230,14 @@ const ChannelMe = () => {
     activeTab,
     allFriends,
     authState.data,
+    blockedList,
     friendRequestList,
     handleDirectMessage,
     onAcceptFriendRequest,
     onDeclineFriendRequest,
     onRemoveFriend,
     onSendRequest,
+    onUnblock,
     onlineFriends
   ]);
   // Tabs --end

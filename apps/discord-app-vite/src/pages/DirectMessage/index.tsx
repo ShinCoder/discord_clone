@@ -7,10 +7,12 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import MessageArea from './components/MessageArea';
 import {
   acceptFriendRequest,
+  blockUser,
   declineFriendRequest,
   getUserProfile,
   removeFriend,
-  sendFriendRequest
+  sendFriendRequest,
+  unblockUser
 } from '@services';
 import UserAvatar from '@components/UserAvatar';
 import ChannelTextarea from '@components/ChannelTextarea';
@@ -113,6 +115,32 @@ const DirectMessage = () => {
     }
   });
 
+  const blockMutation = useMutation({
+    mutationFn: blockUser,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
+  const unblockMutation = useMutation({
+    mutationFn: unblockUser,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
   const handleAddFriend = useCallback(() => {
     if (userData && profile) {
       addFriendMutation.mutate({
@@ -149,6 +177,18 @@ const DirectMessage = () => {
     }
   }, [userData, profile, declineRequestMutation]);
 
+  const handleBlockUser = useCallback(() => {
+    if (userData && profile) {
+      blockMutation.mutate({ accountId: userData.id, targetId: profile.id });
+    }
+  }, [blockMutation, profile, userData]);
+
+  const handleUnblockUser = useCallback(() => {
+    if (userData && profile) {
+      unblockMutation.mutate({ accountId: userData.id, targetId: profile.id });
+    }
+  }, [unblockMutation, profile, userData]);
+
   const handleOpenProfileModal = useCallback(() => {
     if (profile) {
       dispatch(
@@ -158,7 +198,8 @@ const DirectMessage = () => {
             profile,
             onAddFriend: handleAddFriend,
             onAcceptFriend: handleAcceptRequest,
-            onIgnoreFriend: handleDeclineRequest
+            onIgnoreFriend: handleDeclineRequest,
+            onRemoveFriend: handleRemoveFriend
           }
         } satisfies { key: string; extraProps: ProfileModalExtraProps })
       );
@@ -168,6 +209,7 @@ const DirectMessage = () => {
     handleAcceptRequest,
     handleAddFriend,
     handleDeclineRequest,
+    handleRemoveFriend,
     profile
   ]);
 
@@ -326,6 +368,8 @@ const DirectMessage = () => {
                 onAcceptFriend={handleAcceptRequest}
                 onIgnoreFriend={handleDeclineRequest}
                 onRemoveFriend={handleRemoveFriend}
+                onBlockUser={handleBlockUser}
+                onUnblockUser={handleUnblockUser}
               />
               <ChannelTextarea onSubmit={sendDm} />
             </Box>

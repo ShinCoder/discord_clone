@@ -86,6 +86,7 @@ const ProfileModal = () => {
           </Tooltip>
         );
       case RelationshipStatus.FRIEND:
+      case RelationshipStatus.BEING_BLOCKED:
         return <Box />;
       default:
         return (
