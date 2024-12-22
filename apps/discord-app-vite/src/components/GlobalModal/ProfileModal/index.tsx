@@ -20,6 +20,7 @@ export interface ProfileModalExtraProps {
   onAddFriend?: () => void;
   onAcceptFriend?: () => void;
   onIgnoreFriend?: () => void;
+  onRemoveFriend?: () => void;
 }
 
 interface ProfileModalState extends ModalState {
@@ -85,6 +86,7 @@ const ProfileModal = () => {
           </Tooltip>
         );
       case RelationshipStatus.FRIEND:
+      case RelationshipStatus.BEING_BLOCKED:
         return <Box />;
       default:
         return (

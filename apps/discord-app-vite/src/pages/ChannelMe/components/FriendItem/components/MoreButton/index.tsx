@@ -1,22 +1,48 @@
-import { memo, useState } from 'react';
+import { memo, useState, MouseEvent, useCallback } from 'react';
 import { Box, IconButton, Popover, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-const MoreButton = () => {
+import { AccountDto } from '@prj/types/api';
+
+interface MoreButtonProps {
+  userData: AccountDto;
+  data: AccountDto;
+  onRemove: () => void;
+}
+
+const MoreButton = (props: MoreButtonProps) => {
+  const { userData, data, onRemove } = props;
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClose = useCallback(
+    (e: any, r: 'backdropClick' | 'escapeKeyDown') => {
+      if (r === 'backdropClick') {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        e.stopPropagation();
+        setAnchorEl(null);
+      }
+    },
+    []
+  );
 
   const popperOpen = !!anchorEl;
+
+  const handleRemove = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      onRemove();
+    },
+    [onRemove]
+  );
 
   return (
     <Tooltip
@@ -58,6 +84,7 @@ const MoreButton = () => {
           }}
         >
           <Box
+            onClick={handleRemove}
             sx={{
               display: 'flex',
               alignItems: 'center',

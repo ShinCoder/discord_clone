@@ -2,43 +2,33 @@ import { memo, useCallback, MouseEvent } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 
 import UserAvatar from '@components/UserAvatar';
 import { useAppDispatch } from '@redux/hooks';
 import { showModal } from '@redux/slices/modalSlice';
 import { ModalKey } from '@constants';
 
-import { AccountDto, RelationshipStatus } from '@prj/types/api';
+import { AccountDto } from '@prj/types/api';
 import { ProfileModalExtraProps } from '@components/GlobalModal/ProfileModal';
 
-interface RequestItemProps {
+interface BlockedItemProps {
   data: AccountDto;
-  onAccept: () => void;
-  onDecline: () => void;
+  onUnblock: () => void;
 }
 
-const RequestItem = (props: RequestItemProps) => {
-  const { data, onAccept, onDecline } = props;
+const BlockedItem = (props: BlockedItemProps) => {
+  const { data, onUnblock } = props;
 
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
-  const handleAccept = useCallback(
+  const handleUnblock = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      onAccept();
+      onUnblock();
     },
-    [onAccept]
-  );
-
-  const handleDecline = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      onDecline();
-    },
-    [onDecline]
+    [onUnblock]
   );
 
   const handleClick = useCallback(() => {
@@ -46,13 +36,11 @@ const RequestItem = (props: RequestItemProps) => {
       showModal({
         key: ModalKey.PROFILE,
         extraProps: {
-          profile: data,
-          onAcceptFriend: onAccept,
-          onIgnoreFriend: onDecline
+          profile: data
         }
       } satisfies { key: string; extraProps: ProfileModalExtraProps })
     );
-  }, [data, dispatch, onAccept, onDecline]);
+  }, [data, dispatch]);
 
   return (
     <Box
@@ -124,43 +112,13 @@ const RequestItem = (props: RequestItemProps) => {
               textTransform: 'capitalize'
             }}
           >
-            {(data.relationshipWith?.status === RelationshipStatus.REQUESTING
-              ? 'Outgoing'
-              : 'Incoming') + ' Friend Request'}
+            Blocked
           </Typography>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', columnGap: '10px' }}>
-        {data.relationshipWith?.status === RelationshipStatus.PENDING && (
-          <Tooltip
-            title='Accept'
-            placement='top'
-          >
-            <IconButton
-              sx={{
-                width: '36px',
-                height: '36px',
-                color: theme.dcPalette.interactive.normal,
-                backgroundColor: theme.dcPalette.background.secondary,
-
-                '&:hover': {
-                  color: theme.dcPalette.info.positive.foreground,
-                  backgroundColor: theme.dcPalette.background.secondary
-                }
-              }}
-              className='action-button'
-              onClick={handleAccept}
-            >
-              <CheckIcon sx={{ width: '20px', height: '20px' }} />
-            </IconButton>
-          </Tooltip>
-        )}
         <Tooltip
-          title={
-            data.relationshipWith?.status === RelationshipStatus.PENDING
-              ? 'Cancel'
-              : 'Ignore'
-          }
+          title='Unblock'
           placement='top'
         >
           <IconButton
@@ -176,9 +134,9 @@ const RequestItem = (props: RequestItemProps) => {
               }
             }}
             className='action-button'
-            onClick={handleDecline}
+            onClick={handleUnblock}
           >
-            <CloseIcon sx={{ width: '20px', height: '20px' }} />
+            <PersonRemoveIcon sx={{ width: '20px', height: '20px' }} />
           </IconButton>
         </Tooltip>
       </Box>
@@ -186,4 +144,4 @@ const RequestItem = (props: RequestItemProps) => {
   );
 };
 
-export default memo(RequestItem);
+export default memo(BlockedItem);

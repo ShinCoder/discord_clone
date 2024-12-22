@@ -13,10 +13,21 @@ interface TargetProfileProps {
   onAddFriend: () => void;
   onAcceptFriend: () => void;
   onIgnoreFriend: () => void;
+  onRemoveFriend: () => void;
+  onBlockUser: () => void;
+  onUnblockUser: () => void;
 }
 
 const TargetProfile = (props: TargetProfileProps) => {
-  const { data, onAddFriend, onAcceptFriend, onIgnoreFriend } = props;
+  const {
+    data,
+    onAddFriend,
+    onAcceptFriend,
+    onIgnoreFriend,
+    onRemoveFriend,
+    onBlockUser,
+    onUnblockUser
+  } = props;
   const theme = useTheme();
 
   const renderFriendAction = useCallback(() => {
@@ -45,7 +56,13 @@ const TargetProfile = (props: TargetProfileProps) => {
           <PrimaryActionBtn disabled>Friend Request Sent</PrimaryActionBtn>
         );
       case RelationshipStatus.FRIEND:
-        return <SecondaryActionBtn>Remove Friend</SecondaryActionBtn>;
+        return (
+          <SecondaryActionBtn onClick={onRemoveFriend}>
+            Remove Friend
+          </SecondaryActionBtn>
+        );
+      case RelationshipStatus.BLOCKED:
+        return <Box />;
       default:
         return (
           <PrimaryActionBtn onClick={onAddFriend}>Add Friend</PrimaryActionBtn>
@@ -56,15 +73,24 @@ const TargetProfile = (props: TargetProfileProps) => {
     onAcceptFriend,
     onAddFriend,
     onIgnoreFriend,
+    onRemoveFriend,
     theme.dcPalette.header.secondary
   ]);
 
   const renderBlockAction = useCallback(() => {
     switch (data.relationshipWith?.status) {
+      case RelationshipStatus.BLOCKED:
+        return (
+          <SecondaryActionBtn onClick={onUnblockUser}>
+            Unblock
+          </SecondaryActionBtn>
+        );
       default:
-        return <SecondaryActionBtn>Block</SecondaryActionBtn>;
+        return (
+          <SecondaryActionBtn onClick={onBlockUser}>Block</SecondaryActionBtn>
+        );
     }
-  }, [data.relationshipWith?.status]);
+  }, [data.relationshipWith?.status, onBlockUser, onUnblockUser]);
 
   return (
     <Box sx={{ padding: '16px' }}>
