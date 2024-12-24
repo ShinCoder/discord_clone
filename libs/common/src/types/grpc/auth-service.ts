@@ -166,6 +166,15 @@ export interface IgnoreFriendRequestResult {
   status: MessageStatus | undefined;
 }
 
+export interface CancelFriendRequestDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface CancelFriendRequestResult {
+  status: MessageStatus | undefined;
+}
+
 export interface RemoveFriendDto {
   accountId: string;
   targetId: string;
@@ -316,6 +325,10 @@ export interface AuthServiceAccountModuleClient {
     request: IgnoreFriendRequestDto
   ): Observable<IgnoreFriendRequestResult>;
 
+  cancelFriendRequest(
+    request: CancelFriendRequestDto
+  ): Observable<CancelFriendRequestResult>;
+
   removeFriend(request: RemoveFriendDto): Observable<RemoveFriendResult>;
 
   getFriendRequests(
@@ -360,6 +373,13 @@ export interface AuthServiceAccountModuleController {
     | Observable<IgnoreFriendRequestResult>
     | IgnoreFriendRequestResult;
 
+  cancelFriendRequest(
+    request: CancelFriendRequestDto
+  ):
+    | Promise<CancelFriendRequestResult>
+    | Observable<CancelFriendRequestResult>
+    | CancelFriendRequestResult;
+
   removeFriend(
     request: RemoveFriendDto
   ):
@@ -394,6 +414,7 @@ export function AuthServiceAccountModuleControllerMethods() {
       'addFriend',
       'acceptFriendRequest',
       'ignoreFriendRequest',
+      'cancelFriendRequest',
       'removeFriend',
       'getFriendRequests',
       'blockUser',

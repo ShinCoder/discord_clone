@@ -19,6 +19,7 @@ service AuthServiceAccountModule {
     rpc AddFriend (AddFriendDto) returns (AddFriendResult) {};
     rpc AcceptFriendRequest (AcceptFriendRequestDto) returns (AcceptFriendRequestResult) {};
     rpc IgnoreFriendRequest (IgnoreFriendRequestDto) returns (IgnoreFriendRequestResult) {};
+    rpc CancelFriendRequest (CancelFriendRequestDto) returns (CancelFriendRequestResult) {};
     rpc RemoveFriend (RemoveFriendDto) returns (RemoveFriendResult) {};
     rpc GetFriendRequests (GetFriendRequestsDto) returns (GetFriendRequestsResult) {};
     rpc BlockUser (BlockUserDto) returns (BlockUserResult) {};
@@ -186,6 +187,15 @@ message IgnoreFriendRequestDto {
 }
 
 message IgnoreFriendRequestResult {
+    com.common.MessageStatus status = 1;
+}
+
+message CancelFriendRequestDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message CancelFriendRequestResult {
     com.common.MessageStatus status = 1;
 }
 

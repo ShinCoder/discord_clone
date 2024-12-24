@@ -156,6 +156,21 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':id/friend-request/:target')
+  cancelFriendRequest(
+    @Req() req: IRequestWithUser,
+    @Param('id') accountId: string,
+    @Param('target') targetId: string
+  ) {
+    console.log(targetId);
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.authService.cancelFriendRequest(accountId, targetId);
+  }
+
+  @UseGuards(JwtAtGuard)
   @Get(':id/friends')
   getFriends(
     @Req() req: IRequestWithUser,
