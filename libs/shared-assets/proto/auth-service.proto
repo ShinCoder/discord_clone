@@ -16,10 +16,17 @@ service AuthServiceAuthModule {
 service AuthServiceAccountModule {
     rpc GetAccount (GetAccountDto) returns (GetAccountResult) {};
     rpc GetAccounts (GetAccountsDto) returns (GetAccountsResult) {};
-    rpc CreateOrUpdateRelationship (CreateOrUpdateRelationshipDto) returns (CreateOrUpdateRelationshipResult) {};
-    rpc DeleteRelationship (DeleteRelationshipDto) returns (DeleteRelationshipResult) {};
-    rpc GetFriends (GetFriendsDto) returns (GetFriendsResult) {};
-    rpc GetBlocked (GetBlockedDto) returns (GetBlockedResult) {};
+    rpc AddFriend (AddFriendDto) returns (AddFriendResult) {};
+    rpc AcceptFriendRequest (AcceptFriendRequestDto) returns (AcceptFriendRequestResult) {};
+    rpc IgnoreFriendRequest (IgnoreFriendRequestDto) returns (IgnoreFriendRequestResult) {};
+    rpc RemoveFriend (RemoveFriendDto) returns (RemoveFriendResult) {};
+    rpc GetFriendRequests (GetFriendRequestsDto) returns (GetFriendRequestsResult) {};
+    rpc BlockUser (BlockUserDto) returns (BlockUserResult) {};
+    rpc UnblockUser (UnblockUserDto) returns (UnblockUserResult) {};
+    // rpc CreateOrUpdateRelationship (CreateOrUpdateRelationshipDto) returns (CreateOrUpdateRelationshipResult) {};
+    // rpc DeleteRelationship (DeleteRelationshipDto) returns (DeleteRelationshipResult) {};
+    // rpc GetFriends (GetFriendsDto) returns (GetFriendsResult) {};
+    // rpc GetBlocked (GetBlockedDto) returns (GetBlockedResult) {};
 }
 
 enum AccountStatus {
@@ -29,11 +36,9 @@ enum AccountStatus {
 }
 
 enum RelationshipStatus {
-    REQUESTING = 0;
-    PENDING = 1;
-    FRIEND = 2;
-    BLOCKED = 3;
-    BEING_BLOCKED = 4;
+    PENDING = 0;
+    FRIEND = 1;
+    BLOCKED = 2;
 }
 
 enum ConnectionStatus {
@@ -42,13 +47,11 @@ enum ConnectionStatus {
 }
 
 message RelationshipDto {
-    string id = 1;
-    string accountId = 2;
-    string targetId = 3;
-    RelationshipStatus status = 4;
-    optional RelationshipStatus previousStatus = 5;
-    string createdAt = 6;
-    string updatedAt = 7;
+    string accountId = 1;
+    string targetId = 2;
+    RelationshipStatus status = 3;
+    string createdAt = 4;
+    string updatedAt = 5;
 }
 
 message RegisterDto {
@@ -127,8 +130,9 @@ message AccountDto {
     bool isAdmin = 12;
     string createdAt = 13;
     string updatedAt = 14;
-    optional RelationshipDto relationshipWith = 15;
-    ConnectionStatus connectionStatus = 16;
+    optional RelationshipDto relationship = 15;
+    optional RelationshipDto inRelationshipWith = 16;
+    ConnectionStatus connectionStatus = 17;
 }
 
 message GetAccountDto {
@@ -157,37 +161,92 @@ message GetAccountsResult {
     optional AccountsDto payload = 2;
 }
 
-message RelationshipWriteDto {
-    string id = 1;
-    RelationshipStatus status = 2;
-}
-
-message CreateOrUpdateRelationshipDto {
-    RelationshipWriteDto account = 1;
-    RelationshipWriteDto target = 2;
-}
-
-message CreateOrUpdateRelationshipResult {
-    com.common.MessageStatus status = 1;
-}
-
-message DeleteRelationshipDto {
+message AddFriendDto {
     string accountId = 1;
-    string targetId = 2; 
+    optional string targetId = 2;
+    optional string targetUsername = 3;
 }
 
-message DeleteRelationshipResult {
+message AddFriendResult {
     com.common.MessageStatus status = 1;
 }
 
-message GetFriendsDto {
+message AcceptFriendRequestDto {
     string accountId = 1;
+    string targetId = 2;
 }
 
-message GetFriendsResult {
+message AcceptFriendRequestResult {
     com.common.MessageStatus status = 1;
-    optional AccountsDto payload = 2;
 }
+
+message IgnoreFriendRequestDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message IgnoreFriendRequestResult {
+    com.common.MessageStatus status = 1;
+}
+
+message RemoveFriendDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message RemoveFriendResult {
+    com.common.MessageStatus status = 1;
+}
+
+message BlockUserDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message BlockUserResult {
+    com.common.MessageStatus status = 1;
+}
+
+message UnblockUserDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message UnblockUserResult {
+    com.common.MessageStatus status = 1;
+}
+
+// message RelationshipWriteDto {
+//     string id = 1;
+//     RelationshipStatus status = 2;
+// }
+
+// message CreateOrUpdateRelationshipDto {
+//     RelationshipWriteDto account = 1;
+//     RelationshipWriteDto target = 2;
+// }
+
+// message CreateOrUpdateRelationshipResult {
+//     com.common.MessageStatus status = 1;
+// }
+
+// message DeleteRelationshipDto {
+//     string accountId = 1;
+//     string targetId = 2; 
+// }
+
+// message DeleteRelationshipResult {
+//     com.common.MessageStatus status = 1;
+// }
+
+// message GetFriendsDto {
+//     string accountId = 1;
+// }
+
+// message GetFriendsResult {
+//     com.common.MessageStatus status = 1;
+//     optional AccountsDto payload = 2;
+// }
 
 message UpdateConnectionStatusDto {
     string accountId = 1;
@@ -198,11 +257,25 @@ message UpdateConnectionStatusResult {
     com.common.MessageStatus status = 1;
 }
 
-message GetBlockedDto {
+message GetFriendRequestsDto {
     string accountId = 1;
 }
 
-message GetBlockedResult {
+message GetFriendRequestsResult {
+    message GetFriendRequestPayload {
+        repeated AccountDto incomingRequests = 1;
+        repeated AccountDto outgoingRequests = 2;
+    }
+
     com.common.MessageStatus status = 1;
-    optional AccountsDto payload = 2;
+    optional GetFriendRequestPayload payload = 2;
 }
+
+// message GetBlockedDto {
+//     string accountId = 1;
+// }
+
+// message GetBlockedResult {
+//     com.common.MessageStatus status = 1;
+//     optional AccountsDto payload = 2;
+// }

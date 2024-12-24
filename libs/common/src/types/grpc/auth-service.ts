@@ -13,11 +13,9 @@ export enum AccountStatus {
 }
 
 export enum RelationshipStatus {
-  REQUESTING = 0,
-  PENDING = 1,
-  FRIEND = 2,
-  BLOCKED = 3,
-  BEING_BLOCKED = 4,
+  PENDING = 0,
+  FRIEND = 1,
+  BLOCKED = 2,
   UNRECOGNIZED = -1
 }
 
@@ -28,11 +26,9 @@ export enum ConnectionStatus {
 }
 
 export interface RelationshipDto {
-  id: string;
   accountId: string;
   targetId: string;
   status: RelationshipStatus;
-  previousStatus?: RelationshipStatus | undefined;
   createdAt: string;
   updatedAt: string;
 }
@@ -111,7 +107,8 @@ export interface AccountDto {
   isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
-  relationshipWith?: RelationshipDto | undefined;
+  relationship?: RelationshipDto | undefined;
+  inRelationshipWith?: RelationshipDto | undefined;
   connectionStatus: ConnectionStatus;
 }
 
@@ -141,36 +138,59 @@ export interface GetAccountsResult {
   payload?: AccountsDto | undefined;
 }
 
-export interface RelationshipWriteDto {
-  id: string;
-  status: RelationshipStatus;
+export interface AddFriendDto {
+  accountId: string;
+  targetId?: string | undefined;
+  targetUsername?: string | undefined;
 }
 
-export interface CreateOrUpdateRelationshipDto {
-  account: RelationshipWriteDto | undefined;
-  target: RelationshipWriteDto | undefined;
-}
-
-export interface CreateOrUpdateRelationshipResult {
+export interface AddFriendResult {
   status: MessageStatus | undefined;
 }
 
-export interface DeleteRelationshipDto {
+export interface AcceptFriendRequestDto {
   accountId: string;
   targetId: string;
 }
 
-export interface DeleteRelationshipResult {
+export interface AcceptFriendRequestResult {
   status: MessageStatus | undefined;
 }
 
-export interface GetFriendsDto {
+export interface IgnoreFriendRequestDto {
   accountId: string;
+  targetId: string;
 }
 
-export interface GetFriendsResult {
+export interface IgnoreFriendRequestResult {
   status: MessageStatus | undefined;
-  payload?: AccountsDto | undefined;
+}
+
+export interface RemoveFriendDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface RemoveFriendResult {
+  status: MessageStatus | undefined;
+}
+
+export interface BlockUserDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface BlockUserResult {
+  status: MessageStatus | undefined;
+}
+
+export interface UnblockUserDto {
+  accountId: string;
+  targetId: string;
+}
+
+export interface UnblockUserResult {
+  status: MessageStatus | undefined;
 }
 
 export interface UpdateConnectionStatusDto {
@@ -182,13 +202,18 @@ export interface UpdateConnectionStatusResult {
   status: MessageStatus | undefined;
 }
 
-export interface GetBlockedDto {
+export interface GetFriendRequestsDto {
   accountId: string;
 }
 
-export interface GetBlockedResult {
+export interface GetFriendRequestsResult {
   status: MessageStatus | undefined;
-  payload?: AccountsDto | undefined;
+  payload?: GetFriendRequestsResult_GetFriendRequestPayload | undefined;
+}
+
+export interface GetFriendRequestsResult_GetFriendRequestPayload {
+  incomingRequests: AccountDto[];
+  outgoingRequests: AccountDto[];
 }
 
 export const COM_AUTH_SERVICE_PACKAGE_NAME = 'com.auth_service';
@@ -281,17 +306,25 @@ export interface AuthServiceAccountModuleClient {
 
   getAccounts(request: GetAccountsDto): Observable<GetAccountsResult>;
 
-  createOrUpdateRelationship(
-    request: CreateOrUpdateRelationshipDto
-  ): Observable<CreateOrUpdateRelationshipResult>;
+  addFriend(request: AddFriendDto): Observable<AddFriendResult>;
 
-  deleteRelationship(
-    request: DeleteRelationshipDto
-  ): Observable<DeleteRelationshipResult>;
+  acceptFriendRequest(
+    request: AcceptFriendRequestDto
+  ): Observable<AcceptFriendRequestResult>;
 
-  getFriends(request: GetFriendsDto): Observable<GetFriendsResult>;
+  ignoreFriendRequest(
+    request: IgnoreFriendRequestDto
+  ): Observable<IgnoreFriendRequestResult>;
 
-  getBlocked(request: GetBlockedDto): Observable<GetBlockedResult>;
+  removeFriend(request: RemoveFriendDto): Observable<RemoveFriendResult>;
+
+  getFriendRequests(
+    request: GetFriendRequestsDto
+  ): Observable<GetFriendRequestsResult>;
+
+  blockUser(request: BlockUserDto): Observable<BlockUserResult>;
+
+  unblockUser(request: UnblockUserDto): Observable<UnblockUserResult>;
 }
 
 export interface AuthServiceAccountModuleController {
@@ -309,33 +342,48 @@ export interface AuthServiceAccountModuleController {
     | Observable<GetAccountsResult>
     | GetAccountsResult;
 
-  createOrUpdateRelationship(
-    request: CreateOrUpdateRelationshipDto
-  ):
-    | Promise<CreateOrUpdateRelationshipResult>
-    | Observable<CreateOrUpdateRelationshipResult>
-    | CreateOrUpdateRelationshipResult;
+  addFriend(
+    request: AddFriendDto
+  ): Promise<AddFriendResult> | Observable<AddFriendResult> | AddFriendResult;
 
-  deleteRelationship(
-    request: DeleteRelationshipDto
+  acceptFriendRequest(
+    request: AcceptFriendRequestDto
   ):
-    | Promise<DeleteRelationshipResult>
-    | Observable<DeleteRelationshipResult>
-    | DeleteRelationshipResult;
+    | Promise<AcceptFriendRequestResult>
+    | Observable<AcceptFriendRequestResult>
+    | AcceptFriendRequestResult;
 
-  getFriends(
-    request: GetFriendsDto
+  ignoreFriendRequest(
+    request: IgnoreFriendRequestDto
   ):
-    | Promise<GetFriendsResult>
-    | Observable<GetFriendsResult>
-    | GetFriendsResult;
+    | Promise<IgnoreFriendRequestResult>
+    | Observable<IgnoreFriendRequestResult>
+    | IgnoreFriendRequestResult;
 
-  getBlocked(
-    request: GetBlockedDto
+  removeFriend(
+    request: RemoveFriendDto
   ):
-    | Promise<GetBlockedResult>
-    | Observable<GetBlockedResult>
-    | GetBlockedResult;
+    | Promise<RemoveFriendResult>
+    | Observable<RemoveFriendResult>
+    | RemoveFriendResult;
+
+  getFriendRequests(
+    request: GetFriendRequestsDto
+  ):
+    | Promise<GetFriendRequestsResult>
+    | Observable<GetFriendRequestsResult>
+    | GetFriendRequestsResult;
+
+  blockUser(
+    request: BlockUserDto
+  ): Promise<BlockUserResult> | Observable<BlockUserResult> | BlockUserResult;
+
+  unblockUser(
+    request: UnblockUserDto
+  ):
+    | Promise<UnblockUserResult>
+    | Observable<UnblockUserResult>
+    | UnblockUserResult;
 }
 
 export function AuthServiceAccountModuleControllerMethods() {
@@ -343,10 +391,13 @@ export function AuthServiceAccountModuleControllerMethods() {
     const grpcMethods: string[] = [
       'getAccount',
       'getAccounts',
-      'createOrUpdateRelationship',
-      'deleteRelationship',
-      'getFriends',
-      'getBlocked'
+      'addFriend',
+      'acceptFriendRequest',
+      'ignoreFriendRequest',
+      'removeFriend',
+      'getFriendRequests',
+      'blockUser',
+      'unblockUser'
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

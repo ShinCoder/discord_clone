@@ -83,19 +83,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: IJoinDirectMessageRoomData
   ) {
-    const account = await this.authService.getAccount({
-      id: data.targetId,
-      includeRelationshipWith: client.auth.sub
-    });
+    // const account = await this.authService.getAccount({
+    //   id: data.targetId,
+    //   includeRelationshipWith: client.auth.sub
+    // });
 
-    if (
-      account.relationshipWith?.status === RelationshipStatus.BLOCKED ||
-      account.relationshipWith?.status === RelationshipStatus.BEING_BLOCKED
-    ) {
-      client.allowDm = false;
-    } else {
-      client.allowDm = true;
-    }
+    // if (
+    //   account.relationshipWith?.status === RelationshipStatus.BLOCKED ||
+    //   account.relationshipWith?.status === RelationshipStatus.BEING_BLOCKED
+    // ) {
+    //   client.allowDm = false;
+    // } else {
+    //   client.allowDm = true;
+    // }
     client.join([client.auth.sub, data.targetId].sort().join('-'));
   }
 

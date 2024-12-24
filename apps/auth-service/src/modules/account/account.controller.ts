@@ -3,18 +3,26 @@ import { Controller } from '@nestjs/common';
 import { AccountService } from './account.service';
 
 import {
+  AcceptFriendRequestDto,
+  AcceptFriendRequestResult,
+  AddFriendDto,
+  AddFriendResult,
   AuthServiceAccountModuleController,
   AuthServiceAccountModuleControllerMethods,
-  CreateOrUpdateRelationshipDto,
-  DeleteRelationshipDto,
+  BlockUserDto,
+  BlockUserResult,
   GetAccountDto,
   GetAccountResult,
   GetAccountsDto,
   GetAccountsResult,
-  GetBlockedDto,
-  GetBlockedResult,
-  GetFriendsDto,
-  GetFriendsResult
+  GetFriendRequestsDto,
+  GetFriendRequestsResult,
+  IgnoreFriendRequestDto,
+  IgnoreFriendRequestResult,
+  RemoveFriendDto,
+  RemoveFriendResult,
+  UnblockUserDto,
+  UnblockUserResult
 } from '@prj/types/grpc/auth-service';
 @Controller()
 @AuthServiceAccountModuleControllerMethods()
@@ -29,19 +37,45 @@ export class AccountController implements AuthServiceAccountModuleController {
     return this.accountService.getAccounts(data);
   }
 
-  createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
-    return this.accountService.createOrUpdateRelationship(data);
+  // createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
+  //   return this.accountService.createOrUpdateRelationship(data);
+  // }
+
+  // deleteRelationship(data: DeleteRelationshipDto) {
+  //   return this.accountService.deleteRelationship(data);
+  // }
+
+  addFriend(data: AddFriendDto): Promise<AddFriendResult> {
+    return this.accountService.addFriend(data);
   }
 
-  deleteRelationship(data: DeleteRelationshipDto) {
-    return this.accountService.deleteRelationship(data);
+  acceptFriendRequest(
+    data: AcceptFriendRequestDto
+  ): Promise<AcceptFriendRequestResult> {
+    return this.accountService.acceptFriendRequest(data);
   }
 
-  getFriends(data: GetFriendsDto): Promise<GetFriendsResult> {
-    return this.accountService.getFriends(data);
+  ignoreFriendRequest(
+    data: IgnoreFriendRequestDto
+  ): Promise<IgnoreFriendRequestResult> {
+    return this.accountService.ignoreFriendRequest(data);
   }
 
-  getBlocked(data: GetBlockedDto): Promise<GetBlockedResult> {
-    return this.accountService.getBlocked(data);
+  getFriendRequests(
+    data: GetFriendRequestsDto
+  ): Promise<GetFriendRequestsResult> {
+    return this.accountService.getFriendRequests(data);
+  }
+
+  removeFriend(data: RemoveFriendDto): Promise<RemoveFriendResult> {
+    return this.accountService.removeFriend(data);
+  }
+
+  blockUser(data: BlockUserDto): Promise<BlockUserResult> {
+    return this.accountService.blockUser(data);
+  }
+
+  unblockUser(data: UnblockUserDto): Promise<UnblockUserResult> {
+    return this.accountService.unblockUser(data);
   }
 }
