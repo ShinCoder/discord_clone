@@ -118,7 +118,8 @@ export interface IGetFriendsResult {
 }
 
 export interface IGetFriendRequestsResult {
-  accounts: Array<AccountDto>;
+  incomingRequests: Array<AccountDto>;
+  outgoingRequests: Array<AccountDto>;
 }
 
 export interface IGetUserProfileResult {

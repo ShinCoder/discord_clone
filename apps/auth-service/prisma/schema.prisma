@@ -20,11 +20,9 @@ enum AccountStatus {
 }
 
 enum RelationshipStatus {
-  REQUESTING
   PENDING
   FRIEND
   BLOCKED
-  BEING_BLOCKED
 
   @@map("RELATIONSHIP_STATUS")
 }
@@ -82,12 +80,10 @@ model Relationships {
   target    Accounts @relation(fields: [targetId], references: [id], name: "in_relationship_with")
   targetId  String   @map("target_id")
 
-  id             String              @id @default(uuid())
-  status         RelationshipStatus  @default(REQUESTING)
-  previousStatus RelationshipStatus? @map("previous_status")
+  status         RelationshipStatus  @default(PENDING)
   createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt      DateTime            @updatedAt() @map("updated_at") @db.Timestamptz()
 
-  @@unique([accountId, targetId])
+  @@id([accountId, targetId])
   @@map("relationships")
 }

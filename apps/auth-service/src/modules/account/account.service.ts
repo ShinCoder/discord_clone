@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   HttpStatus,
   Injectable,
   NotFoundException
@@ -23,11 +24,14 @@ import {
   AccountDto,
   AccountStatus as RpcAccountStatus,
   RelationshipStatus as RpcRelationshipStatus,
-  CreateOrUpdateRelationshipDto,
-  DeleteRelationshipDto,
-  GetFriendsDto,
   ConnectionStatus as RpcConnectionStatus,
-  GetBlockedDto
+  AddFriendDto,
+  AcceptFriendRequestDto,
+  IgnoreFriendRequestDto,
+  BlockUserDto,
+  UnblockUserDto,
+  RemoveFriendDto,
+  GetFriendRequestsDto
 } from '@prj/types/grpc/auth-service';
 import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
 
@@ -39,7 +43,9 @@ export class AccountService {
   ) {}
 
   private toAccountDto(
-    data: Prisma.AccountsGetPayload<{ include: { relationshipWith: true } }> & {
+    data: Prisma.AccountsGetPayload<{
+      include: { relationship: true; relationshipWith: true };
+    }> & {
       connectionStatus: ConnectionStatus;
     }
   ): AccountDto {
@@ -58,14 +64,20 @@ export class AccountService {
       isAdmin: data.isAdmin,
       createdAt: data.createdAt.toISOString(),
       updatedAt: data.updatedAt.toISOString(),
-      relationshipWith:
+      relationship:
+        data.relationship?.length === 1
+          ? {
+              ...data.relationship[0],
+              status: RpcRelationshipStatus[data.relationship[0].status],
+              createdAt: data.relationship[0].createdAt.toISOString(),
+              updatedAt: data.relationship[0].updatedAt.toISOString()
+            }
+          : undefined,
+      inRelationshipWith:
         data.relationshipWith?.length === 1
           ? {
               ...data.relationshipWith[0],
               status: RpcRelationshipStatus[data.relationshipWith[0].status],
-              previousStatus: data.relationshipWith[0].previousStatus
-                ? RpcRelationshipStatus[data.relationshipWith[0].previousStatus]
-                : undefined,
               createdAt: data.relationshipWith[0].createdAt.toISOString(),
               updatedAt: data.relationshipWith[0].updatedAt.toISOString()
             }
@@ -121,6 +133,7 @@ export class AccountService {
           HttpStatus.OK,
           this.toAccountDto({
             ...account,
+            relationship: [],
             connectionStatus: await this.getConnectionStatus(account.id)
           })
         );
@@ -133,24 +146,22 @@ export class AccountService {
 
   async getAccounts(data: GetAccountsDto) {
     try {
-      let condition = {};
+      let condition: Prisma.AccountsFindManyArgs = {};
 
       if (
-        data.haveRelationshipWith != undefined &&
-        data.relationshipStatus != undefined
+        data.haveRelationshipWith !== undefined &&
+        data.relationshipStatus !== undefined
       ) {
-        const relationships = await this.prismaService.relationships.findMany({
-          where: {
-            accountId: data.haveRelationshipWith,
-            status:
-              RelationshipStatus[RpcRelationshipStatus[data.relationshipStatus]]
-          }
-        });
-
         condition = {
           where: {
-            id: {
-              in: relationships.map((e) => e.targetId)
+            relationshipWith: {
+              some: {
+                accountId: data.haveRelationshipWith,
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[data.relationshipStatus]
+                  ]
+              }
             }
           }
         };
@@ -184,106 +195,309 @@ export class AccountService {
     }
   }
 
-  async createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
+  // async createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
+  //   try {
+  //     if (data.account.id === data.target.id) {
+  //       throw new RpcException(
+  //         new BadRequestException(
+  //           ApiErrorMessages.SEND_FRIEND_REQUEST_SELF_REQUEST
+  //         )
+  //       );
+  //     }
+
+  //     await this.prismaService.$transaction(async (tx) => {
+  //       const account = await tx.accounts.findFirst({
+  //         where: { id: data.account.id }
+  //       });
+  //       if (!account)
+  //         throw new RpcException(
+  //           new NotFoundException(
+  //             ApiErrorMessages.SEND_FRIEND_REQUEST_ACCOUNT_NOT_FOUND
+  //           )
+  //         );
+  //       const target = await tx.accounts.findFirst({
+  //         where: { id: data.target.id }
+  //       });
+  //       if (!target)
+  //         throw new RpcException(
+  //           new NotFoundException(
+  //             ApiErrorMessages.SEND_FRIEND_REQUEST_ACCOUNT_NOT_FOUND
+  //           )
+  //         );
+
+  //       let existed = await tx.relationships.findFirst({
+  //         where: {
+  //           accountId: data.account.id,
+  //           targetId: data.target.id
+  //         }
+  //       });
+
+  //       if (existed) {
+  //         await tx.relationships.update({
+  //           where: {
+  //             id: existed.id
+  //           },
+  //           data: {
+  //             previousStatus: existed.status,
+  //             status:
+  //               RelationshipStatus[RpcRelationshipStatus[data.account.status]]
+  //           }
+  //         });
+  //       } else {
+  //         await tx.relationships.create({
+  //           data: {
+  //             account: {
+  //               connect: {
+  //                 id: data.account.id
+  //               }
+  //             },
+  //             target: {
+  //               connect: {
+  //                 id: data.target.id
+  //               }
+  //             },
+  //             status:
+  //               RelationshipStatus[RpcRelationshipStatus[data.account.status]]
+  //           }
+  //         });
+  //       }
+
+  //       existed = await tx.relationships.findFirst({
+  //         where: {
+  //           accountId: data.target.id,
+  //           targetId: data.account.id
+  //         }
+  //       });
+
+  //       if (existed) {
+  //         await tx.relationships.update({
+  //           where: {
+  //             id: existed.id
+  //           },
+  //           data: {
+  //             previousStatus: existed.status,
+  //             status:
+  //               RelationshipStatus[RpcRelationshipStatus[data.target.status]]
+  //           }
+  //         });
+  //       } else {
+  //         await tx.relationships.create({
+  //           data: {
+  //             account: {
+  //               connect: {
+  //                 id: data.target.id
+  //               }
+  //             },
+  //             target: {
+  //               connect: {
+  //                 id: data.account.id
+  //               }
+  //             },
+  //             status:
+  //               RelationshipStatus[RpcRelationshipStatus[data.target.status]]
+  //           }
+  //         });
+  //       }
+  //     });
+
+  //     return getRpcSuccessMessage(HttpStatus.CREATED);
+  //   } catch (err) {
+  //     return handleThrowError(err);
+  //   }
+  // }
+
+  // async deleteRelationship(data: DeleteRelationshipDto) {
+  //   try {
+  //     await this.prismaService.$transaction(async (tx) => {
+  //       let relationship = await tx.relationships.findFirst({
+  //         where: {
+  //           accountId: data.accountId,
+  //           targetId: data.targetId
+  //         }
+  //       });
+
+  //       if (relationship) {
+  //         await tx.relationships.delete({
+  //           where: {
+  //             id: relationship.id
+  //           }
+  //         });
+  //       }
+
+  //       relationship = await tx.relationships.findFirst({
+  //         where: {
+  //           accountId: data.targetId,
+  //           targetId: data.accountId
+  //         }
+  //       });
+
+  //       if (relationship) {
+  //         await tx.relationships.delete({
+  //           where: {
+  //             id: relationship.id
+  //           }
+  //         });
+  //       }
+  //     });
+
+  //     return getRpcSuccessMessage(HttpStatus.OK);
+  //   } catch (err) {
+  //     return handleThrowError(err);
+  //   }
+  // }
+
+  private async verifyUsers(
+    tx: Prisma.TransactionClient,
+    accountId: string,
+    targetId: string
+  ) {
+    const account = await tx.accounts.findFirst({
+      where: { id: accountId },
+      include: {
+        relationship: {
+          where: {
+            targetId
+          }
+        }
+      }
+    });
+    if (!account)
+      throw new RpcException(
+        new NotFoundException(ApiErrorMessages.RELATIONSHIP__ACCOUNT_NOT_FOUND)
+      );
+    const target = await tx.accounts.findFirst({
+      where: {
+        id: targetId
+      },
+      include: {
+        relationship: {
+          where: {
+            targetId: accountId
+          }
+        }
+      }
+    });
+    if (!target)
+      throw new RpcException(
+        new NotFoundException(ApiErrorMessages.RELATIONSHIP__TARGET_NOT_FOUND)
+      );
+
+    return { account, target };
+  }
+
+  async addFriend(data: AddFriendDto) {
     try {
-      if (data.account.id === data.target.id) {
+      if (!data.targetId && !data.targetUsername) {
         throw new RpcException(
           new BadRequestException(
-            ApiErrorMessages.SEND_FRIEND_REQUEST_SELF_REQUEST
+            ApiErrorMessages.SEND_FRIEND_REQUEST__NO_TARGET
           )
         );
       }
 
       await this.prismaService.$transaction(async (tx) => {
         const account = await tx.accounts.findFirst({
-          where: { id: data.account.id }
+          where: { id: data.accountId }
         });
         if (!account)
           throw new RpcException(
             new NotFoundException(
-              ApiErrorMessages.SEND_FRIEND_REQUEST_ACCOUNT_NOT_FOUND
+              ApiErrorMessages.RELATIONSHIP__ACCOUNT_NOT_FOUND
             )
           );
         const target = await tx.accounts.findFirst({
-          where: { id: data.target.id }
+          where: {
+            ...(data.targetId && { id: data.targetId }),
+            ...(data.targetUsername && { username: data.targetUsername })
+          }
         });
         if (!target)
           throw new RpcException(
             new NotFoundException(
-              ApiErrorMessages.SEND_FRIEND_REQUEST_ACCOUNT_NOT_FOUND
+              ApiErrorMessages.RELATIONSHIP__TARGET_NOT_FOUND
             )
           );
 
-        let existed = await tx.relationships.findFirst({
-          where: {
-            accountId: data.account.id,
-            targetId: data.target.id
-          }
-        });
-
-        if (existed) {
-          await tx.relationships.update({
-            where: {
-              id: existed.id
-            },
-            data: {
-              previousStatus: existed.status,
-              status:
-                RelationshipStatus[RpcRelationshipStatus[data.account.status]]
-            }
-          });
-        } else {
-          await tx.relationships.create({
-            data: {
-              account: {
-                connect: {
-                  id: data.account.id
-                }
-              },
-              target: {
-                connect: {
-                  id: data.target.id
-                }
-              },
-              status:
-                RelationshipStatus[RpcRelationshipStatus[data.account.status]]
-            }
-          });
+        if (account.id === target.id) {
+          throw new RpcException(
+            new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+          );
         }
 
-        existed = await tx.relationships.findFirst({
+        const pastRevertedRelationship = await tx.relationships.findFirst({
           where: {
-            accountId: data.target.id,
-            targetId: data.account.id
+            accountId: target.id,
+            targetId: account.id
           }
         });
 
-        if (existed) {
-          await tx.relationships.update({
-            where: {
-              id: existed.id
-            },
-            data: {
-              previousStatus: existed.status,
-              status:
-                RelationshipStatus[RpcRelationshipStatus[data.target.status]]
-            }
-          });
-        } else {
-          await tx.relationships.create({
-            data: {
-              account: {
-                connect: {
-                  id: data.target.id
+        if (pastRevertedRelationship) {
+          switch (pastRevertedRelationship.status) {
+            case RelationshipStatus.FRIEND:
+              throw new RpcException(
+                new ConflictException(
+                  ApiErrorMessages.SEND_FRIEND_REQUEST__ALREADY_FRIEND
+                )
+              );
+            case RelationshipStatus.BLOCKED:
+              throw new RpcException(
+                new ConflictException(
+                  ApiErrorMessages.SEND_FRIEND_REQUEST__BLOCKED
+                )
+              );
+            case RelationshipStatus.PENDING:
+              await tx.relationships.update({
+                where: {
+                  accountId_targetId: {
+                    accountId: target.id,
+                    targetId: account.id
+                  }
+                },
+                data: {
+                  status: RelationshipStatus.FRIEND
                 }
+              });
+
+              await tx.relationships.upsert({
+                where: {
+                  accountId_targetId: {
+                    accountId: account.id,
+                    targetId: target.id
+                  }
+                },
+                create: {
+                  account: {
+                    connect: { id: account.id }
+                  },
+                  target: {
+                    connect: { id: target.id }
+                  },
+                  status: RelationshipStatus.FRIEND
+                },
+                update: {
+                  status: RelationshipStatus.FRIEND
+                }
+              });
+          }
+        } else {
+          await tx.relationships.upsert({
+            where: {
+              accountId_targetId: {
+                accountId: account.id,
+                targetId: target.id
+              }
+            },
+            create: {
+              account: {
+                connect: { id: account.id }
               },
               target: {
-                connect: {
-                  id: data.account.id
-                }
+                connect: { id: target.id }
               },
-              status:
-                RelationshipStatus[RpcRelationshipStatus[data.target.status]]
+              status: RelationshipStatus.PENDING
+            },
+            update: {
+              status: RelationshipStatus.PENDING
             }
           });
         }
@@ -295,107 +509,387 @@ export class AccountService {
     }
   }
 
-  async deleteRelationship(data: DeleteRelationshipDto) {
+  async acceptFriendRequest(data: AcceptFriendRequestDto) {
     try {
+      if (data.accountId === data.targetId) {
+        throw new RpcException(
+          new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+        );
+      }
+
       await this.prismaService.$transaction(async (tx) => {
-        let relationship = await tx.relationships.findFirst({
-          where: {
-            accountId: data.accountId,
-            targetId: data.targetId
-          }
-        });
+        const { account, target } = await this.verifyUsers(
+          tx,
+          data.accountId,
+          data.targetId
+        );
 
-        if (relationship) {
+        if (target.relationship[0]?.status === RelationshipStatus.PENDING) {
+          await tx.relationships.update({
+            where: {
+              accountId_targetId: {
+                accountId: target.id,
+                targetId: account.id
+              }
+            },
+            data: {
+              status: RelationshipStatus.FRIEND
+            }
+          });
+
+          await tx.relationships.upsert({
+            where: {
+              accountId_targetId: {
+                accountId: account.id,
+                targetId: target.id
+              }
+            },
+            update: {
+              status: RelationshipStatus.FRIEND
+            },
+            create: {
+              account: {
+                connect: { id: account.id }
+              },
+              target: {
+                connect: { id: target.id }
+              },
+              status: RelationshipStatus.FRIEND
+            }
+          });
+        } else {
+          throw new RpcException(
+            new ConflictException(
+              ApiErrorMessages.FRIEND_REQUEST_FEEDBACK__NO_REQUEST
+            )
+          );
+        }
+      });
+
+      return getRpcSuccessMessage(HttpStatus.NO_CONTENT);
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async ignoreFriendRequest(data: IgnoreFriendRequestDto) {
+    try {
+      if (data.accountId === data.targetId) {
+        throw new RpcException(
+          new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+        );
+      }
+
+      await this.prismaService.$transaction(async (tx) => {
+        const { account, target } = await this.verifyUsers(
+          tx,
+          data.accountId,
+          data.targetId
+        );
+
+        if (account.relationship[0]?.status === RelationshipStatus.PENDING) {
           await tx.relationships.delete({
             where: {
-              id: relationship.id
+              accountId_targetId: {
+                accountId: account.id,
+                targetId: target.id
+              }
+            }
+          });
+        } else {
+          throw new RpcException(
+            new ConflictException(
+              ApiErrorMessages.FRIEND_REQUEST_FEEDBACK__NO_REQUEST
+            )
+          );
+        }
+      });
+
+      return getRpcSuccessMessage(HttpStatus.NO_CONTENT);
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async removeFriend(data: RemoveFriendDto) {
+    try {
+      if (data.accountId === data.targetId) {
+        throw new RpcException(
+          new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+        );
+      }
+
+      await this.prismaService.$transaction(async (tx) => {
+        const { account, target } = await this.verifyUsers(
+          tx,
+          data.accountId,
+          data.targetId
+        );
+
+        if (account.relationship[0]?.status == RelationshipStatus.FRIEND) {
+          await tx.relationships.deleteMany({
+            where: {
+              OR: [
+                {
+                  accountId: account.id,
+                  targetId: target.id
+                },
+                { accountId: target.id, targetId: account.id }
+              ]
+            }
+          });
+        } else {
+          throw new RpcException(
+            new ConflictException(ApiErrorMessages.REMOVE_FRIEND__NOT_FRIEND)
+          );
+        }
+      });
+
+      return getRpcSuccessMessage(HttpStatus.NO_CONTENT);
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async blockUser(data: BlockUserDto) {
+    try {
+      if (data.accountId === data.targetId) {
+        throw new RpcException(
+          new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+        );
+      }
+
+      await this.prismaService.$transaction(async (tx) => {
+        const { account, target } = await this.verifyUsers(
+          tx,
+          data.accountId,
+          data.targetId
+        );
+
+        if (account.relationship[0]?.status === RelationshipStatus.FRIEND) {
+          await tx.relationships.delete({
+            where: {
+              accountId_targetId: {
+                accountId: target.id,
+                targetId: account.id
+              }
             }
           });
         }
 
-        relationship = await tx.relationships.findFirst({
+        await tx.relationships.upsert({
           where: {
-            accountId: data.targetId,
-            targetId: data.accountId
+            accountId_targetId: {
+              accountId: account.id,
+              targetId: target.id
+            }
+          },
+          update: {
+            status: RelationshipStatus.BLOCKED
+          },
+          create: {
+            account: {
+              connect: {
+                id: account.id
+              }
+            },
+            target: {
+              connect: {
+                id: target.id
+              }
+            },
+            status: RelationshipStatus.BLOCKED
           }
         });
+      });
 
-        if (relationship) {
+      return getRpcSuccessMessage(HttpStatus.NO_CONTENT);
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async unblockUser(data: UnblockUserDto) {
+    try {
+      if (data.accountId === data.targetId) {
+        throw new RpcException(
+          new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+        );
+      }
+
+      await this.prismaService.$transaction(async (tx) => {
+        const { account, target } = await this.verifyUsers(
+          tx,
+          data.accountId,
+          data.targetId
+        );
+
+        if (account.relationship[0]?.status === RelationshipStatus.BLOCKED) {
           await tx.relationships.delete({
             where: {
-              id: relationship.id
+              accountId_targetId: {
+                accountId: account.id,
+                targetId: target.id
+              }
             }
           });
+        } else {
+          throw new RpcException(
+            new ConflictException(ApiErrorMessages.UNBLOCK__NOT_BLOCKED)
+          );
         }
       });
 
-      return getRpcSuccessMessage(HttpStatus.OK);
+      return getRpcSuccessMessage(HttpStatus.NO_CONTENT);
     } catch (err) {
       return handleThrowError(err);
     }
   }
 
-  async getFriends(data: GetFriendsDto) {
+  async getFriendRequests(data: GetFriendRequestsDto) {
     try {
-      const relationships = await this.prismaService.relationships.findMany({
-        where: {
-          targetId: data.accountId,
-          status: RelationshipStatus.FRIEND
-        },
-        include: {
-          account: true
-        }
-      });
+      const { accountRequesting, accountBeingRequested } =
+        await this.prismaService.$transaction(async (tx) => {
+          const account = await tx.accounts.findFirst({
+            where: {
+              id: data.accountId
+            }
+          });
+          if (!account)
+            throw new RpcException(
+              new NotFoundException(
+                ApiErrorMessages.RELATIONSHIP__ACCOUNT_NOT_FOUND
+              )
+            );
 
-      const friends = await Promise.all(
-        relationships.map(async (e) =>
-          this.toAccountDto({
-            ...e.account,
-            relationshipWith: [
-              {
-                ...e
+          const accountRequesting = await tx.accounts.findMany({
+            where: {
+              relationship: {
+                some: {
+                  targetId: account.id,
+                  status: RelationshipStatus.PENDING
+                }
               }
-            ],
-            connectionStatus: await this.getConnectionStatus(e.account.id)
-          })
-        )
-      );
+            },
+            include: {
+              relationship: {
+                where: {
+                  targetId: account.id
+                }
+              }
+            }
+          });
 
-      return getRpcSuccessMessage(HttpStatus.OK, { accounts: friends });
+          const accountBeingRequested = await tx.accounts.findMany({
+            where: {
+              relationshipWith: {
+                some: {
+                  accountId: account.id,
+                  status: RelationshipStatus.PENDING
+                }
+              }
+            },
+            include: {
+              relationship: {
+                where: {
+                  targetId: account.id
+                }
+              }
+            }
+          });
+
+          return {
+            accountRequesting,
+            accountBeingRequested
+          };
+        });
+
+      return getRpcSuccessMessage(HttpStatus.OK, {
+        incomingRequests: await Promise.all(
+          accountRequesting.map(async (_account) =>
+            this.toAccountDto({
+              ..._account,
+              relationshipWith: [],
+              connectionStatus: await this.getConnectionStatus(_account.id)
+            })
+          )
+        ),
+        outgoingRequests: await Promise.all(
+          accountBeingRequested.map(async (_account) =>
+            this.toAccountDto({
+              ..._account,
+              relationshipWith: [],
+              connectionStatus: await this.getConnectionStatus(_account.id)
+            })
+          )
+        )
+      });
     } catch (err) {
       return handleThrowError(err);
     }
   }
 
-  async getBlocked(data: GetBlockedDto) {
-    try {
-      const relationships = await this.prismaService.relationships.findMany({
-        where: {
-          targetId: data.accountId,
-          status: RelationshipStatus.BEING_BLOCKED
-        },
-        include: {
-          account: true
-        }
-      });
+  // async getFriends(data: GetFriendsDto) {
+  //   try {
+  //     const relationships = await this.prismaService.relationships.findMany({
+  //       where: {
+  //         targetId: data.accountId,
+  //         status: RelationshipStatus.FRIEND
+  //       },
+  //       include: {
+  //         account: true
+  //       }
+  //     });
 
-      const blocked = await Promise.all(
-        relationships.map(async (e) =>
-          this.toAccountDto({
-            ...e.account,
-            relationshipWith: [
-              {
-                ...e
-              }
-            ],
-            connectionStatus: await this.getConnectionStatus(e.account.id)
-          })
-        )
-      );
+  //     const friends = await Promise.all(
+  //       relationships.map(async (e) =>
+  //         this.toAccountDto({
+  //           ...e.account,
+  //           relationshipWith: [
+  //             {
+  //               ...e
+  //             }
+  //           ],
+  //           connectionStatus: await this.getConnectionStatus(e.account.id)
+  //         })
+  //       )
+  //     );
 
-      return getRpcSuccessMessage(HttpStatus.OK, { accounts: blocked });
-    } catch (err) {
-      return handleThrowError(err);
-    }
-  }
+  //     return getRpcSuccessMessage(HttpStatus.OK, { accounts: friends });
+  //   } catch (err) {
+  //     return handleThrowError(err);
+  //   }
+  // }
+
+  // async getBlocked(data: GetBlockedDto) {
+  //   try {
+  //     const relationships = await this.prismaService.relationships.findMany({
+  //       where: {
+  //         targetId: data.accountId,
+  //         status: RelationshipStatus.BEING_BLOCKED
+  //       },
+  //       include: {
+  //         account: true
+  //       }
+  //     });
+
+  //     const blocked = await Promise.all(
+  //       relationships.map(async (e) =>
+  //         this.toAccountDto({
+  //           ...e.account,
+  //           relationshipWith: [
+  //             {
+  //               ...e
+  //             }
+  //           ],
+  //           connectionStatus: await this.getConnectionStatus(e.account.id)
+  //         })
+  //       )
+  //     );
+
+  //     return getRpcSuccessMessage(HttpStatus.OK, { accounts: blocked });
+  //   } catch (err) {
+  //     return handleThrowError(err);
+  //   }
+  // }
 }

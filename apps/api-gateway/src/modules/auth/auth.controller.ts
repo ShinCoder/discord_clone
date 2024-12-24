@@ -128,6 +128,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id/friend-request/accept')
   acceptFriendRequest(
     @Req() req: IRequestWithUser,
@@ -141,6 +142,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAtGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id/friend-request/decline')
   declineFriendRequest(
     @Req() req: IRequestWithUser,
