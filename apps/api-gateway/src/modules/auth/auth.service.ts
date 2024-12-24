@@ -160,6 +160,14 @@ export class AuthService implements OnModuleInit {
     return handleRpcResult(result);
   }
 
+  async cancelFriendRequest(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceAccountModule.cancelFriendRequest({ accountId, targetId })
+    );
+
+    return handleRpcResult(result);
+  }
+
   async getFriends(accountId: string) {
     const result = await lastValueFrom(
       this.authServiceAccountModule.getAccounts({

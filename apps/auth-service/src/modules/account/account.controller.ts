@@ -11,6 +11,8 @@ import {
   AuthServiceAccountModuleControllerMethods,
   BlockUserDto,
   BlockUserResult,
+  CancelFriendRequestDto,
+  CancelFriendRequestResult,
   GetAccountDto,
   GetAccountResult,
   GetAccountsDto,
@@ -59,6 +61,12 @@ export class AccountController implements AuthServiceAccountModuleController {
     data: IgnoreFriendRequestDto
   ): Promise<IgnoreFriendRequestResult> {
     return this.accountService.ignoreFriendRequest(data);
+  }
+
+  cancelFriendRequest(
+    data: CancelFriendRequestDto
+  ): Promise<CancelFriendRequestResult> {
+    return this.accountService.cancelFriendRequest(data);
   }
 
   getFriendRequests(

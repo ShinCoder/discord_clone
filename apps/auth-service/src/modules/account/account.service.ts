@@ -31,7 +31,8 @@ import {
   BlockUserDto,
   UnblockUserDto,
   RemoveFriendDto,
-  GetFriendRequestsDto
+  GetFriendRequestsDto,
+  CancelFriendRequestDto
 } from '@prj/types/grpc/auth-service';
 import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
 
@@ -579,6 +580,47 @@ export class AccountService {
           new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
         );
       }
+
+      await this.prismaService.$transaction(async (tx) => {
+        const { account, target } = await this.verifyUsers(
+          tx,
+          data.accountId,
+          data.targetId
+        );
+
+        if (target.relationship[0]?.status === RelationshipStatus.PENDING) {
+          await tx.relationships.delete({
+            where: {
+              accountId_targetId: {
+                accountId: target.id,
+                targetId: account.id
+              }
+            }
+          });
+        } else {
+          throw new RpcException(
+            new ConflictException(
+              ApiErrorMessages.FRIEND_REQUEST_FEEDBACK__NO_REQUEST
+            )
+          );
+        }
+      });
+
+      return getRpcSuccessMessage(HttpStatus.NO_CONTENT);
+    } catch (err) {
+      return handleThrowError(err);
+    }
+  }
+
+  async cancelFriendRequest(data: CancelFriendRequestDto) {
+    try {
+      if (data.accountId === data.targetId) {
+        throw new RpcException(
+          new BadRequestException(ApiErrorMessages.RELATIONSHIP__SELF_INVOKE)
+        );
+      }
+
+      console.log(data);
 
       await this.prismaService.$transaction(async (tx) => {
         const { account, target } = await this.verifyUsers(
