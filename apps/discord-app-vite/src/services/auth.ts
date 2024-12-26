@@ -72,6 +72,15 @@ export const declineFriendRequest = (data: DeclineFriendRequestDto) => {
   );
 };
 
+export const cancelFriendRequest = (data: {
+  accountId: string;
+  targetId: string;
+}) => {
+  return apiClientWithAuth.delete(
+    `/auth/${data.accountId}/friend-request/${data.targetId}`
+  );
+};
+
 export const getUserProfile = (id: string) => {
   return apiClientWithAuth.get<IGetUserProfileResult>(`/auth/${id}/profile`);
 };

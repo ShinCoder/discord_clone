@@ -77,19 +77,15 @@ export interface IUnblockDto {
 }
 
 export enum RelationshipStatus {
-  REQUESTING = 'REQUESTING',
   PENDING = 'PENDING',
   FRIEND = 'FRIEND',
-  BLOCKED = 'BLOCKED',
-  BEING_BLOCKED = 'BEING_BLOCKED'
+  BLOCKED = 'BLOCKED'
 }
 
 interface RelationshipDto {
-  id: string;
   accountId: string;
   targetId: string;
   status: string;
-  previousStatus?: string | undefined;
   createdAt: string;
   updatedAt: string;
 }
@@ -110,7 +106,8 @@ export interface AccountDto {
   createdAt: string;
   updatedAt: string;
   connectionStatus?: 'ONLINE' | 'OFFLINE';
-  relationshipWith?: RelationshipDto | undefined;
+  relationship?: RelationshipDto | undefined;
+  inRelationshipWith?: RelationshipDto | undefined;
 }
 
 export interface IGetFriendsResult {

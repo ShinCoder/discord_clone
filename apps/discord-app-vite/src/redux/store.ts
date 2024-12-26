@@ -30,8 +30,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['socket/setSocket'],
-        ignoredPaths: ['socket.socket']
+        ignoredActions: ['socket/setSocket', 'modal/showModal'],
+        ignoredPaths: ['socket.socket', 'modal']
       }
     })
       .concat(...getMiddlewares())

@@ -31,45 +31,91 @@ const TargetProfile = (props: TargetProfileProps) => {
   const theme = useTheme();
 
   const renderFriendAction = useCallback(() => {
-    switch (data.relationshipWith?.status) {
-      case RelationshipStatus.PENDING:
-        return (
-          <Box sx={{ display: 'flex', alignItems: 'center', columnGap: '8px' }}>
-            <Typography
-              sx={{
-                color: theme.dcPalette.header.secondary,
-                fontSize: '0.875rem',
-                fontWeight: 400,
-                lineHeight: 1.25
-              }}
-            >
-              Sent you a friend request:
-            </Typography>
-            <PrimaryActionBtn onClick={onAcceptFriend}>Accept</PrimaryActionBtn>
-            <SecondaryActionBtn onClick={onIgnoreFriend}>
-              Ignore
-            </SecondaryActionBtn>
-          </Box>
-        );
-      case RelationshipStatus.REQUESTING:
-        return (
-          <PrimaryActionBtn disabled>Friend Request Sent</PrimaryActionBtn>
-        );
-      case RelationshipStatus.FRIEND:
-        return (
-          <SecondaryActionBtn onClick={onRemoveFriend}>
-            Remove Friend
+    // switch (data.relationshipWith?.status) {
+    //   case RelationshipStatus.PENDING:
+    //     return (
+    //       <Box sx={{ display: 'flex', alignItems: 'center', columnGap: '8px' }}>
+    //         <Typography
+    //           sx={{
+    //             color: theme.dcPalette.header.secondary,
+    //             fontSize: '0.875rem',
+    //             fontWeight: 400,
+    //             lineHeight: 1.25
+    //           }}
+    //         >
+    //           Sent you a friend request:
+    //         </Typography>
+    //         <PrimaryActionBtn onClick={onAcceptFriend}>Accept</PrimaryActionBtn>
+    //         <SecondaryActionBtn onClick={onIgnoreFriend}>
+    //           Ignore
+    //         </SecondaryActionBtn>
+    //       </Box>
+    //     );
+    //   case RelationshipStatus.REQUESTING:
+    //     return (
+    //       <PrimaryActionBtn disabled>Friend Request Sent</PrimaryActionBtn>
+    //     );
+    //   case RelationshipStatus.FRIEND:
+    //     return (
+    //       <SecondaryActionBtn onClick={onRemoveFriend}>
+    //         Remove Friend
+    //       </SecondaryActionBtn>
+    //     );
+    //   case RelationshipStatus.BLOCKED:
+    //     return <Box />;
+    //   default:
+    //     return (
+    //       <PrimaryActionBtn onClick={onAddFriend}>Add Friend</PrimaryActionBtn>
+    //     );
+    // }
+
+    // if have incoming friend request
+    if (data.relationship?.status === RelationshipStatus.PENDING) {
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center', columnGap: '8px' }}>
+          <Typography
+            sx={{
+              color: theme.dcPalette.header.secondary,
+              fontSize: '0.875rem',
+              fontWeight: 400,
+              lineHeight: 1.25
+            }}
+          >
+            Sent you a friend request:
+          </Typography>
+          <PrimaryActionBtn onClick={onAcceptFriend}>Accept</PrimaryActionBtn>
+          <SecondaryActionBtn onClick={onIgnoreFriend}>
+            Ignore
           </SecondaryActionBtn>
-        );
-      case RelationshipStatus.BLOCKED:
-        return <Box />;
-      default:
-        return (
-          <PrimaryActionBtn onClick={onAddFriend}>Add Friend</PrimaryActionBtn>
-        );
+        </Box>
+      );
     }
+
+    // if have outgoing friend request
+    if (data.inRelationshipWith?.status === RelationshipStatus.PENDING) {
+      return <PrimaryActionBtn disabled>Friend Request Sent</PrimaryActionBtn>;
+    }
+
+    // if friend
+    if (data.relationship?.status === RelationshipStatus.FRIEND) {
+      return (
+        <SecondaryActionBtn onClick={onRemoveFriend}>
+          Remove Friend
+        </SecondaryActionBtn>
+      );
+    }
+
+    // if blocked
+    if (data.inRelationshipWith?.status === RelationshipStatus.BLOCKED) {
+      return <Box />;
+    }
+
+    return (
+      <PrimaryActionBtn onClick={onAddFriend}>Add Friend</PrimaryActionBtn>
+    );
   }, [
-    data.relationshipWith?.status,
+    data.inRelationshipWith?.status,
+    data.relationship?.status,
     onAcceptFriend,
     onAddFriend,
     onIgnoreFriend,
@@ -78,19 +124,16 @@ const TargetProfile = (props: TargetProfileProps) => {
   ]);
 
   const renderBlockAction = useCallback(() => {
-    switch (data.relationshipWith?.status) {
-      case RelationshipStatus.BLOCKED:
-        return (
-          <SecondaryActionBtn onClick={onUnblockUser}>
-            Unblock
-          </SecondaryActionBtn>
-        );
-      default:
-        return (
-          <SecondaryActionBtn onClick={onBlockUser}>Block</SecondaryActionBtn>
-        );
+    if (data.inRelationshipWith?.status === RelationshipStatus.BLOCKED) {
+      return (
+        <SecondaryActionBtn onClick={onUnblockUser}>Unblock</SecondaryActionBtn>
+      );
+    } else {
+      return (
+        <SecondaryActionBtn onClick={onBlockUser}>Block</SecondaryActionBtn>
+      );
     }
-  }, [data.relationshipWith?.status, onBlockUser, onUnblockUser]);
+  }, [data.inRelationshipWith?.status, onBlockUser, onUnblockUser]);
 
   return (
     <Box sx={{ padding: '16px' }}>

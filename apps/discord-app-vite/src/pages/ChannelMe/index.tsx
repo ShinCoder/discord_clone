@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
 import { protectedRoutes } from '@constants';
 
-import { AccountDto } from '@prj/types/api';
+import { AccountDto, IGetFriendRequestsResult } from '@prj/types/api';
 
 const ChannelMe = () => {
   const theme = useTheme();
@@ -56,9 +56,11 @@ const ChannelMe = () => {
   // Friend list -- end
 
   // Friend request
-  const [friendRequestList, setFriendRequestList] = useState<Array<AccountDto>>(
-    []
-  );
+  const [friendRequestLists, setFriendRequestLists] =
+    useState<IGetFriendRequestsResult>({
+      incomingRequests: [],
+      outgoingRequests: []
+    });
 
   const { refetch: fetchFriendRequests } = useQuery({
     queryKey: ['friend-requests', authState.data?.id || ''],
@@ -67,15 +69,31 @@ const ChannelMe = () => {
   });
 
   const onAcceptFriendRequest = useCallback(
-    (targetId: string) => {
-      setFriendRequestList((pre) => pre.filter((e) => e.id !== targetId));
-      fetchFriends();
+    async (targetId: string) => {
+      setFriendRequestLists((pre) => ({
+        ...pre,
+        incomingRequests: pre.incomingRequests.filter((e) => e.id !== targetId)
+      }));
+      const rawFriends = await fetchFriends();
+      if (rawFriends.data?.data) {
+        setFriends(rawFriends.data.data.friends);
+      }
     },
     [fetchFriends]
   );
 
   const onDeclineFriendRequest = useCallback((targetId: string) => {
-    setFriendRequestList((pre) => pre.filter((e) => e.id !== targetId));
+    setFriendRequestLists((pre) => ({
+      ...pre,
+      incomingRequests: pre.incomingRequests.filter((e) => e.id !== targetId)
+    }));
+  }, []);
+
+  const onCancelFriendRequest = useCallback((targetId: string) => {
+    setFriendRequestLists((pre) => ({
+      ...pre,
+      outgoingRequests: pre.outgoingRequests.filter((e) => e.id !== targetId)
+    }));
   }, []);
   // Friend request --end
 
@@ -83,7 +101,7 @@ const ChannelMe = () => {
   const [blockedList, setBlockedList] = useState<Array<AccountDto>>([]);
 
   const { refetch: fetchBlocked } = useQuery({
-    queryKey: ['friend-requests', authState.data?.id || ''],
+    queryKey: ['blocked', authState.data?.id || ''],
     queryFn: ({ queryKey }) => getBlocked(queryKey[1]),
     enabled: false
   });
@@ -115,10 +133,19 @@ const ChannelMe = () => {
   // Blocked --end
 
   // Add friend
-  const onSendRequest = useCallback(() => {
-    fetchFriends();
-    fetchFriendRequests();
-  }, [fetchFriendRequests, fetchFriends]);
+  const onSendRequest = useCallback(async () => {
+    const rawFriends = await fetchFriends();
+    if (rawFriends.data?.data) {
+      setFriends(rawFriends.data.data.friends);
+    }
+    const rawFriendRequests = await fetchFriendRequests();
+    if (rawFriendRequests.data?.data)
+      setFriendRequestLists(rawFriendRequests.data.data);
+    const blocked = await fetchBlocked();
+    if (blocked.data?.data) {
+      setBlockedList(blocked.data.data.blocked);
+    }
+  }, [fetchBlocked, fetchFriendRequests, fetchFriends]);
   // Add friend --end
 
   // Remove friend
@@ -161,7 +188,7 @@ const ChannelMe = () => {
           }
           const rawFriendRequests = await fetchFriendRequests();
           if (rawFriendRequests.data?.data) {
-            setFriendRequestList(rawFriendRequests.data.data.accounts);
+            setFriendRequestLists(rawFriendRequests.data.data);
           }
           const blocked = await fetchBlocked();
           if (blocked.data?.data) {
@@ -210,9 +237,10 @@ const ChannelMe = () => {
         case 2:
           return (
             <PendingRequests
-              data={friendRequestList}
+              data={friendRequestLists}
               onAcceptFriendRequest={onAcceptFriendRequest}
               onDeclineFriendRequest={onDeclineFriendRequest}
+              onCancelFriendRequest={onCancelFriendRequest}
             />
           );
         case 3:
@@ -231,9 +259,10 @@ const ChannelMe = () => {
     allFriends,
     authState.data,
     blockedList,
-    friendRequestList,
+    friendRequestLists,
     handleDirectMessage,
     onAcceptFriendRequest,
+    onCancelFriendRequest,
     onDeclineFriendRequest,
     onRemoveFriend,
     onSendRequest,
