@@ -73,6 +73,13 @@ const DirectMessage = () => {
     },
     onSuccess: () => {
       refetch();
+    },
+    onError: (error) => {
+      dispatch(
+        showModal({
+          key: ModalKey.FRIEND_REQUEST_ERR
+        })
+      );
     }
   });
 

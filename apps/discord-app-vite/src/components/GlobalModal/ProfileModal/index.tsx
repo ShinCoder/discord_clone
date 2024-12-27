@@ -53,70 +53,6 @@ const ProfileModal = () => {
   }, [dispatch, location.pathname, modalState?.extraProps?.profile, navigate]);
 
   const renderFriendAction = useCallback(() => {
-    // switch (modalState?.extraProps?.profile.relationship?.status) {
-    //   case RelationshipStatus.PENDING:
-    //   case RelationshipStatus.REQUESTING:
-    //     return (
-    //       <Tooltip
-    //         title='Pending'
-    //         placement='top'
-    //       >
-    //         <Box>
-    //           <Button
-    //             disabled
-    //             sx={{
-    //               width: '32px',
-    //               minWidth: 'auto',
-    //               height: '32px',
-    //               borderRadius: theme.dcShape.borderRadius.button,
-
-    //               '&.Mui-disabled': {
-    //                 color: theme.dcPalette.button.secondaryText,
-    //                 backgroundColor:
-    //                   theme.dcPalette.button.secondaryBackgroundDisabled,
-    //                 cursor: 'not-allowed',
-    //                 pointerEvents: 'auto',
-    //                 opacity: 0.5
-    //               }
-    //             }}
-    //           >
-    //             <ManageAccountsIcon sx={{ width: '16px', height: '16px' }} />
-    //           </Button>
-    //         </Box>
-    //       </Tooltip>
-    //     );
-    //   case RelationshipStatus.FRIEND:
-    //   case RelationshipStatus.BEING_BLOCKED:
-    //     return <Box />;
-    //   default:
-    //     return (
-    //       <Button
-    //         onClick={() => {
-    //           modalState.extraProps?.onAddFriend?.();
-    //           handleClose();
-    //         }}
-    //         startIcon={
-    //           <PersonAddAlt1Icon sx={{ width: '16px', height: '16px' }} />
-    //         }
-    //         sx={{
-    //           height: '32px',
-    //           color: theme.dcPalette.button.filledBrandText,
-    //           textTransform: 'none',
-    //           padding: '2px 16px',
-    //           borderRadius: theme.dcShape.borderRadius.button,
-    //           backgroundColor: theme.dcPalette.button.filledBrandBackground,
-
-    //           '&:hover': {
-    //             backgroundColor:
-    //               theme.dcPalette.button.filledBrandBackgroundHover
-    //           }
-    //         }}
-    //       >
-    //         Add Friend
-    //       </Button>
-    //     );
-    // }
-
     // if there is incoming or outgoing friend request
     if (
       modalState?.extraProps?.profile.relationship?.status ===
@@ -155,6 +91,7 @@ const ProfileModal = () => {
       );
     }
 
+    // if friend or blocked
     if (
       modalState?.extraProps?.profile.inRelationshipWith?.status ===
         RelationshipStatus.FRIEND ||

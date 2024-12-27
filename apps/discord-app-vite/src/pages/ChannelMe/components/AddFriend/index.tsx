@@ -6,7 +6,12 @@ import { useForm } from 'react-hook-form';
 
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
+import { showModal } from '@redux/slices/modalSlice';
 import { sendFriendRequest } from '@services';
+import { ModalKey } from '@constants';
+import { FriendRequestErrorModalExtraProps } from '@components/GlobalModal/FriendRequestErrorModal';
+
+import { ApiErrorMessages } from '@prj/common';
 
 interface AddFriendProps {
   onSendRequest: () => void;
@@ -22,9 +27,9 @@ const AddFriend = (props: AddFriendProps) => {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.auth);
 
-  const [status, setStatus] = useState<'PENDING' | 'SUCCESS' | 'ERROR'>(
-    'PENDING'
-  );
+  const [status, setStatus] = useState<
+    'PENDING' | 'SUCCESS' | 'ERROR' | 'ERROR_F'
+  >('PENDING');
 
   const {
     register,
@@ -54,9 +59,32 @@ const AddFriend = (props: AddFriendProps) => {
       setStatus('SUCCESS');
       onSendRequest();
     },
-    onError: () => {
+    onError: (error) => {
+      if (
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        error?.data?.message ===
+        ApiErrorMessages.SEND_FRIEND_REQUEST__ALREADY_FRIEND
+      ) {
+        dispatch(
+          showModal({
+            key: ModalKey.FRIEND_REQUEST_ERR,
+            extraProps: { isFriend: true }
+          } satisfies {
+            key: string;
+            extraProps: FriendRequestErrorModalExtraProps;
+          })
+        );
+        setStatus('ERROR_F');
+      } else {
+        dispatch(
+          showModal({
+            key: ModalKey.FRIEND_REQUEST_ERR
+          })
+        );
+        setStatus('ERROR');
+      }
       reset({ username: formValues.username });
-      setStatus('ERROR');
     }
   });
 
@@ -123,88 +151,96 @@ const AddFriend = (props: AddFriendProps) => {
                 return `Success! Your friend request to ${preText.current} was sent.`;
               case 'ERROR':
                 return "Hm, didn't work. Double check that the username is correct.";
+              case 'ERROR_F':
+                return "You're already friends with that user!";
             }
           })()}
-          FormHelperTextProps={{
-            sx: {
-              color: (() => {
-                switch (status) {
-                  case 'PENDING':
-                    return 'transparent';
-                  case 'SUCCESS':
-                    return theme.dcPalette.text.positive;
-                  case 'ERROR':
-                    return theme.dcPalette.text.danger;
-                }
-              })()
-            }
-          }}
-          InputProps={{
-            sx: {
-              height: '48px',
-              color: theme.dcPalette.text.normal,
-              fontSize: '1rem',
-              fontWeight: '500',
-              padding: '0 12px',
-              borderRadius: '8px',
-              backgroundColor: theme.dcPalette.background.tertiary,
-
-              '.MuiOutlinedInput-notchedOutline': {
-                borderWidth: '1px',
-                borderColor: (() => {
+          slotProps={{
+            formHelperText: {
+              sx: {
+                color: (() => {
                   switch (status) {
                     case 'PENDING':
                       return 'transparent';
                     case 'SUCCESS':
-                      return theme.dcPalette.green[360] + ' !important';
+                      return theme.dcPalette.text.positive;
                     case 'ERROR':
-                      return theme.dcPalette.status.danger.base + ' !important';
+                    case 'ERROR_F':
+                      return theme.dcPalette.text.danger;
                   }
                 })()
-              },
-
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'transparent'
-              },
-
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderWidth: '1px',
-                borderColor: theme.dcPalette.text.link
               }
             },
-            endAdornment: (
-              <Button
-                type='submit'
-                variant='contained'
-                disabled={formValues.username.length < 1}
-                sx={{
-                  display: 'flex',
-                  width: 'auto',
-                  minWidth: 'auto',
-                  minHeight: '32px',
-                  color: theme.dcPalette.white[500],
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  lineHeight: '16px',
-                  textTransform: 'none',
-                  whiteSpace: 'nowrap',
-                  padding: '2px 16px',
-                  backgroundColor: theme.dcPalette.brand[500],
+            input: {
+              sx: {
+                height: '48px',
+                color: theme.dcPalette.text.normal,
+                fontSize: '1rem',
+                fontWeight: '500',
+                padding: '0 12px',
+                borderRadius: '8px',
+                backgroundColor: theme.dcPalette.background.tertiary,
 
-                  '&:disabled': {
+                '.MuiOutlinedInput-notchedOutline': {
+                  borderWidth: '1px',
+                  borderColor: (() => {
+                    switch (status) {
+                      case 'PENDING':
+                        return 'transparent';
+                      case 'SUCCESS':
+                        return theme.dcPalette.green[360] + ' !important';
+                      case 'ERROR':
+                      case 'ERROR_F':
+                        return (
+                          theme.dcPalette.status.danger.base + ' !important'
+                        );
+                    }
+                  })()
+                },
+
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'transparent'
+                },
+
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderWidth: '1px',
+                  borderColor: theme.dcPalette.text.link
+                }
+              },
+              endAdornment: (
+                <Button
+                  type='submit'
+                  variant='contained'
+                  disabled={formValues.username.length < 1}
+                  sx={{
+                    display: 'flex',
+                    width: 'auto',
+                    minWidth: 'auto',
+                    minHeight: '32px',
                     color: theme.dcPalette.white[500],
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    lineHeight: '16px',
+                    textTransform: 'none',
+                    whiteSpace: 'nowrap',
+                    padding: '2px 16px',
                     backgroundColor: theme.dcPalette.brand[500],
-                    opacity: 0.5,
-                    cursor: 'not-allowed',
-                    pointerEvents: 'all'
-                  }
-                }}
-              >
-                Send Friend Request
-              </Button>
-            )
+
+                    '&:disabled': {
+                      color: theme.dcPalette.white[500],
+                      backgroundColor: theme.dcPalette.brand[500],
+                      opacity: 0.5,
+                      cursor: 'not-allowed',
+                      pointerEvents: 'all'
+                    }
+                  }}
+                >
+                  Send Friend Request
+                </Button>
+              )
+            },
+            htmlInput: { style: { padding: '4px 0', marginRight: '16px' } }
           }}
-          inputProps={{ style: { padding: '4px 0', marginRight: '16px' } }}
         />
       </Box>
     </Box>

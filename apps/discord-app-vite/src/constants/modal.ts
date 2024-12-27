@@ -1,3 +1,4 @@
 export const ModalKey = {
-  PROFILE: 'PROFILE'
+  PROFILE: 'PROFILE',
+  FRIEND_REQUEST_ERR: 'FRIEND_REQUEST_ERR'
 };
