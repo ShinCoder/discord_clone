@@ -304,6 +304,7 @@ declare module '@mui/material/styles' {
         '100': string;
         '330': string;
         '360': string;
+        '600': string;
         '630': string;
         '730': string;
         '800': string;
@@ -411,6 +412,7 @@ declare module '@mui/material/styles' {
         '100': string;
         '330': string;
         '360': string;
+        '600': string;
         '630': string;
         '730': string;
         '800': string;
@@ -579,6 +581,7 @@ const defaultThemeOptions: ThemeOptions = {
       '100': paletteConstants.primary[100],
       '330': paletteConstants.primary[330],
       '360': paletteConstants.primary[360],
+      '600': paletteConstants.primary[600],
       '630': paletteConstants.primary[630],
       '730': paletteConstants.primary[730],
       '800': paletteConstants.primary[800]

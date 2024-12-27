@@ -10,16 +10,16 @@ import { useAppDispatch } from '@redux/hooks';
 import { showModal } from '@redux/slices/modalSlice';
 import { ModalKey } from '@constants';
 
-import { AccountDto, RelationshipStatus } from '@prj/types/api';
+import { AccountDto } from '@prj/types/api';
 import { ProfileModalExtraProps } from '@components/GlobalModal/ProfileModal';
 
-interface RequestItemProps {
+interface IncomingRequestItemProps {
   data: AccountDto;
   onAccept: () => void;
   onDecline: () => void;
 }
 
-const RequestItem = (props: RequestItemProps) => {
+const IncomingRequestItem = (props: IncomingRequestItemProps) => {
   const { data, onAccept, onDecline } = props;
 
   const theme = useTheme();
@@ -124,43 +124,35 @@ const RequestItem = (props: RequestItemProps) => {
               textTransform: 'capitalize'
             }}
           >
-            {(data.relationshipWith?.status === RelationshipStatus.REQUESTING
-              ? 'Outgoing'
-              : 'Incoming') + ' Friend Request'}
+            Incoming Friend Request
           </Typography>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', columnGap: '10px' }}>
-        {data.relationshipWith?.status === RelationshipStatus.PENDING && (
-          <Tooltip
-            title='Accept'
-            placement='top'
-          >
-            <IconButton
-              sx={{
-                width: '36px',
-                height: '36px',
-                color: theme.dcPalette.interactive.normal,
-                backgroundColor: theme.dcPalette.background.secondary,
-
-                '&:hover': {
-                  color: theme.dcPalette.info.positive.foreground,
-                  backgroundColor: theme.dcPalette.background.secondary
-                }
-              }}
-              className='action-button'
-              onClick={handleAccept}
-            >
-              <CheckIcon sx={{ width: '20px', height: '20px' }} />
-            </IconButton>
-          </Tooltip>
-        )}
         <Tooltip
-          title={
-            data.relationshipWith?.status === RelationshipStatus.PENDING
-              ? 'Cancel'
-              : 'Ignore'
-          }
+          title='Accept'
+          placement='top'
+        >
+          <IconButton
+            sx={{
+              width: '36px',
+              height: '36px',
+              color: theme.dcPalette.interactive.normal,
+              backgroundColor: theme.dcPalette.background.secondary,
+
+              '&:hover': {
+                color: theme.dcPalette.info.positive.foreground,
+                backgroundColor: theme.dcPalette.background.secondary
+              }
+            }}
+            className='action-button'
+            onClick={handleAccept}
+          >
+            <CheckIcon sx={{ width: '20px', height: '20px' }} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          title='Ignore'
           placement='top'
         >
           <IconButton
@@ -186,4 +178,4 @@ const RequestItem = (props: RequestItemProps) => {
   );
 };
 
-export default memo(RequestItem);
+export default memo(IncomingRequestItem);

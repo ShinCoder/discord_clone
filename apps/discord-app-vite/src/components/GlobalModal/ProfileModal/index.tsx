@@ -53,69 +53,76 @@ const ProfileModal = () => {
   }, [dispatch, location.pathname, modalState?.extraProps?.profile, navigate]);
 
   const renderFriendAction = useCallback(() => {
-    switch (modalState?.extraProps?.profile.relationshipWith?.status) {
-      case RelationshipStatus.PENDING:
-      case RelationshipStatus.REQUESTING:
-        return (
-          <Tooltip
-            title='Pending'
-            placement='top'
-          >
-            <Box>
-              <Button
-                disabled
-                sx={{
-                  width: '32px',
-                  minWidth: 'auto',
-                  height: '32px',
-                  borderRadius: theme.dcShape.borderRadius.button,
+    // if there is incoming or outgoing friend request
+    if (
+      modalState?.extraProps?.profile.relationship?.status ===
+        RelationshipStatus.PENDING ||
+      modalState?.extraProps?.profile.inRelationshipWith?.status ===
+        RelationshipStatus.PENDING
+    ) {
+      return (
+        <Tooltip
+          title='Pending'
+          placement='top'
+        >
+          <Box>
+            <Button
+              disabled
+              sx={{
+                width: '32px',
+                minWidth: 'auto',
+                height: '32px',
+                borderRadius: theme.dcShape.borderRadius.button,
 
-                  '&.Mui-disabled': {
-                    color: theme.dcPalette.button.secondaryText,
-                    backgroundColor:
-                      theme.dcPalette.button.secondaryBackgroundDisabled,
-                    cursor: 'not-allowed',
-                    pointerEvents: 'auto',
-                    opacity: 0.5
-                  }
-                }}
-              >
-                <ManageAccountsIcon sx={{ width: '16px', height: '16px' }} />
-              </Button>
-            </Box>
-          </Tooltip>
-        );
-      case RelationshipStatus.FRIEND:
-      case RelationshipStatus.BEING_BLOCKED:
-        return <Box />;
-      default:
-        return (
-          <Button
-            onClick={() => {
-              modalState.extraProps?.onAddFriend?.();
-              handleClose();
-            }}
-            startIcon={
-              <PersonAddAlt1Icon sx={{ width: '16px', height: '16px' }} />
-            }
-            sx={{
-              height: '32px',
-              color: theme.dcPalette.button.filledBrandText,
-              textTransform: 'none',
-              padding: '2px 16px',
-              borderRadius: theme.dcShape.borderRadius.button,
-              backgroundColor: theme.dcPalette.button.filledBrandBackground,
-
-              '&:hover': {
-                backgroundColor:
-                  theme.dcPalette.button.filledBrandBackgroundHover
-              }
-            }}
-          >
-            Add Friend
-          </Button>
-        );
+                '&.Mui-disabled': {
+                  color: theme.dcPalette.button.secondaryText,
+                  backgroundColor:
+                    theme.dcPalette.button.secondaryBackgroundDisabled,
+                  cursor: 'not-allowed',
+                  pointerEvents: 'auto',
+                  opacity: 0.5
+                }
+              }}
+            >
+              <ManageAccountsIcon sx={{ width: '16px', height: '16px' }} />
+            </Button>
+          </Box>
+        </Tooltip>
+      );
     }
+
+    // if friend or blocked
+    if (
+      modalState?.extraProps?.profile.inRelationshipWith?.status ===
+        RelationshipStatus.FRIEND ||
+      modalState?.extraProps?.profile.inRelationshipWith?.status ===
+        RelationshipStatus.BLOCKED
+    )
+      return <Box />;
+
+    return (
+      <Button
+        onClick={() => {
+          modalState.extraProps?.onAddFriend?.();
+          handleClose();
+        }}
+        startIcon={<PersonAddAlt1Icon sx={{ width: '16px', height: '16px' }} />}
+        sx={{
+          height: '32px',
+          color: theme.dcPalette.button.filledBrandText,
+          textTransform: 'none',
+          padding: '2px 16px',
+          borderRadius: theme.dcShape.borderRadius.button,
+          backgroundColor: theme.dcPalette.button.filledBrandBackground,
+
+          '&:hover': {
+            backgroundColor: theme.dcPalette.button.filledBrandBackgroundHover
+          }
+        }}
+      >
+        Add Friend
+      </Button>
+    );
   }, [
     handleClose,
     modalState?.extraProps,
@@ -242,7 +249,7 @@ const ProfileModal = () => {
                       {modalState.extraProps.profile.username}
                     </Typography>
                   </Box>
-                  {modalState.extraProps.profile.relationshipWith?.status ===
+                  {modalState.extraProps.profile.relationship?.status ===
                     RelationshipStatus.PENDING && (
                     <Box
                       sx={{
