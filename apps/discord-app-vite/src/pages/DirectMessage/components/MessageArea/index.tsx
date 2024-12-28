@@ -105,7 +105,7 @@ const MessageArea = (props: MessageAreaProps) => {
       {[...dms].reverse().map((e) => (
         <ChatDate
           data={e}
-          key={e.date.format()}
+          key={e.key}
         />
       ))}
       {hasMore && !processing && (

@@ -3,25 +3,29 @@ import dayjs, { Dayjs } from 'dayjs';
 import { AccountDto, MessageType } from '@prj/types/api';
 
 export interface ProcessedMessage {
-  id: string;
+  key: string;
   content: string;
   type: MessageType;
   createdAt: Dayjs;
+  isError: boolean;
 }
 
 export interface ProcessedMessageClump {
+  key: string;
   sender: AccountDto;
   messages: Array<ProcessedMessage>;
+  isError: boolean;
 }
 
 export interface ProcessedMessageDate {
+  key: string;
   date: Dayjs;
   messageClumps: Array<ProcessedMessageClump>;
 }
 
 export const processMessageForDisplay = (data: {
   messages: Array<{
-    id: string;
+    id?: string;
     senderId: string;
     content: string;
     type: MessageType;
@@ -36,8 +40,16 @@ export const processMessageForDisplay = (data: {
       if (accum.length === 0) {
         return [
           {
+            key: date.format(),
             date,
-            messages: [{ ...e, createdAt: date }]
+            messages: [
+              {
+                ...e,
+                key: e.id || date.valueOf().toString(),
+                createdAt: date,
+                isError: !e.id
+              }
+            ]
           }
         ];
       }
@@ -46,10 +58,16 @@ export const processMessageForDisplay = (data: {
         return [
           ...accum.slice(0, -1),
           {
+            key: accum[accum.length - 1].key,
             date: accum[accum.length - 1].date,
             messages: [
               ...accum[accum.length - 1].messages,
-              { ...e, createdAt: date }
+              {
+                ...e,
+                key: e.id || date.valueOf().toString(),
+                createdAt: date,
+                isError: !e.id
+              }
             ]
           }
         ];
@@ -58,24 +76,35 @@ export const processMessageForDisplay = (data: {
       return [
         ...accum,
         {
+          key: date.format(),
           date,
-          messages: [{ ...e, createdAt: date }]
+          messages: [
+            {
+              ...e,
+              key: e.id || date.valueOf().toString(),
+              createdAt: date,
+              isError: !e.id
+            }
+          ]
         }
       ];
     },
     [] as Array<{
+      key: string;
       date: Dayjs;
       messages: Array<{
-        id: string;
+        key: string;
         senderId: string;
         content: string;
         type: MessageType;
         createdAt: Dayjs;
+        isError: boolean;
       }>;
     }>
   );
 
   const filterBySender = filterByDate.map((_day) => ({
+    key: _day.key,
     date: _day.date,
     messageClumps: _day.messages.reduce((accum, _message) => {
       if (accum.length === 0) {
@@ -85,20 +114,27 @@ export const processMessageForDisplay = (data: {
         if (sender) {
           return [
             {
+              key: sender.id + _message.key,
               sender,
-              messages: [_message]
+              messages: [_message],
+              isError: _message.isError
             }
           ];
         }
         return [];
       }
 
-      if (accum[accum.length - 1].sender.id === _message.senderId) {
+      if (
+        accum[accum.length - 1].sender.id === _message.senderId &&
+        accum[accum.length - 1].isError === _message.isError
+      ) {
         return [
           ...accum.slice(0, -1),
           {
+            key: accum[accum.length - 1].key,
             sender: accum[accum.length - 1].sender,
-            messages: [...accum[accum.length - 1].messages, _message]
+            messages: [...accum[accum.length - 1].messages, _message],
+            isError: accum[accum.length - 1].isError
           }
         ];
       }
@@ -110,8 +146,10 @@ export const processMessageForDisplay = (data: {
         return [
           ...accum,
           {
+            key: sender.id + _message.key,
             sender,
-            messages: [_message]
+            messages: [_message],
+            isError: _message.isError
           }
         ];
       }
@@ -137,23 +175,30 @@ export const concatenateProcessedMessages = (
         data1Last.messageClumps[data1Last.messageClumps.length - 1];
       const data2FirstClumb = data2First.messageClumps[0];
 
-      if (data1LastClump.sender.id === data2FirstClumb.sender.id) {
+      if (
+        data1LastClump.sender.id === data2FirstClumb.sender.id &&
+        data1LastClump.isError === data2FirstClumb.isError
+      ) {
         mergedItem = {
+          key: data1Last.key,
           date: data1Last.date,
           messageClumps: [
             ...data1Last.messageClumps.slice(0, -1),
             {
+              key: data1LastClump.key,
               sender: data1LastClump.sender,
               messages: [
                 ...data1LastClump.messages,
                 ...data2FirstClumb.messages
-              ]
+              ],
+              isError: data1LastClump.isError
             },
             ...data2First.messageClumps.slice(1)
           ]
         };
       } else {
         mergedItem = {
+          key: data1Last.key,
           date: data1Last.date,
           messageClumps: [
             ...data1Last.messageClumps,
