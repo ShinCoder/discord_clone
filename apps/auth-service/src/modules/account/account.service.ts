@@ -672,7 +672,7 @@ export class AccountService {
           data.targetId
         );
 
-        if (account.relationship[0]?.status == RelationshipStatus.FRIEND) {
+        if (account.relationship[0]?.status === RelationshipStatus.FRIEND) {
           await tx.relationships.deleteMany({
             where: {
               OR: [
@@ -712,7 +712,10 @@ export class AccountService {
           data.targetId
         );
 
-        if (account.relationship[0]?.status !== RelationshipStatus.BLOCKED) {
+        if (
+          target.relationship[0]?.status &&
+          target.relationship[0].status !== RelationshipStatus.BLOCKED
+        ) {
           await tx.relationships.delete({
             where: {
               accountId_targetId: {
@@ -874,68 +877,4 @@ export class AccountService {
       return handleThrowError(err);
     }
   }
-
-  // async getFriends(data: GetFriendsDto) {
-  //   try {
-  //     const relationships = await this.prismaService.relationships.findMany({
-  //       where: {
-  //         targetId: data.accountId,
-  //         status: RelationshipStatus.FRIEND
-  //       },
-  //       include: {
-  //         account: true
-  //       }
-  //     });
-
-  //     const friends = await Promise.all(
-  //       relationships.map(async (e) =>
-  //         this.toAccountDto({
-  //           ...e.account,
-  //           relationshipWith: [
-  //             {
-  //               ...e
-  //             }
-  //           ],
-  //           connectionStatus: await this.getConnectionStatus(e.account.id)
-  //         })
-  //       )
-  //     );
-
-  //     return getRpcSuccessMessage(HttpStatus.OK, { accounts: friends });
-  //   } catch (err) {
-  //     return handleThrowError(err);
-  //   }
-  // }
-
-  // async getBlocked(data: GetBlockedDto) {
-  //   try {
-  //     const relationships = await this.prismaService.relationships.findMany({
-  //       where: {
-  //         targetId: data.accountId,
-  //         status: RelationshipStatus.BEING_BLOCKED
-  //       },
-  //       include: {
-  //         account: true
-  //       }
-  //     });
-
-  //     const blocked = await Promise.all(
-  //       relationships.map(async (e) =>
-  //         this.toAccountDto({
-  //           ...e.account,
-  //           relationshipWith: [
-  //             {
-  //               ...e
-  //             }
-  //           ],
-  //           connectionStatus: await this.getConnectionStatus(e.account.id)
-  //         })
-  //       )
-  //     );
-
-  //     return getRpcSuccessMessage(HttpStatus.OK, { accounts: blocked });
-  //   } catch (err) {
-  //     return handleThrowError(err);
-  //   }
-  // }
 }
