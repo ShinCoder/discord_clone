@@ -3,6 +3,14 @@ export enum MessageType {
   IMAGE = 'IMAGE'
 }
 
+export interface FailedDirectMessageDto {
+  senderId: string;
+  targetId: string;
+  content: string;
+  type: MessageType;
+  createdAt: string;
+}
+
 export interface DirectMessageDto {
   id: string;
   senderId: string;

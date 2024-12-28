@@ -3,5 +3,6 @@ export const SocketEvents = {
   leaveDirectMessageRoom: 'leave-dm-room',
   sendDirectMessage: 'send-dm',
 
-  receiveDirectMessage: 'receive-dm'
+  receiveDirectMessage: 'receive-dm',
+  receiveFailedDirectMessage: 'receive-fail-dm'
 };

@@ -124,6 +124,11 @@ export class AccountService {
               where: {
                 accountId: data.includeRelationshipWith
               }
+            },
+            relationship: {
+              where: {
+                targetId: data.includeRelationshipWith
+              }
             }
           })
         }
@@ -134,7 +139,6 @@ export class AccountService {
           HttpStatus.OK,
           this.toAccountDto({
             ...account,
-            relationship: [],
             connectionStatus: await this.getConnectionStatus(account.id)
           })
         );
@@ -708,7 +712,7 @@ export class AccountService {
           data.targetId
         );
 
-        if (account.relationship[0]?.status === RelationshipStatus.FRIEND) {
+        if (account.relationship[0]?.status !== RelationshipStatus.BLOCKED) {
           await tx.relationships.delete({
             where: {
               accountId_targetId: {
@@ -832,9 +836,9 @@ export class AccountService {
               }
             },
             include: {
-              relationship: {
+              relationshipWith: {
                 where: {
-                  targetId: account.id
+                  accountId: account.id
                 }
               }
             }
@@ -860,7 +864,7 @@ export class AccountService {
           accountBeingRequested.map(async (_account) =>
             this.toAccountDto({
               ..._account,
-              relationshipWith: [],
+              relationship: [],
               connectionStatus: await this.getConnectionStatus(_account.id)
             })
           )
