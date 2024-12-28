@@ -5,8 +5,7 @@ import {
   SubscribeMessage,
   ConnectedSocket,
   MessageBody,
-  WebSocketServer,
-  WsException
+  WebSocketServer
 } from '@nestjs/websockets';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { Server } from 'socket.io';
@@ -20,13 +19,15 @@ import {
   IJoinDirectMessageRoomData,
   ILeaveDirectMessageRoomData,
   IReceiveDirectMessageDto,
-  ISendDirectMessageData
+  IReceiveFailedDirectMessageDto,
+  ISendDirectMessageData,
+  MessageType
 } from '@prj/types/api';
 import {
   ConnectionStatus,
   RelationshipStatus
 } from '@prj/types/grpc/auth-service';
-import { MessageType } from '@prj/types/grpc/message-service';
+import { MessageType as RpcMessageType } from '@prj/types/grpc/message-service';
 
 @WebSocketGateway({ namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -83,19 +84,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: IJoinDirectMessageRoomData
   ) {
-    // const account = await this.authService.getAccount({
-    //   id: data.targetId,
-    //   includeRelationshipWith: client.auth.sub
-    // });
+    const account = await this.authService.getAccount({
+      id: data.targetId,
+      includeRelationshipWith: client.auth.sub
+    });
 
-    // if (
-    //   account.relationshipWith?.status === RelationshipStatus.BLOCKED ||
-    //   account.relationshipWith?.status === RelationshipStatus.BEING_BLOCKED
-    // ) {
-    //   client.allowDm = false;
-    // } else {
-    //   client.allowDm = true;
-    // }
+    if (account.relationship?.status === RelationshipStatus.BLOCKED) {
+      client.allowDm = false;
+    } else {
+      client.allowDm = true;
+    }
     client.join([client.auth.sub, data.targetId].sort().join('-'));
   }
 
@@ -114,18 +112,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: ISendDirectMessageData
   ) {
-    if (!client.allowDm) throw new WsException('Blocked');
+    if (!client.allowDm) {
+      client.emit(SocketEvents.receiveFailedDirectMessage, {
+        message: {
+          ...data,
+          senderId: client.auth.sub,
+          createdAt: new Date().toISOString()
+        }
+      } satisfies IReceiveFailedDirectMessageDto);
+    } else {
+      const message = await this.messageService.createDirectMessage({
+        senderId: client.auth.sub,
+        ...data,
+        type: RpcMessageType[data.type]
+      });
 
-    const message = await this.messageService.createDirectMessage({
-      senderId: client.auth.sub,
-      ...data,
-      type: MessageType[data.type]
-    });
-
-    this.server
-      .to([client.auth.sub, data.targetId].sort().join('-'))
-      .emit(SocketEvents.receiveDirectMessage, {
-        message: { ...message, type: MessageType[message.type] }
-      } as IReceiveDirectMessageDto);
+      this.server
+        .to([client.auth.sub, data.targetId].sort().join('-'))
+        .emit(SocketEvents.receiveDirectMessage, {
+          message: {
+            ...message,
+            type: MessageType[RpcMessageType[message.type]]
+          }
+        } satisfies IReceiveDirectMessageDto);
+    }
   }
 }

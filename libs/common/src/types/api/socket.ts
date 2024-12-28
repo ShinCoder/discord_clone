@@ -1,4 +1,8 @@
-import { DirectMessageDto, MessageType } from './directMessage-api';
+import {
+  DirectMessageDto,
+  FailedDirectMessageDto,
+  MessageType
+} from './directMessage-api';
 
 export interface IJoinDirectMessageRoomData {
   targetId: string;
@@ -16,4 +20,8 @@ export interface ISendDirectMessageData {
 
 export interface IReceiveDirectMessageDto {
   message: DirectMessageDto;
+}
+
+export interface IReceiveFailedDirectMessageDto {
+  message: FailedDirectMessageDto;
 }
