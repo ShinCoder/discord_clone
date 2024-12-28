@@ -5,10 +5,11 @@ import { ProcessedMessage } from '@utils';
 
 interface TextChatItemProps {
   data: ProcessedMessage;
+  variant?: 'normal' | 'error';
 }
 
 const TextChatItem = (props: TextChatItemProps) => {
-  const { data } = props;
+  const { data, variant = 'normal' } = props;
 
   return (
     <Box
@@ -48,7 +49,10 @@ const TextChatItem = (props: TextChatItemProps) => {
         <Typography
           sx={{
             display: 'block',
-            color: (theme) => theme.dcPalette.text.normal,
+            color: (theme) =>
+              variant === 'normal'
+                ? theme.dcPalette.text.normal
+                : theme.dcPalette.status.danger.base,
             fontSize: '1rem',
             fontWeight: 400,
             whiteSpace: 'break-spaces',

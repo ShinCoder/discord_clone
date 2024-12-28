@@ -32,6 +32,7 @@ import {
   IJoinDirectMessageRoomData,
   ILeaveDirectMessageRoomData,
   IReceiveDirectMessageDto,
+  IReceiveFailedDirectMessageDto,
   ISendDirectMessageData,
   MessageType
 } from '@prj/types/api';
@@ -251,12 +252,27 @@ const DirectMessage = () => {
       }
     };
 
+    const onReceiveFailedDm = (_data: IReceiveFailedDirectMessageDto) => {
+      if (userData && targetData?.data.profile) {
+        setDms((pre) =>
+          concatenateProcessedMessages(
+            pre,
+            processMessageForDisplay({
+              messages: [_data.message],
+              senders: [userData, targetData.data.profile]
+            })
+          )
+        );
+      }
+    };
+
     if (socket && id) {
       socket.emit(SocketEvents.joinDirectMessageRoom, {
         targetId: id
       } satisfies IJoinDirectMessageRoomData);
 
       socket.on(SocketEvents.receiveDirectMessage, onReceiveDm);
+      socket.on(SocketEvents.receiveFailedDirectMessage, onReceiveFailedDm);
     }
 
     return () => {
@@ -266,6 +282,7 @@ const DirectMessage = () => {
         } satisfies ILeaveDirectMessageRoomData);
 
         socket.off(SocketEvents.receiveDirectMessage, onReceiveDm);
+        socket.off(SocketEvents.receiveFailedDirectMessage, onReceiveFailedDm);
       }
     };
   }, [id, socket, targetData?.data.profile, userData]);

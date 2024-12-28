@@ -14,10 +14,11 @@ dayjs.extend(calendar);
 interface HeadTextChatItemProps {
   data: ProcessedMessage;
   sender: AccountDto;
+  variant?: 'normal' | 'error';
 }
 
 const HeadTextChatItem = (props: HeadTextChatItemProps) => {
-  const { data, sender } = props;
+  const { data, sender, variant = 'normal' } = props;
 
   const theme = useTheme();
 
@@ -85,7 +86,10 @@ const HeadTextChatItem = (props: HeadTextChatItemProps) => {
         <Typography
           sx={{
             display: 'block',
-            color: theme.dcPalette.text.normal,
+            color:
+              variant === 'normal'
+                ? theme.dcPalette.text.normal
+                : theme.dcPalette.status.danger.base,
             fontSize: '1rem',
             whiteSpace: 'break-spaces',
             wordBreak: 'break-word'

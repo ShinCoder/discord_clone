@@ -6,22 +6,27 @@ import { ProcessedMessage, ProcessedMessageClump } from '@utils';
 
 interface ChatClumpProps {
   data: ProcessedMessageClump;
+  variant?: 'normal' | 'error';
 }
 
 const ChatClump = (props: ChatClumpProps) => {
-  const { data } = props;
+  const { data, variant = 'normal' } = props;
 
-  const renderItem = useCallback((item: ProcessedMessage) => {
-    switch (item.type) {
-      default:
-        return (
-          <TextChatItem
-            data={item}
-            key={item.id}
-          />
-        );
-    }
-  }, []);
+  const renderItem = useCallback(
+    (item: ProcessedMessage) => {
+      switch (item.type) {
+        default:
+          return (
+            <TextChatItem
+              data={item}
+              key={item.key}
+              variant={variant}
+            />
+          );
+      }
+    },
+    [variant]
+  );
 
   const renderHeadItem = useCallback(
     (item: ProcessedMessage) => {
@@ -31,11 +36,12 @@ const ChatClump = (props: ChatClumpProps) => {
             <HeadTextChatItem
               data={item}
               sender={data.sender}
+              variant={variant}
             />
           );
       }
     },
-    [data.sender]
+    [data.sender, variant]
   );
 
   return data.messages.length > 0 ? (

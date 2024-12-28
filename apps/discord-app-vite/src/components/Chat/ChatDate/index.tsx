@@ -39,8 +39,9 @@ const ChatDate = (props: ChatDateProps) => {
       </Divider>
       {data.messageClumps.map((e) => (
         <ChatClump
-          key={e.messages[0].id}
+          key={e.messages[0].key}
           data={e}
+          variant={e.isError ? 'error' : 'normal'}
         />
       ))}
     </Box>
