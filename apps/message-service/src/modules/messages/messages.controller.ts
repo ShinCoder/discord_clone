@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 
-import MessagesService from './messages.service';
+import { MessagesService } from './messages.service';
 
 import {
   GetChannelMessagesDto,
@@ -10,7 +10,7 @@ import {
 
 @Controller()
 @MessageServiceMessageModuleControllerMethods()
-export default class MessagesController
+export class MessagesController
   implements MessageServiceMessageModuleController
 {
   constructor(private readonly messagesService: MessagesService) {}

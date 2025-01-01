@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Messages } from '@prisma/message-client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { handleThrowError } from '../../utlis';
+import { handleThrowError } from '../../utils';
 
 import {
   GetChannelMessagesDto,
@@ -15,7 +15,7 @@ import {
 import { getRpcSuccessMessage } from '@prj/common';
 
 @Injectable()
-export default class MessagesService {
+export class MessagesService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService

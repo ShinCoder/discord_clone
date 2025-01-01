@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
-import { handleThrowError } from '../../utlis';
+import { handleThrowError } from '../../utils';
 
 import {
   SendVerifyEmailResult,

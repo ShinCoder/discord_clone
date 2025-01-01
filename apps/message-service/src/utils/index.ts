@@ -15,3 +15,5 @@ export const handleThrowError = (err) => {
 
   throw new RpcException(new InternalServerErrorException(err));
 };
+
+export * from './rpc-message';

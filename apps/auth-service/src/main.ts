@@ -4,17 +4,19 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
 import { AppModule } from './modules/app/app.module';
-import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/auth-service';
 import { GlobalRpcExceptionFilter } from './exception-filters/rpc-exception.filter';
 
+import { COM_AUTH_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/auth-service';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const appContext = await NestFactory.createApplicationContext(AppModule);
 
-  const configService = app.get<ConfigService>(ConfigService);
+  const configService = appContext.get<ConfigService>(ConfigService);
 
-  app.useGlobalFilters(new GlobalRpcExceptionFilter());
+  appContext.close();
 
-  app.connectMicroservice<MicroserviceOptions>(
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
     {
       transport: Transport.GRPC,
       options: {
@@ -22,11 +24,12 @@ async function bootstrap() {
         package: COM_AUTH_SERVICE_PACKAGE_NAME,
         protoPath: join(__dirname, './proto/auth-service.proto')
       }
-    },
-    { inheritAppConfig: true }
+    }
   );
 
-  await app.startAllMicroservices();
+  app.useGlobalFilters(new GlobalRpcExceptionFilter());
+
+  await app.listen();
 }
 
 bootstrap();
