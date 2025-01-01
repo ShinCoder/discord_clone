@@ -5,16 +5,18 @@ import { join } from 'path';
 
 import { AppModule } from './modules/app/app.module';
 import { GlobalRpcExceptionFilter } from './exception-filters/rpc-exception.filter';
+
 import { COM_MESSAGE_SERVICE_PACKAGE_NAME } from '@prj/types/grpc/message-service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const appContext = await NestFactory.createApplicationContext(AppModule);
 
-  const configService = app.get<ConfigService>(ConfigService);
+  const configService = appContext.get<ConfigService>(ConfigService);
 
-  app.useGlobalFilters(new GlobalRpcExceptionFilter());
+  appContext.close();
 
-  app.connectMicroservice<MicroserviceOptions>(
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
     {
       transport: Transport.GRPC,
       options: {
@@ -22,11 +24,12 @@ async function bootstrap() {
         package: COM_MESSAGE_SERVICE_PACKAGE_NAME,
         protoPath: join(__dirname, './proto/message-service.proto')
       }
-    },
-    { inheritAppConfig: true }
+    }
   );
 
-  await app.startAllMicroservices();
+  app.useGlobalFilters(new GlobalRpcExceptionFilter());
+
+  await app.listen();
 }
 
 bootstrap();
