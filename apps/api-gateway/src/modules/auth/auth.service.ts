@@ -3,6 +3,11 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
 
+import {
+  AcceptFriendRequestDto,
+  DeclineFriendRequestDto,
+  SendFriendRequestDto
+} from './dto';
 import { AUTH_SERVICE, MAIL_SERVICE } from '../../constants';
 import { handleRpcResult } from '../../utils/rpc-message';
 
@@ -25,11 +30,6 @@ import {
   MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME,
   MailServiceAuthModuleClient
 } from '@prj/types/grpc/mail-service';
-import {
-  AcceptFriendRequestDto,
-  DeclineFriendRequestDto,
-  SendFriendRequestDto
-} from './dto';
 
 @Injectable()
 export class AuthService implements OnModuleInit {

@@ -163,7 +163,6 @@ export class AuthController {
     @Param('id') accountId: string,
     @Param('target') targetId: string
   ) {
-    console.log(targetId);
     if (req.user.sub !== accountId)
       throw new ForbiddenException('Forbidden resource');
 

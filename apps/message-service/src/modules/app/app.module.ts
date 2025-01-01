@@ -2,18 +2,20 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import joi from 'joi';
 
-import DmModule from '../dm/dm.module';
-import MessagesModule from '../messages/messages.module';
+import { DmModule } from '../dm/dm.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: joi.object({ DATABASE_URL: joi.string().required() }),
+      validationSchema: joi.object({
+        DATABASE_URL: joi.string().required(),
+        GRPC_URL: joi.string().required(),
+        AUTH_SERVICE_GRPC_URL: joi.string().required()
+      }),
       envFilePath: '.env'
     }),
-    DmModule,
-    MessagesModule
+    DmModule
   ]
 })
 export class AppModule {}

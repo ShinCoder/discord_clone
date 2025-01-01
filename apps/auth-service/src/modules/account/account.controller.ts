@@ -39,14 +39,6 @@ export class AccountController implements AuthServiceAccountModuleController {
     return this.accountService.getAccounts(data);
   }
 
-  // createOrUpdateRelationship(data: CreateOrUpdateRelationshipDto) {
-  //   return this.accountService.createOrUpdateRelationship(data);
-  // }
-
-  // deleteRelationship(data: DeleteRelationshipDto) {
-  //   return this.accountService.deleteRelationship(data);
-  // }
-
   addFriend(data: AddFriendDto): Promise<AddFriendResult> {
     return this.accountService.addFriend(data);
   }

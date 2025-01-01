@@ -15,7 +15,7 @@ import bcrypt from 'bcrypt';
 import { AccountStatus, Accounts, ConnectionStatus } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { handleThrowError } from '../../utlis';
+import { handleThrowError } from '../../utils';
 
 import {
   IJwtPayload,

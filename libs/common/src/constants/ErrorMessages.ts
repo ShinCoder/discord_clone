@@ -16,5 +16,6 @@ export const ApiErrorMessages = {
   RELATIONSHIP__SELF_INVOKE: "Can't invoke this action on self",
   FRIEND_REQUEST_FEEDBACK__NO_REQUEST: "This friend request doesn't exist",
   UNBLOCK__NOT_BLOCKED: "You haven't block this user",
-  REMOVE_FRIEND__NOT_FRIEND: 'You and this user are not friend'
+  REMOVE_FRIEND__NOT_FRIEND: 'You and this user are not friend',
+  SEND_DM__BLOCKED: "You're blocked by this user"
 };

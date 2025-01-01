@@ -1,9 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
+
 import { DirectMessages, MessageTypes, Prisma } from '@prisma/message-client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { handleThrowError } from '../../utlis';
+import { AuthService } from '../auth/auth.service';
+import { handleThrowError } from '../../utils';
 
 import {
   CreateDirectMessageDto,
@@ -11,13 +13,14 @@ import {
   GetDirectMessagesDto,
   MessageType as RpcMessageType
 } from '@prj/types/grpc/message-service';
-import { getRpcSuccessMessage } from '@prj/common';
+import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
+import { RelationshipStatus as RpcRelationshipStatus } from '@prj/types/grpc/auth-service';
 
 @Injectable()
-export default class DmService {
+export class DmService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly configService: ConfigService
+    private readonly authService: AuthService
   ) {}
 
   private toDirectMessageDto(data: DirectMessages): DirectMessageDto {
@@ -31,6 +34,17 @@ export default class DmService {
 
   async createDirectMessage(data: CreateDirectMessageDto) {
     try {
+      const target = await this.authService.getAccount({
+        id: data.targetId,
+        includeRelationshipWith: data.senderId
+      });
+
+      if (target.relationship.status === RpcRelationshipStatus.BLOCKED) {
+        throw new RpcException(
+          new ConflictException(ApiErrorMessages.SEND_DM__BLOCKED)
+        );
+      }
+
       const message = await this.prismaService.directMessages.create({
         data: {
           ...data,

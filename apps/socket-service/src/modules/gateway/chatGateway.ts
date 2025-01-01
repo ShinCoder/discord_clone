@@ -23,10 +23,7 @@ import {
   ISendDirectMessageData,
   MessageType
 } from '@prj/types/api';
-import {
-  ConnectionStatus,
-  RelationshipStatus
-} from '@prj/types/grpc/auth-service';
+import { ConnectionStatus } from '@prj/types/grpc/auth-service';
 import { MessageType as RpcMessageType } from '@prj/types/grpc/message-service';
 
 @WebSocketGateway({ namespace: 'chat' })
@@ -84,16 +81,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: IJoinDirectMessageRoomData
   ) {
-    const account = await this.authService.getAccount({
-      id: data.targetId,
-      includeRelationshipWith: client.auth.sub
-    });
-
-    if (account.relationship?.status === RelationshipStatus.BLOCKED) {
-      client.allowDm = false;
-    } else {
-      client.allowDm = true;
-    }
     client.join([client.auth.sub, data.targetId].sort().join('-'));
   }
 
@@ -103,7 +90,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: ILeaveDirectMessageRoomData
   ) {
     client.leave([client.auth.sub, data.targetId].sort().join('-'));
-    client.allowDm = true;
   }
 
   @UsePipes(new ValidationPipe())
@@ -112,15 +98,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() data: ISendDirectMessageData
   ) {
-    if (!client.allowDm) {
-      client.emit(SocketEvents.receiveFailedDirectMessage, {
-        message: {
-          ...data,
-          senderId: client.auth.sub,
-          createdAt: new Date().toISOString()
-        }
-      } satisfies IReceiveFailedDirectMessageDto);
-    } else {
+    try {
       const message = await this.messageService.createDirectMessage({
         senderId: client.auth.sub,
         ...data,
@@ -135,6 +113,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             type: MessageType[RpcMessageType[message.type]]
           }
         } satisfies IReceiveDirectMessageDto);
+    } catch (_) {
+      console.log(_);
+      client.emit(SocketEvents.receiveFailedDirectMessage, {
+        message: {
+          ...data,
+          senderId: client.auth.sub,
+          createdAt: new Date().toISOString()
+        }
+      } satisfies IReceiveFailedDirectMessageDto);
     }
   }
 }

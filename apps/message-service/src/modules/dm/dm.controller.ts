@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 
-import DmService from './dm.service';
+import { DmService } from './dm.service';
 
 import {
   CreateDirectMessageDto,
@@ -13,7 +13,7 @@ import {
 
 @Controller()
 @MessageServiceDirectMessageModuleControllerMethods()
-export default class DmController
+export class DmController
   implements MessageServiceDirectMessageModuleController
 {
   constructor(private readonly dmService: DmService) {}
