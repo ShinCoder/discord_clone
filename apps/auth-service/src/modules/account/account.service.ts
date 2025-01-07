@@ -15,6 +15,7 @@ import {
 } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
+import { UserSettings } from '../../types/settings';
 import { handleThrowError } from '../../utils';
 
 import {
@@ -39,13 +40,36 @@ import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
 export class AccountService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  private toAccountDto(
-    data: Prisma.AccountsGetPayload<{
-      include: { relationship: true; relationshipWith: true };
-    }> & {
-      connectionStatus: ConnectionStatus;
-    }
-  ): AccountDto {
+  private toAccountDto(data: {
+    id: string;
+    email: string;
+    username: string;
+    displayName: string;
+    dateOfBirth: Date;
+    phoneNumber: string;
+    avatar: string;
+    pronouns: string;
+    about: string;
+    bannerColor: string;
+    createdAt: Date;
+    updatedAt: Date;
+    relationship?: Array<
+      Prisma.RelationshipsGetPayload<{
+        omit: {
+          createdAt: true;
+        };
+      }>
+    >;
+    relationshipWith?: Array<
+      Prisma.RelationshipsGetPayload<{
+        omit: {
+          createdAt: true;
+        };
+      }>
+    >;
+    settings?: Prisma.JsonValue;
+    connectionStatus?: ConnectionStatus;
+  }): AccountDto {
     return {
       id: data.id,
       email: data.email,
@@ -57,8 +81,6 @@ export class AccountService {
       pronouns: data.pronouns,
       about: data.about,
       bannerColor: data.bannerColor,
-      status: RpcAccountStatus[data.status],
-      isAdmin: data.isAdmin,
       createdAt: data.createdAt.toISOString(),
       updatedAt: data.updatedAt.toISOString(),
       relationship:
@@ -66,7 +88,6 @@ export class AccountService {
           ? {
               ...data.relationship[0],
               status: RpcRelationshipStatus[data.relationship[0].status],
-              createdAt: data.relationship[0].createdAt.toISOString(),
               updatedAt: data.relationship[0].updatedAt.toISOString()
             }
           : undefined,
@@ -75,11 +96,16 @@ export class AccountService {
           ? {
               ...data.relationshipWith[0],
               status: RpcRelationshipStatus[data.relationshipWith[0].status],
-              createdAt: data.relationshipWith[0].createdAt.toISOString(),
               updatedAt: data.relationshipWith[0].updatedAt.toISOString()
             }
           : undefined,
-      connectionStatus: RpcConnectionStatus[data.connectionStatus]
+      connectionStatus: data.connectionStatus
+        ? RpcConnectionStatus[data.connectionStatus]
+        : undefined,
+      userSettings:
+        data.settings && data.settings instanceof UserSettings
+          ? data.settings
+          : undefined
     };
   }
 
@@ -107,26 +133,51 @@ export class AccountService {
   async getAccount(data: GetAccountDto) {
     try {
       const account = await this.prismaService.accounts.findFirst({
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          displayName: true,
+          dateOfBirth: true,
+          phoneNumber: true,
+          avatar: true,
+          about: true,
+          pronouns: true,
+          bannerColor: true,
+          createdAt: true,
+          updatedAt: true,
+          settings: !!data.includeSettings,
+          ...(data.includeRelationshipWith && {
+            relationship: {
+              select: {
+                accountId: true,
+                targetId: true,
+                status: true,
+                updatedAt: true
+              },
+              where: {
+                targetId: data.includeRelationshipWith
+              }
+            },
+            relationshipWith: {
+              select: {
+                accountId: true,
+                targetId: true,
+                status: true,
+                updatedAt: true
+              },
+              where: {
+                accountId: data.includeRelationshipWith
+              }
+            }
+          })
+        },
         where: {
           ...(data.id && { id: data.id }),
           ...(data.username && { username: data.username }),
           status: data.status
             ? AccountStatus[RpcAccountStatus[data.status]]
             : AccountStatus.ACTIVE
-        },
-        include: {
-          ...(data.includeRelationshipWith && {
-            relationshipWith: {
-              where: {
-                accountId: data.includeRelationshipWith
-              }
-            },
-            relationship: {
-              where: {
-                targetId: data.includeRelationshipWith
-              }
-            }
-          })
         }
       });
 
@@ -135,7 +186,9 @@ export class AccountService {
           HttpStatus.OK,
           this.toAccountDto({
             ...account,
-            connectionStatus: await this.getConnectionStatus(account.id)
+            ...(data.includeConnectionStatus && {
+              connectionStatus: await this.getConnectionStatus(account.id)
+            })
           })
         );
 
@@ -147,37 +200,52 @@ export class AccountService {
 
   async getAccounts(data: GetAccountsDto) {
     try {
-      let condition: Prisma.AccountsFindManyArgs = {};
-
-      if (
-        data.haveRelationshipWith !== undefined &&
-        data.relationshipStatus !== undefined
-      ) {
-        condition = {
-          where: {
-            relationshipWith: {
-              some: {
-                accountId: data.haveRelationshipWith,
-                status:
-                  RelationshipStatus[
-                    RpcRelationshipStatus[data.relationshipStatus]
-                  ]
-              }
-            }
-          }
-        };
-      }
-
       const accounts = await this.prismaService.accounts.findMany({
-        ...condition,
-        include: {
-          ...(data.haveRelationshipWith && {
-            relationshipWith: {
-              where: {
-                accountId: data.haveRelationshipWith
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          displayName: true,
+          dateOfBirth: true,
+          phoneNumber: true,
+          avatar: true,
+          about: true,
+          pronouns: true,
+          bannerColor: true,
+          createdAt: true,
+          updatedAt: true,
+          ...(data.haveRelationshipWith !== undefined &&
+            data.relationshipStatus !== undefined && {
+              relationshipWith: {
+                select: {
+                  accountId: true,
+                  targetId: true,
+                  status: true,
+                  updatedAt: true
+                },
+                where: {
+                  accountId: data.haveRelationshipWith,
+                  status:
+                    RelationshipStatus[
+                      RpcRelationshipStatus[data.relationshipStatus]
+                    ]
+                }
               }
-            }
-          })
+            })
+        },
+        where: {
+          ...(data.haveRelationshipWith !== undefined &&
+            data.relationshipStatus !== undefined && {
+              relationshipWith: {
+                some: {
+                  accountId: data.haveRelationshipWith,
+                  status:
+                    RelationshipStatus[
+                      RpcRelationshipStatus[data.relationshipStatus]
+                    ]
+                }
+              }
+            })
         }
       });
 
@@ -186,7 +254,9 @@ export class AccountService {
           accounts.map(async (account) =>
             this.toAccountDto({
               ...account,
-              connectionStatus: await this.getConnectionStatus(account.id)
+              ...(data.includeConnectionStatus && {
+                connectionStatus: await this.getConnectionStatus(account.id)
+              })
             })
           )
         )
@@ -202,29 +272,37 @@ export class AccountService {
     targetId: string
   ) {
     const account = await tx.accounts.findFirst({
-      where: { id: accountId },
-      include: {
+      select: {
+        id: true,
         relationship: {
+          select: {
+            status: true
+          },
           where: {
             targetId
           }
         }
-      }
+      },
+      where: { id: accountId }
     });
     if (!account)
       throw new RpcException(
         new NotFoundException(ApiErrorMessages.RELATIONSHIP__ACCOUNT_NOT_FOUND)
       );
     const target = await tx.accounts.findFirst({
-      where: {
-        id: targetId
-      },
-      include: {
+      select: {
+        id: true,
         relationship: {
+          select: {
+            status: true
+          },
           where: {
             targetId: accountId
           }
         }
+      },
+      where: {
+        id: targetId
       }
     });
     if (!target)
@@ -247,6 +325,9 @@ export class AccountService {
 
       await this.prismaService.$transaction(async (tx) => {
         const account = await tx.accounts.findFirst({
+          select: {
+            id: true
+          },
           where: { id: data.accountId }
         });
         if (!account)
@@ -256,6 +337,9 @@ export class AccountService {
             )
           );
         const target = await tx.accounts.findFirst({
+          select: {
+            id: true
+          },
           where: {
             ...(data.targetId && { id: data.targetId }),
             ...(data.targetUsername && { username: data.targetUsername })
@@ -275,6 +359,9 @@ export class AccountService {
         }
 
         const pastRevertedRelationship = await tx.relationships.findFirst({
+          select: {
+            status: true
+          },
           where: {
             accountId: target.id,
             targetId: account.id
@@ -645,6 +732,9 @@ export class AccountService {
       const { accountRequesting, accountBeingRequested } =
         await this.prismaService.$transaction(async (tx) => {
           const account = await tx.accounts.findFirst({
+            select: {
+              id: true
+            },
             where: {
               id: data.accountId
             }
@@ -657,6 +747,31 @@ export class AccountService {
             );
 
           const accountRequesting = await tx.accounts.findMany({
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              displayName: true,
+              dateOfBirth: true,
+              phoneNumber: true,
+              avatar: true,
+              about: true,
+              pronouns: true,
+              bannerColor: true,
+              createdAt: true,
+              updatedAt: true,
+              relationship: {
+                select: {
+                  accountId: true,
+                  targetId: true,
+                  status: true,
+                  updatedAt: true
+                },
+                where: {
+                  targetId: account.id
+                }
+              }
+            },
             where: {
               relationship: {
                 some: {
@@ -664,29 +779,40 @@ export class AccountService {
                   status: RelationshipStatus.PENDING
                 }
               }
-            },
-            include: {
-              relationship: {
-                where: {
-                  targetId: account.id
-                }
-              }
             }
           });
 
           const accountBeingRequested = await tx.accounts.findMany({
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              displayName: true,
+              dateOfBirth: true,
+              phoneNumber: true,
+              avatar: true,
+              about: true,
+              pronouns: true,
+              bannerColor: true,
+              createdAt: true,
+              updatedAt: true,
+              relationshipWith: {
+                select: {
+                  accountId: true,
+                  targetId: true,
+                  status: true,
+                  updatedAt: true
+                },
+                where: {
+                  accountId: account.id
+                }
+              }
+            },
             where: {
               relationshipWith: {
                 some: {
                   accountId: account.id,
                   status: RelationshipStatus.PENDING
-                }
-              }
-            },
-            include: {
-              relationshipWith: {
-                where: {
-                  accountId: account.id
                 }
               }
             }
@@ -699,23 +825,11 @@ export class AccountService {
         });
 
       return getRpcSuccessMessage(HttpStatus.OK, {
-        incomingRequests: await Promise.all(
-          accountRequesting.map(async (_account) =>
-            this.toAccountDto({
-              ..._account,
-              relationshipWith: [],
-              connectionStatus: await this.getConnectionStatus(_account.id)
-            })
-          )
+        incomingRequests: accountRequesting.map((_account) =>
+          this.toAccountDto(_account)
         ),
-        outgoingRequests: await Promise.all(
-          accountBeingRequested.map(async (_account) =>
-            this.toAccountDto({
-              ..._account,
-              relationship: [],
-              connectionStatus: await this.getConnectionStatus(_account.id)
-            })
-          )
+        outgoingRequests: accountBeingRequested.map((_account) =>
+          this.toAccountDto(_account)
         )
       });
     } catch (err) {

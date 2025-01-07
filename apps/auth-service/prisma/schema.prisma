@@ -4,6 +4,7 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../../../node_modules/@prisma/auth-client"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -50,6 +51,8 @@ model Accounts {
   bannerColor String  @map("banner_color")
   about       String?
 
+  settings Json @default("{}")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt DateTime @updatedAt() @map("updated_at") @db.Timestamptz()
 
@@ -80,9 +83,9 @@ model Relationships {
   target    Accounts @relation(fields: [targetId], references: [id], name: "in_relationship_with")
   targetId  String   @map("target_id")
 
-  status         RelationshipStatus  @default(PENDING)
-  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt      DateTime            @updatedAt() @map("updated_at") @db.Timestamptz()
+  status    RelationshipStatus @default(PENDING)
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime           @updatedAt() @map("updated_at") @db.Timestamptz()
 
   @@id([accountId, targetId])
   @@map("relationships")

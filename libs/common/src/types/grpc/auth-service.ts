@@ -25,14 +25,6 @@ export enum ConnectionStatus {
   UNRECOGNIZED = -1
 }
 
-export interface RelationshipDto {
-  accountId: string;
-  targetId: string;
-  status: RelationshipStatus;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface RegisterDto {
   email: string;
   password: string;
@@ -92,6 +84,18 @@ export interface LogoutResult {
   status: MessageStatus | undefined;
 }
 
+export interface UserSettings {
+  channelIds: string[];
+  pinnedDmIds: string[];
+}
+
+export interface RelationshipDto {
+  accountId: string;
+  targetId: string;
+  status: RelationshipStatus;
+  updatedAt: string;
+}
+
 export interface AccountDto {
   id: string;
   email: string;
@@ -103,13 +107,12 @@ export interface AccountDto {
   pronouns?: string | undefined;
   about?: string | undefined;
   bannerColor: string;
-  status: AccountStatus;
-  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
   relationship?: RelationshipDto | undefined;
   inRelationshipWith?: RelationshipDto | undefined;
-  connectionStatus: ConnectionStatus;
+  connectionStatus?: ConnectionStatus | undefined;
+  userSettings?: UserSettings | undefined;
 }
 
 export interface GetAccountDto {
@@ -117,6 +120,8 @@ export interface GetAccountDto {
   username?: string | undefined;
   status?: AccountStatus | undefined;
   includeRelationshipWith?: string | undefined;
+  includeConnectionStatus?: boolean | undefined;
+  includeSettings?: boolean | undefined;
 }
 
 export interface GetAccountResult {
@@ -131,6 +136,7 @@ export interface AccountsDto {
 export interface GetAccountsDto {
   haveRelationshipWith?: string | undefined;
   relationshipStatus?: RelationshipStatus | undefined;
+  includeConnectionStatus?: boolean | undefined;
 }
 
 export interface GetAccountsResult {

@@ -31,7 +31,6 @@ export interface ILogoutDto {
 }
 
 export interface IGetMeResult {
-  status: string;
   id: string;
   email: string;
   username: string;
@@ -42,7 +41,6 @@ export interface IGetMeResult {
   pronouns?: string;
   bannerColor: string;
   about?: string;
-  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -82,13 +80,21 @@ export enum RelationshipStatus {
   BLOCKED = 'BLOCKED'
 }
 
+export enum ConnectionStatus {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE'
+}
+
 interface RelationshipDto {
   accountId: string;
   targetId: string;
-  status: string;
-  createdAt: string;
+  status: RelationshipStatus;
   updatedAt: string;
 }
+
+// export interface UserSettings {
+
+// }
 
 export interface AccountDto {
   id: string;
@@ -101,11 +107,9 @@ export interface AccountDto {
   pronouns?: string | undefined;
   about?: string | undefined;
   bannerColor: string;
-  status: string;
-  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
-  connectionStatus?: 'ONLINE' | 'OFFLINE';
+  connectionStatus?: ConnectionStatus;
   relationship?: RelationshipDto | undefined;
   inRelationshipWith?: RelationshipDto | undefined;
 }

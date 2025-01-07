@@ -14,7 +14,6 @@ import { handleRpcResult } from '../../utils/rpc-message';
 import {
   AUTH_SERVICE_ACCOUNT_MODULE_SERVICE_NAME,
   AUTH_SERVICE_AUTH_MODULE_SERVICE_NAME,
-  AccountStatus as RpcAccountStatus,
   AuthServiceAccountModuleClient,
   AuthServiceAuthModuleClient,
   ConnectionStatus as RpcConnectionStatus,
@@ -30,6 +29,7 @@ import {
   MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME,
   MailServiceAuthModuleClient
 } from '@prj/types/grpc/mail-service';
+import { ConnectionStatus, RelationshipStatus } from '@prj/types/api';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -103,20 +103,24 @@ export class AuthService implements OnModuleInit {
 
     return {
       ...account,
-      connectionStatus: RpcConnectionStatus[account.connectionStatus] as
-        | 'ONLINE'
-        | 'OFFLINE',
-      status: RpcAccountStatus[account.status],
+      connectionStatus:
+        ConnectionStatus[RpcConnectionStatus[account.connectionStatus]],
       relationship: account.relationship
         ? {
             ...account.relationship,
-            status: RpcRelationshipStatus[account.relationship.status]
+            status:
+              RelationshipStatus[
+                RpcRelationshipStatus[account.relationship.status]
+              ]
           }
         : undefined,
       inRelationshipWith: account.inRelationshipWith
         ? {
             ...account.inRelationshipWith,
-            status: RpcRelationshipStatus[account.inRelationshipWith.status]
+            status:
+              RelationshipStatus[
+                RpcRelationshipStatus[account.inRelationshipWith.status]
+              ]
           }
         : undefined
     };
@@ -172,7 +176,8 @@ export class AuthService implements OnModuleInit {
     const result = await lastValueFrom(
       this.authServiceAccountModule.getAccounts({
         haveRelationshipWith: accountId,
-        relationshipStatus: RpcRelationshipStatus.FRIEND
+        relationshipStatus: RpcRelationshipStatus.FRIEND,
+        includeConnectionStatus: true
       })
     );
 
@@ -180,20 +185,24 @@ export class AuthService implements OnModuleInit {
       friends:
         handleRpcResult(result).accounts?.map((e) => ({
           ...e,
-          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
-            | 'ONLINE'
-            | 'OFFLINE',
-          status: RpcAccountStatus[e.status],
+          connectionStatus:
+            ConnectionStatus[RpcConnectionStatus[e.connectionStatus]],
           relationship: e.relationship
             ? {
                 ...e.relationship,
-                status: RpcRelationshipStatus[e.relationship.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.relationship.status]
+                  ]
               }
             : undefined,
           inRelationshipWith: e.inRelationshipWith
             ? {
                 ...e.inRelationshipWith,
-                status: RpcRelationshipStatus[e.inRelationshipWith.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.inRelationshipWith.status]
+                  ]
               }
             : undefined
         })) || []
@@ -219,40 +228,48 @@ export class AuthService implements OnModuleInit {
       incomingRequests:
         result?.incomingRequests?.map((e) => ({
           ...e,
-          status: RpcAccountStatus[e.status],
-          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
-            | 'ONLINE'
-            | 'OFFLINE',
+          connectionStatus:
+            ConnectionStatus[RpcConnectionStatus[e.connectionStatus]],
           relationship: e.relationship
             ? {
                 ...e.relationship,
-                status: RpcRelationshipStatus[e.relationship.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.relationship.status]
+                  ]
               }
             : undefined,
           inRelationshipWith: e.inRelationshipWith
             ? {
                 ...e.inRelationshipWith,
-                status: RpcRelationshipStatus[e.inRelationshipWith.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.inRelationshipWith.status]
+                  ]
               }
             : undefined
         })) || [],
       outgoingRequests:
         result?.outgoingRequests?.map((e) => ({
           ...e,
-          status: RpcAccountStatus[e.status],
-          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
-            | 'ONLINE'
-            | 'OFFLINE',
+          connectionStatus:
+            ConnectionStatus[RpcConnectionStatus[e.connectionStatus]],
           relationship: e.relationship
             ? {
                 ...e.relationship,
-                status: RpcRelationshipStatus[e.relationship.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.relationship.status]
+                  ]
               }
             : undefined,
           inRelationshipWith: e.inRelationshipWith
             ? {
                 ...e.inRelationshipWith,
-                status: RpcRelationshipStatus[e.inRelationshipWith.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.inRelationshipWith.status]
+                  ]
               }
             : undefined
         })) || []
@@ -271,20 +288,24 @@ export class AuthService implements OnModuleInit {
       blocked:
         handleRpcResult(result).accounts?.map((e) => ({
           ...e,
-          connectionStatus: RpcConnectionStatus[e.connectionStatus] as
-            | 'ONLINE'
-            | 'OFFLINE',
-          status: RpcAccountStatus[e.status],
+          connectionStatus:
+            ConnectionStatus[RpcConnectionStatus[e.connectionStatus]],
           relationship: e.relationship
             ? {
                 ...e.relationship,
-                status: RpcRelationshipStatus[e.relationship.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.relationship.status]
+                  ]
               }
             : undefined,
           inRelationshipWith: e.inRelationshipWith
             ? {
                 ...e.inRelationshipWith,
-                status: RpcRelationshipStatus[e.inRelationshipWith.status]
+                status:
+                  RelationshipStatus[
+                    RpcRelationshipStatus[e.inRelationshipWith.status]
+                  ]
               }
             : undefined
         })) || []
