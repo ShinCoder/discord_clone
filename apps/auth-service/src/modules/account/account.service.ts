@@ -15,7 +15,6 @@ import {
 } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { UserSettings } from '../../types/settings';
 import { handleThrowError } from '../../utils';
 
 import {
@@ -67,7 +66,6 @@ export class AccountService {
         };
       }>
     >;
-    settings?: Prisma.JsonValue;
     connectionStatus?: ConnectionStatus;
   }): AccountDto {
     return {
@@ -101,11 +99,7 @@ export class AccountService {
           : undefined,
       connectionStatus: data.connectionStatus
         ? RpcConnectionStatus[data.connectionStatus]
-        : undefined,
-      userSettings:
-        data.settings && data.settings instanceof UserSettings
-          ? data.settings
-          : undefined
+        : undefined
     };
   }
 
@@ -146,7 +140,6 @@ export class AccountService {
           bannerColor: true,
           createdAt: true,
           updatedAt: true,
-          settings: !!data.includeSettings,
           ...(data.includeRelationshipWith && {
             relationship: {
               select: {

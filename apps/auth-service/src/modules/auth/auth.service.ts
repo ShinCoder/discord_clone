@@ -82,7 +82,10 @@ export class AuthService {
               username: data.username,
               displayName: data.displayName || data.username,
               dateOfBirth: new Date(data.dateOfBirth),
-              bannerColor: DefaultProfileValue.BannerColor
+              bannerColor: DefaultProfileValue.BannerColor,
+              settings: {
+                pinnedDms: []
+              }
             }
           });
 

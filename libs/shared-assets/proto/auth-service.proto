@@ -104,11 +104,6 @@ message LogoutResult {
     com.common.MessageStatus status = 1;
 }
 
-message UserSettings {
-    repeated string channelIds = 1;
-    repeated string pinnedDmIds = 2;
-}
-
 message RelationshipDto {
     string accountId = 1;
     string targetId = 2;
@@ -132,7 +127,6 @@ message AccountDto {
     optional RelationshipDto relationship = 13;
     optional RelationshipDto inRelationshipWith = 14;
     optional ConnectionStatus connectionStatus = 15;
-    optional UserSettings userSettings = 16;
 }
 
 message GetAccountDto {
@@ -141,7 +135,6 @@ message GetAccountDto {
     optional AccountStatus status = 3;
     optional string includeRelationshipWith = 4;
     optional bool includeConnectionStatus = 5;
-    optional bool includeSettings = 6;
 }
 
 message GetAccountResult {
@@ -249,4 +242,66 @@ message GetFriendRequestsResult {
 
     com.common.MessageStatus status = 1;
     optional GetFriendRequestPayload payload = 2;
+}
+
+service AuthServiceSettingModule {
+    rpc GetAccountWithSettings (GetAccountWithSettingsDto) returns (GetAccountWithSettingsResult) {};
+    rpc PinDm (PinDmDto) returns (PinDmResult) {};
+    rpc UnpinDm (UnpinDmDto) returns (UnpinDmResult) {};
+}
+
+message DmSettingsDto {
+    repeated AccountDto pinnedDms = 1;
+}
+
+message UserSettings {
+    DmSettingsDto dmSettings = 1;
+}
+
+message GetAccountWithSettingsDto {
+    string id = 1;
+}
+
+message GetAccountWithSettingsResult {
+    message GetAccountWithSettingsResultPayload {
+        string id = 1;
+        string email = 2;
+        string username = 3;
+        optional string displayName = 4;
+        string dateOfBirth = 5;
+        optional string phoneNumber = 6;
+        string avatar = 7;
+        optional string pronouns = 8;
+        optional string about = 9;
+        string bannerColor = 10;
+        string createdAt = 11;
+        string updatedAt = 12;
+        UserSettings userSettings = 13;
+    }
+
+    com.common.MessageStatus status = 1;
+    optional GetAccountWithSettingsResultPayload payload = 2;
+}
+
+message PinDmDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message PinDmResult {
+    message PinDmResultPayload {
+        AccountDto newPinnedDm = 1;
+    }
+
+    com.common.MessageStatus status = 1;
+    optional PinDmResultPayload payload = 2;
+}
+
+message UnpinDmDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message UnpinDmResult {
+    com.common.MessageStatus status = 1;
 }
