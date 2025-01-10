@@ -23,7 +23,9 @@ import {
   VerifyDto,
   RefreshDto,
   LogoutDto,
-  RelationshipStatus as RpcRelationshipStatus
+  RelationshipStatus as RpcRelationshipStatus,
+  AuthServiceSettingModuleClient,
+  AUTH_SERVICE_SETTING_MODULE_SERVICE_NAME
 } from '@prj/types/grpc/auth-service';
 import {
   MAIL_SERVICE_AUTH_MODULE_SERVICE_NAME,
@@ -35,6 +37,7 @@ import { ConnectionStatus, RelationshipStatus } from '@prj/types/api';
 export class AuthService implements OnModuleInit {
   private authServiceAuthModule: AuthServiceAuthModuleClient;
   private authServiceAccountModule: AuthServiceAccountModuleClient;
+  private authServiceSettingModule: AuthServiceSettingModuleClient;
   private mailServiceAuthModule: MailServiceAuthModuleClient;
 
   constructor(
@@ -52,6 +55,11 @@ export class AuthService implements OnModuleInit {
     this.authServiceAccountModule =
       this.authClient.getService<AuthServiceAccountModuleClient>(
         AUTH_SERVICE_ACCOUNT_MODULE_SERVICE_NAME
+      );
+
+    this.authServiceSettingModule =
+      this.authClient.getService<AuthServiceSettingModuleClient>(
+        AUTH_SERVICE_SETTING_MODULE_SERVICE_NAME
       );
 
     this.mailServiceAuthModule =
@@ -92,6 +100,47 @@ export class AuthService implements OnModuleInit {
     const result = await lastValueFrom(this.authServiceAuthModule.verify(data));
 
     return handleRpcResult(result);
+  }
+
+  async getMe(accountId: string) {
+    const result = await lastValueFrom(
+      this.authServiceSettingModule.getAccountWithSettings({ id: accountId })
+    );
+
+    const account = handleRpcResult(result);
+
+    return {
+      ...account,
+      userSettings: {
+        ...account.userSettings,
+        dmSettings: {
+          ...account.userSettings.dmSettings,
+          pinnedDms: account.userSettings.dmSettings.pinnedDms.map((e) => ({
+            ...e,
+            connectionStatus:
+              ConnectionStatus[RpcConnectionStatus[e.connectionStatus]],
+            relationship: e.relationship
+              ? {
+                  ...e.relationship,
+                  status:
+                    RelationshipStatus[
+                      RpcRelationshipStatus[e.relationship.status]
+                    ]
+                }
+              : undefined,
+            inRelationshipWith: e.inRelationshipWith
+              ? {
+                  ...e.inRelationshipWith,
+                  status:
+                    RelationshipStatus[
+                      RpcRelationshipStatus[e.inRelationshipWith.status]
+                    ]
+                }
+              : undefined
+          }))
+        }
+      }
+    };
   }
 
   async getAccount(data: GetAccountDto) {

@@ -43,6 +43,7 @@ export interface IGetMeResult {
   about?: string;
   createdAt: string;
   updatedAt: string;
+  userSettings: UserSettings;
 }
 
 export interface IVerifyDto {
@@ -92,9 +93,11 @@ interface RelationshipDto {
   updatedAt: string;
 }
 
-// export interface UserSettings {
-
-// }
+export interface UserSettings {
+  dmSettings: {
+    pinnedDms: Array<AccountDto>;
+  };
+}
 
 export interface AccountDto {
   id: string;
@@ -129,4 +132,16 @@ export interface IGetUserProfileResult {
 
 export interface IGetBlockedResult {
   blocked: Array<AccountDto>;
+}
+
+export interface IPinDmDto {
+  targetId: string;
+}
+
+export interface IPinDmResult {
+  newPin: AccountDto;
+}
+
+export interface IUnpinDmDto {
+  targetId: string;
 }

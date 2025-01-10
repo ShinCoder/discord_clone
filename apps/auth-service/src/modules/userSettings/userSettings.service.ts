@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
-import { RelationshipStatus } from '@prisma/auth-client';
+import { ConnectionStatus, RelationshipStatus } from '@prisma/auth-client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { handleThrowError } from '../../utils';
@@ -10,6 +10,7 @@ import {
   GetAccountWithSettingsDto,
   PinDmDto,
   RelationshipStatus as RpcRelationshipStatus,
+  ConnectionStatus as RpcConnectionStatus,
   UnpinDmDto
 } from '@prj/types/grpc/auth-service';
 import { ApiErrorMessages, getRpcSuccessMessage } from '@prj/common';
@@ -60,6 +61,7 @@ export class UserSettingsService {
               about: string;
               createdAt: Date;
               updatedAt: Date;
+              connectionStatus: ConnectionStatus;
               relationshipWith: Array<{
                 accountId: string;
                 targetId: string;
@@ -93,6 +95,15 @@ export class UserSettingsService {
                     where: {
                       accountId: account.id
                     }
+                  },
+                  sessions: {
+                    select: {
+                      id: true,
+                      connectionStatus: true
+                    },
+                    where: {
+                      connectionStatus: ConnectionStatus.ONLINE
+                    }
                   }
                 },
                 where: {
@@ -104,7 +115,17 @@ export class UserSettingsService {
 
               pinnedDms = pinnedDmIds.reduce((accum, e) => {
                 const _e = pinnedAccounts.find((_account) => _account.id === e);
-                if (_e) return [...accum, _e];
+                if (_e)
+                  return [
+                    ...accum,
+                    {
+                      ..._e,
+                      connectionStatus:
+                        _e.sessions.length > 0
+                          ? ConnectionStatus.ONLINE
+                          : ConnectionStatus.OFFLINE
+                    }
+                  ];
                 else return accum;
               }, []);
             }
@@ -131,6 +152,7 @@ export class UserSettingsService {
               dateOfBirth: e.dateOfBirth.toISOString(),
               createdAt: e.createdAt.toISOString(),
               updatedAt: e.updatedAt.toISOString(),
+              connectionStatus: RpcConnectionStatus[e.connectionStatus],
               inRelationshipWith:
                 e.relationshipWith?.length === 1
                   ? {

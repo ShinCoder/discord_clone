@@ -76,9 +76,7 @@ export class AuthController {
   @UseGuards(JwtAtGuard)
   @Get('me')
   getMe(@Req() req: IRequestWithUser): Promise<IGetMeResult> {
-    return this.authService.getAccount({
-      id: req.user.sub
-    });
+    return this.authService.getMe(req.user.sub);
   }
 
   @UseGuards(JwtRtGuard)

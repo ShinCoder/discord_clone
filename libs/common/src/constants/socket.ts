@@ -4,5 +4,8 @@ export const SocketEvents = {
   sendDirectMessage: 'send-dm',
 
   receiveDirectMessage: 'receive-dm',
-  receiveFailedDirectMessage: 'receive-fail-dm'
+  receiveFailedDirectMessage: 'receive-fail-dm',
+
+  pinDirectMessage: 'pin-dm',
+  unpinDirectMessage: 'unpin-dm'
 };
