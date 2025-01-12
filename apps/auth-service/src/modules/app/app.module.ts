@@ -4,6 +4,7 @@ import joi from 'joi';
 
 import { AuthModule } from '../auth/auth.module';
 import { AccountModule } from '../account/account.module';
+import { UserSettingsModule } from '../userSettings/userSettings.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { AccountModule } from '../account/account.module';
       envFilePath: '.env'
     }),
     AuthModule,
-    AccountModule
+    AccountModule,
+    UserSettingsModule
   ]
 })
 export class AppModule {}

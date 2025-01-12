@@ -30,8 +30,7 @@ export interface ILogoutDto {
   accountId: string;
 }
 
-export interface IGetMeResult {
-  status: string;
+export interface AccountWithSettingsDto {
   id: string;
   email: string;
   username: string;
@@ -42,10 +41,12 @@ export interface IGetMeResult {
   pronouns?: string;
   bannerColor: string;
   about?: string;
-  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
+  userSettings: UserSettings;
 }
+
+export type IGetMeResult = AccountWithSettingsDto;
 
 export interface IVerifyDto {
   verifyToken: string;
@@ -82,12 +83,22 @@ export enum RelationshipStatus {
   BLOCKED = 'BLOCKED'
 }
 
+export enum ConnectionStatus {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE'
+}
+
 interface RelationshipDto {
   accountId: string;
   targetId: string;
-  status: string;
-  createdAt: string;
+  status: RelationshipStatus;
   updatedAt: string;
+}
+
+export interface UserSettings {
+  dmSettings: {
+    pinnedDms: Array<AccountDto>;
+  };
 }
 
 export interface AccountDto {
@@ -101,11 +112,9 @@ export interface AccountDto {
   pronouns?: string | undefined;
   about?: string | undefined;
   bannerColor: string;
-  status: string;
-  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
-  connectionStatus?: 'ONLINE' | 'OFFLINE';
+  connectionStatus?: ConnectionStatus;
   relationship?: RelationshipDto | undefined;
   inRelationshipWith?: RelationshipDto | undefined;
 }
@@ -125,4 +134,12 @@ export interface IGetUserProfileResult {
 
 export interface IGetBlockedResult {
   blocked: Array<AccountDto>;
+}
+
+export interface IPinDmDto {
+  targetId: string;
+}
+
+export interface IPinDmResult {
+  newPin: AccountDto;
 }

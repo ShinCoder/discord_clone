@@ -17,5 +17,8 @@ export const ApiErrorMessages = {
   FRIEND_REQUEST_FEEDBACK__NO_REQUEST: "This friend request doesn't exist",
   UNBLOCK__NOT_BLOCKED: "You haven't block this user",
   REMOVE_FRIEND__NOT_FRIEND: 'You and this user are not friend',
-  SEND_DM__BLOCKED: "You're blocked by this user"
+  SEND_DM__BLOCKED: "You're blocked by this user",
+  PIN_DM__ACCOUNT_NOT_FOUND: 'Account not found',
+  PIN_DM__TARGET_NOT_FOUND: 'Target not found',
+  PIN_DM__ALREADY_PINNED: 'Target is already pinned'
 };

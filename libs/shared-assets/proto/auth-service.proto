@@ -24,10 +24,6 @@ service AuthServiceAccountModule {
     rpc GetFriendRequests (GetFriendRequestsDto) returns (GetFriendRequestsResult) {};
     rpc BlockUser (BlockUserDto) returns (BlockUserResult) {};
     rpc UnblockUser (UnblockUserDto) returns (UnblockUserResult) {};
-    // rpc CreateOrUpdateRelationship (CreateOrUpdateRelationshipDto) returns (CreateOrUpdateRelationshipResult) {};
-    // rpc DeleteRelationship (DeleteRelationshipDto) returns (DeleteRelationshipResult) {};
-    // rpc GetFriends (GetFriendsDto) returns (GetFriendsResult) {};
-    // rpc GetBlocked (GetBlockedDto) returns (GetBlockedResult) {};
 }
 
 enum AccountStatus {
@@ -45,14 +41,6 @@ enum RelationshipStatus {
 enum ConnectionStatus {
     ONLINE = 0;
     OFFLINE = 1;
-}
-
-message RelationshipDto {
-    string accountId = 1;
-    string targetId = 2;
-    RelationshipStatus status = 3;
-    string createdAt = 4;
-    string updatedAt = 5;
 }
 
 message RegisterDto {
@@ -116,6 +104,13 @@ message LogoutResult {
     com.common.MessageStatus status = 1;
 }
 
+message RelationshipDto {
+    string accountId = 1;
+    string targetId = 2;
+    RelationshipStatus status = 3;
+    string updatedAt = 4;
+}
+
 message AccountDto {
     string id = 1;
     string email = 2;
@@ -127,13 +122,11 @@ message AccountDto {
     optional string pronouns = 8;
     optional string about = 9;
     string bannerColor = 10;
-    AccountStatus status = 11;
-    bool isAdmin = 12;
-    string createdAt = 13;
-    string updatedAt = 14;
-    optional RelationshipDto relationship = 15;
-    optional RelationshipDto inRelationshipWith = 16;
-    ConnectionStatus connectionStatus = 17;
+    string createdAt = 11;
+    string updatedAt = 12;
+    optional RelationshipDto relationship = 13;
+    optional RelationshipDto inRelationshipWith = 14;
+    optional ConnectionStatus connectionStatus = 15;
 }
 
 message GetAccountDto {
@@ -141,6 +134,7 @@ message GetAccountDto {
     optional string username = 2;
     optional AccountStatus status = 3;
     optional string includeRelationshipWith = 4;
+    optional bool includeConnectionStatus = 5;
 }
 
 message GetAccountResult {
@@ -155,6 +149,7 @@ message AccountsDto {
 message GetAccountsDto {
     optional string haveRelationshipWith = 1;
     optional RelationshipStatus relationshipStatus = 2;
+    optional bool includeConnectionStatus = 3;
 }
 
 message GetAccountsResult {
@@ -226,38 +221,6 @@ message UnblockUserResult {
     com.common.MessageStatus status = 1;
 }
 
-// message RelationshipWriteDto {
-//     string id = 1;
-//     RelationshipStatus status = 2;
-// }
-
-// message CreateOrUpdateRelationshipDto {
-//     RelationshipWriteDto account = 1;
-//     RelationshipWriteDto target = 2;
-// }
-
-// message CreateOrUpdateRelationshipResult {
-//     com.common.MessageStatus status = 1;
-// }
-
-// message DeleteRelationshipDto {
-//     string accountId = 1;
-//     string targetId = 2; 
-// }
-
-// message DeleteRelationshipResult {
-//     com.common.MessageStatus status = 1;
-// }
-
-// message GetFriendsDto {
-//     string accountId = 1;
-// }
-
-// message GetFriendsResult {
-//     com.common.MessageStatus status = 1;
-//     optional AccountsDto payload = 2;
-// }
-
 message UpdateConnectionStatusDto {
     string accountId = 1;
     ConnectionStatus status = 2;
@@ -281,11 +244,64 @@ message GetFriendRequestsResult {
     optional GetFriendRequestPayload payload = 2;
 }
 
-// message GetBlockedDto {
-//     string accountId = 1;
-// }
+service AuthServiceSettingModule {
+    rpc GetAccountWithSettings (GetAccountWithSettingsDto) returns (GetAccountWithSettingsResult) {};
+    rpc PinDm (PinDmDto) returns (PinDmResult) {};
+    rpc UnpinDm (UnpinDmDto) returns (UnpinDmResult) {};
+}
 
-// message GetBlockedResult {
-//     com.common.MessageStatus status = 1;
-//     optional AccountsDto payload = 2;
-// }
+message DmSettingsDto {
+    repeated AccountDto pinnedDms = 1;
+}
+
+message UserSettings {
+    DmSettingsDto dmSettings = 1;
+}
+
+message GetAccountWithSettingsDto {
+    string id = 1;
+}
+
+message GetAccountWithSettingsResult {
+    message GetAccountWithSettingsResultPayload {
+        string id = 1;
+        string email = 2;
+        string username = 3;
+        optional string displayName = 4;
+        string dateOfBirth = 5;
+        optional string phoneNumber = 6;
+        string avatar = 7;
+        optional string pronouns = 8;
+        optional string about = 9;
+        string bannerColor = 10;
+        string createdAt = 11;
+        string updatedAt = 12;
+        UserSettings userSettings = 13;
+    }
+
+    com.common.MessageStatus status = 1;
+    optional GetAccountWithSettingsResultPayload payload = 2;
+}
+
+message PinDmDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message PinDmResult {
+    message PinDmResultPayload {
+        AccountDto newPinnedDm = 1;
+    }
+
+    com.common.MessageStatus status = 1;
+    optional PinDmResultPayload payload = 2;
+}
+
+message UnpinDmDto {
+    string accountId = 1;
+    string targetId = 2;
+}
+
+message UnpinDmResult {
+    com.common.MessageStatus status = 1;
+}

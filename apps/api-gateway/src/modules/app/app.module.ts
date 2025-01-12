@@ -5,6 +5,7 @@ import joi from 'joi';
 import { CustomLoggerMiddleware } from '../../middlewares/custom-logger.middleware';
 import { AuthModule } from '../auth/auth.module';
 import { MessageModule } from '../message/message.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { MessageModule } from '../message/message.module';
       envFilePath: '.env'
     }),
     AuthModule,
-    MessageModule
+    MessageModule,
+    UserModule
   ]
 })
 export class AppModule implements NestModule {
