@@ -3,14 +3,18 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { clearLocalStorage, readLocalStorage, writeLocalStorage } from '@utils';
 import { StorageKey } from '@constants';
 
-import { ILoginResult, AccountDto } from '@prj/types/api';
+import {
+  ILoginResult,
+  AccountWithSettingsDto,
+  AccountDto
+} from '@prj/types/api';
 
 export interface AuthSlice {
   token?: {
     accessToken?: string;
     refreshToken?: string;
   };
-  data?: AccountDto;
+  data?: AccountWithSettingsDto;
 }
 
 const initialState: AuthSlice = {
@@ -25,16 +29,22 @@ export const authSlice = createSlice({
       state.token = action.payload;
       writeLocalStorage(StorageKey.TOKEN, action.payload);
     },
-    setAccountData: (state, action: PayloadAction<AccountDto>) => {
+    setAccountData: (state, action: PayloadAction<AccountWithSettingsDto>) => {
       state.data = action.payload;
     },
     clearAuthState: (state) => {
       clearLocalStorage(StorageKey.TOKEN);
       return {};
+    },
+    setPinnedDms: (state, action: PayloadAction<Array<AccountDto>>) => {
+      if (state.data) {
+        state.data.userSettings.dmSettings.pinnedDms = action.payload;
+      }
     }
   }
 });
 
-export const { setToken, setAccountData, clearAuthState } = authSlice.actions;
+export const { setToken, setAccountData, clearAuthState, setPinnedDms } =
+  authSlice.actions;
 
 export default authSlice.reducer;

@@ -118,13 +118,14 @@ const AppRouter = () => {
           const me = await refetch({ throwOnError: true });
           if (me.data?.data) dispatch(setAccountData(me.data?.data));
         } catch (err: any) {
-          /* empty */
           if (err?.status !== 401) {
             dispatch(
               setErrorMessage('Something went wrong, please try again later')
             );
-            dispatch(clearAuthState());
+          } else {
+            dispatch(setErrorMessage('Session expired, please login again'));
           }
+          dispatch(clearAuthState());
         }
         dispatch(setLoading(false));
       };

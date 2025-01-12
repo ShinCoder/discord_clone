@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { Box } from '@mui/material';
 import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
@@ -48,6 +48,9 @@ const MessageArea = (props: MessageAreaProps) => {
   } = props;
 
   const [hasMore, setHasMore] = useState<boolean>(true);
+  useEffect(() => {
+    setHasMore(true);
+  }, [target]);
 
   const { refetch } = useQuery({
     queryKey: ['dms', sender.id, target.id, dmsNumber],

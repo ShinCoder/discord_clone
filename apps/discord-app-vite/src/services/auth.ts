@@ -12,8 +12,11 @@ import {
   IGetUserProfileResult,
   ILoginDto,
   ILoginResult,
+  IPinDmDto,
+  IPinDmResult,
   IRegisterDto,
   ISendFriendRequestDto,
+  IUnblockDto,
   IVerifyDto
 } from '@prj/types/api';
 
@@ -22,7 +25,7 @@ export const login = (data: ILoginDto) => {
 };
 
 export const getMe = () => {
-  return apiClientWithAuth.get<IGetMeResult>('/auth/me');
+  return apiClientWithAuth.get<IGetMeResult>('/users/me');
 };
 
 export const register = (data: IRegisterDto) => {
@@ -35,7 +38,7 @@ export const verify = (data: IVerifyDto) => {
 
 export const getFriends = (data: IGetFriendsDto) => {
   return apiClientWithAuth.get<IGetFriendsResult>(
-    `/auth/${data.accountId}/friends`
+    `/users/${data.accountId}/friends`
   );
 };
 
@@ -43,12 +46,15 @@ interface SendFriendRequestDto extends ISendFriendRequestDto {
   accountId: string;
 }
 export const sendFriendRequest = (data: SendFriendRequestDto) => {
-  return apiClientWithAuth.post(`/auth/${data.accountId}/friend-request`, data);
+  return apiClientWithAuth.post(
+    `/users/${data.accountId}/friend-request`,
+    data
+  );
 };
 
 export const getPendingFriendRequest = (id: string) => {
   return apiClientWithAuth.get<IGetFriendRequestsResult>(
-    `/auth/${id}/friend-requests`
+    `/users/${id}/friend-requests`
   );
 };
 
@@ -57,7 +63,7 @@ interface AcceptFriendRequestDto extends IAcceptFriendRequestDto {
 }
 export const acceptFriendRequest = (data: AcceptFriendRequestDto) => {
   return apiClientWithAuth.patch(
-    `/auth/${data.accountId}/friend-request/accept`,
+    `/users/${data.accountId}/friend-request/accept`,
     data
   );
 };
@@ -67,7 +73,7 @@ interface DeclineFriendRequestDto extends IDeclineFriendRequestDto {
 }
 export const declineFriendRequest = (data: DeclineFriendRequestDto) => {
   return apiClientWithAuth.patch(
-    `/auth/${data.accountId}/friend-request/decline`,
+    `/users/${data.accountId}/friend-request/decline`,
     data
   );
 };
@@ -77,33 +83,52 @@ export const cancelFriendRequest = (data: {
   targetId: string;
 }) => {
   return apiClientWithAuth.delete(
-    `/auth/${data.accountId}/friend-request/${data.targetId}`
+    `/users/${data.accountId}/friend-request/${data.targetId}`
   );
 };
 
 export const getUserProfile = (id: string) => {
-  return apiClientWithAuth.get<IGetUserProfileResult>(`/auth/${id}/profile`);
+  return apiClientWithAuth.get<IGetUserProfileResult>(`/users/${id}/profile`);
 };
 
 export const removeFriend = (data: { accountId: string; targetId: string }) => {
   return apiClientWithAuth.delete(
-    `/auth/${data.accountId}/friend/${data.targetId}`
+    `/users/${data.accountId}/friend/${data.targetId}`
   );
 };
 
 export const getBlocked = (id: string) => {
-  return apiClientWithAuth.get<IGetBlockedResult>(`/auth/${id}/blocked`);
+  return apiClientWithAuth.get<IGetBlockedResult>(`/users/${id}/blocked`);
 };
 
 interface BlockDto extends IBlockDto {
   accountId: string;
 }
 export const blockUser = (data: BlockDto) => {
-  return apiClientWithAuth.post(`/auth/${data.accountId}/block`, data);
+  return apiClientWithAuth.post(`/users/${data.accountId}/block`, data);
 };
 
-export const unblockUser = (data: { accountId: string; targetId: string }) => {
+interface UnBlockDto extends IUnblockDto {
+  accountId: string;
+}
+export const unblockUser = (data: UnBlockDto) => {
   return apiClientWithAuth.delete(
-    `/auth/${data.accountId}/block/${data.targetId}`
+    `/users/${data.accountId}/block/${data.targetId}`
+  );
+};
+
+interface PinDmDto extends IPinDmDto {
+  accountId: string;
+}
+export const pinDm = (data: PinDmDto) => {
+  return apiClientWithAuth.post<IPinDmResult>(
+    `/users/${data.accountId}/settings/direct-message/pin`,
+    data
+  );
+};
+
+export const unpinDm = (data: { accountId: string; targetId: string }) => {
+  return apiClientWithAuth.delete(
+    `/users/${data.accountId}/settings/direct-message/pin/${data.targetId}`
   );
 };
