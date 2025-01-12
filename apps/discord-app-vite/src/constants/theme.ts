@@ -273,6 +273,7 @@ declare module '@mui/material/styles' {
         secondaryText: string;
       };
       channel: {
+        default: string;
         textareaBackground: string;
       };
       green: {
@@ -381,6 +382,7 @@ declare module '@mui/material/styles' {
         secondaryText: string;
       };
       channel: {
+        default: string;
         textareaBackground: string;
       };
       green: {
@@ -550,6 +552,7 @@ const defaultThemeOptions: ThemeOptions = {
       secondaryText: paletteConstants.white[500]
     },
     channel: {
+      default: paletteConstants.primary[360],
       textareaBackground: `color-mix(in oklab, ${paletteConstants.primary[560]} 100%, black 0%)`
     },
     green: {

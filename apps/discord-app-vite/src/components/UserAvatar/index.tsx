@@ -4,12 +4,14 @@ import { useTheme } from '@mui/material/styles';
 
 import BrandIcon from '@components/BrandIcon';
 
+import { ConnectionStatus } from '@prj/types/api';
+
 interface UserAvatarProps {
   src?: string;
   alt: string;
   color?: string;
   showStatus?: boolean;
-  status?: 'ONLINE' | 'OFFLINE';
+  status?: ConnectionStatus;
   size?: string;
 }
 
@@ -19,7 +21,7 @@ const UserAvatar = (props: UserAvatarProps) => {
     alt,
     color = 'transparent',
     showStatus = false,
-    status = 'OFFLINE',
+    status = ConnectionStatus.OFFLINE,
     size = '32px'
   } = props;
 
@@ -46,7 +48,7 @@ const UserAvatar = (props: UserAvatarProps) => {
   const render = useCallback(() => {
     if (showStatus) {
       switch (status) {
-        case 'ONLINE':
+        case ConnectionStatus.ONLINE:
           return (
             <Badge
               overlap='circular'
@@ -66,7 +68,7 @@ const UserAvatar = (props: UserAvatarProps) => {
               {renderAvatar()}
             </Badge>
           );
-        case 'OFFLINE':
+        case ConnectionStatus.OFFLINE:
           return (
             <Badge
               overlap='circular'

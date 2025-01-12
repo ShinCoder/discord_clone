@@ -10,6 +10,7 @@ import {
   blockUser,
   declineFriendRequest,
   getUserProfile,
+  pinDm,
   removeFriend,
   sendFriendRequest,
   unblockUser
@@ -20,6 +21,7 @@ import { ProfileModalExtraProps } from '@components/GlobalModal/ProfileModal';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { setLoading } from '@redux/slices/statusSlice';
 import { showModal } from '@redux/slices/modalSlice';
+import { setPinnedDms } from '@redux/slices/authSlice';
 import {
   processMessageForDisplay,
   ProcessedMessageDate,
@@ -46,6 +48,36 @@ const DirectMessage = () => {
   const { socket } = useAppSelector((state) => state.socket);
   const { data: userData } = useAppSelector((state) => state.auth);
 
+  const pinDmMutation = useMutation({
+    mutationFn: pinDm,
+    onMutate: () => {
+      dispatch(setLoading(true));
+    },
+    onSettled: () => {
+      dispatch(setLoading(false));
+    },
+    onSuccess: (data) => {
+      if (data.data?.newPin && userData) {
+        dispatch(
+          setPinnedDms([
+            data.data.newPin,
+            ...userData.userSettings.dmSettings.pinnedDms
+          ])
+        );
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (userData && id) {
+      if (
+        !userData.userSettings.dmSettings.pinnedDms.find((e) => e.id === id)
+      ) {
+        pinDmMutation.mutate({ accountId: userData.id, targetId: id });
+      }
+    }
+  }, [id, pinDmMutation, userData]);
+
   useEffect(() => {
     if (id === userData?.id) {
       navigate(protectedRoutes.myChannels, { replace: true });
@@ -54,8 +86,12 @@ const DirectMessage = () => {
 
   // Get target profile
   const { data: targetData, refetch } = useQuery({
-    queryKey: ['user-profile', id || ''],
-    queryFn: ({ queryKey }) => getUserProfile(queryKey[1]),
+    queryKey: ['user-profile', id],
+    queryFn: ({ queryKey }) => {
+      if (queryKey[1]) {
+        return getUserProfile(queryKey[1]);
+      }
+    },
     enabled: false
   });
 
@@ -226,6 +262,11 @@ const DirectMessage = () => {
   // Get dm
   const [dms, setDms] = useState<Array<ProcessedMessageDate>>([]);
   const [dmsNumber, setDmsNumber] = useState<number>(0);
+
+  useEffect(() => {
+    setDms([]);
+    setDmsNumber(0);
+  }, [id]);
 
   const handleAddDms = useCallback((_data: Array<ProcessedMessageDate>) => {
     setDms((pre) => concatenateProcessedMessages(_data, pre));
