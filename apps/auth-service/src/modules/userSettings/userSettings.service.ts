@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpStatus,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
 import { ConnectionStatus, RelationshipStatus } from '@prisma/auth-client';
@@ -192,7 +197,7 @@ export class UserSettingsService {
 
         if (pinnedDmIds.includes(data.targetId))
           throw new RpcException(
-            new NotFoundException(ApiErrorMessages.PIN_DM__ALREADY_PINNED)
+            new ConflictException(ApiErrorMessages.PIN_DM__ALREADY_PINNED)
           );
 
         const target = await tx.accounts.findFirst({
@@ -219,6 +224,15 @@ export class UserSettingsService {
               where: {
                 accountId: account.id
               }
+            },
+            sessions: {
+              select: {
+                id: true,
+                connectionStatus: true
+              },
+              where: {
+                connectionStatus: ConnectionStatus.ONLINE
+              }
             }
           },
           where: {
@@ -244,7 +258,13 @@ export class UserSettingsService {
           }
         });
 
-        return target;
+        return {
+          ...target,
+          connectionStatus:
+            target.sessions.length > 0
+              ? ConnectionStatus.ONLINE
+              : ConnectionStatus.OFFLINE
+        };
       });
 
       return getRpcSuccessMessage(HttpStatus.CREATED, {
@@ -253,6 +273,7 @@ export class UserSettingsService {
           dateOfBirth: newPin.dateOfBirth.toISOString(),
           createdAt: newPin.createdAt.toISOString(),
           updatedAt: newPin.updatedAt.toISOString(),
+          connectionStatus: RpcConnectionStatus[newPin.connectionStatus],
           inRelationshipWith:
             newPin.relationshipWith?.length === 1
               ? {

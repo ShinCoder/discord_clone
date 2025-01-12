@@ -301,4 +301,46 @@ export class UserService implements OnModuleInit {
 
     return handleRpcResult(result);
   }
+
+  async pinDirectMessage(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceSettingModule.pinDm({ accountId, targetId })
+    );
+
+    const newPin = handleRpcResult(result).newPinnedDm;
+
+    return {
+      newPin: {
+        ...newPin,
+        connectionStatus:
+          ConnectionStatus[RpcConnectionStatus[newPin.connectionStatus]],
+        relationship: newPin.relationship
+          ? {
+              ...newPin.relationship,
+              status:
+                RelationshipStatus[
+                  RpcRelationshipStatus[newPin.relationship.status]
+                ]
+            }
+          : undefined,
+        inRelationshipWith: newPin.inRelationshipWith
+          ? {
+              ...newPin.inRelationshipWith,
+              status:
+                RelationshipStatus[
+                  RpcRelationshipStatus[newPin.inRelationshipWith.status]
+                ]
+            }
+          : undefined
+      }
+    };
+  }
+
+  async unpinDirectMessage(accountId: string, targetId: string) {
+    const result = await lastValueFrom(
+      this.authServiceSettingModule.unpinDm({ accountId, targetId })
+    );
+
+    return handleRpcResult(result);
+  }
 }

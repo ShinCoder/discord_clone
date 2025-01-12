@@ -18,6 +18,7 @@ import {
   AcceptFriendRequestDto,
   BlockDto,
   DeclineFriendRequestDto,
+  PinDirectMessageDto,
   SendFriendRequestDto
 } from './dto';
 import { JwtAtGuard } from '../../guards';
@@ -28,7 +29,8 @@ import {
   IGetFriendRequestsResult,
   IGetFriendsResult,
   IGetMeResult,
-  IGetUserProfileResult
+  IGetUserProfileResult,
+  IPinDmResult
 } from '@prj/types/api';
 
 @Controller('users')
@@ -185,5 +187,31 @@ export class UserController {
       throw new ForbiddenException('Forbidden resource');
 
     return this.userService.unblockUser(accountId, targetId);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Post(':id/settings/direct-message/pin')
+  async pinDirectMessage(
+    @Req() req: IRequestWithUser,
+    @Body() body: PinDirectMessageDto,
+    @Param('id') accountId: string
+  ): Promise<IPinDmResult> {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.userService.pinDirectMessage(accountId, body.targetId);
+  }
+
+  @UseGuards(JwtAtGuard)
+  @Delete(':id/settings/direct-message/pin/:target')
+  async unpinDirectMessage(
+    @Req() req: IRequestWithUser,
+    @Param('target') targetId: string,
+    @Param('id') accountId: string
+  ) {
+    if (req.user.sub !== accountId)
+      throw new ForbiddenException('Forbidden resource');
+
+    return this.userService.unpinDirectMessage(accountId, targetId);
   }
 }

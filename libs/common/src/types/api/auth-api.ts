@@ -30,7 +30,7 @@ export interface ILogoutDto {
   accountId: string;
 }
 
-export interface IGetMeResult {
+export interface AccountWithSettingsDto {
   id: string;
   email: string;
   username: string;
@@ -45,6 +45,8 @@ export interface IGetMeResult {
   updatedAt: string;
   userSettings: UserSettings;
 }
+
+export type IGetMeResult = AccountWithSettingsDto;
 
 export interface IVerifyDto {
   verifyToken: string;
@@ -140,8 +142,4 @@ export interface IPinDmDto {
 
 export interface IPinDmResult {
   newPin: AccountDto;
-}
-
-export interface IUnpinDmDto {
-  targetId: string;
 }
